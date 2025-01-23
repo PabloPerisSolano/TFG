@@ -8,7 +8,7 @@
 backend/.venv/
 
 # Ignorar la base de datos del proyecto
-projectTFG/db.sqlite3
+backend/db.sqlite3
 
 # Ignorar todos los archivos __pycache__ en cualquier directorio
 **/__pycache__/*
