@@ -1,51 +1,102 @@
-import { cn } from "@/lib/utils"
-import { Button } from "@/components/ui/button"
+"use client";
+import { useState } from "react";
+import { useRouter } from "next/navigation";
+import { cn } from "@/lib/utils";
+import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import Link from "next/link"
+} from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import Link from "next/link";
+import { API_BASE_URL } from "@/config";
 
-export function LoginForm({
-  className,
-  ...props
-}) {
+export function LoginForm({ className, ...props }) {
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
+  const router = useRouter();
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    try {
+      const response = await fetch(`${API_BASE_URL}/api/users/login/`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ username, password }),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        setError("Credenciales incorrectas.");
+        return;
+      }
+
+      const data = await response.json();
+
+      // Guardar los tokens en localStorage
+      localStorage.setItem("accessToken", data.access);
+      localStorage.setItem("refreshToken", data.refresh);
+
+      // Redirigir al usuario a la página de inicio
+      router.push("/");
+    } catch (error) {
+      setError("Ocurrió un error inesperado");
+    }
+  };
+
   return (
-    (<div className={cn("flex flex-col gap-6", className)} {...props}>
+    <div className={cn("flex flex-col gap-6", className)} {...props}>
       <Card>
         <CardHeader>
           <CardTitle className="text-2xl">Iniciar Sesión</CardTitle>
-          <CardDescription>
-            Introduce tus datos de acceso.
-          </CardDescription>
+          <CardDescription>Introduce tus datos de acceso.</CardDescription>
         </CardHeader>
         <CardContent>
-          <form>
+          <form onSubmit={handleSubmit}>
             <div className="flex flex-col gap-6">
               <div className="grid gap-2">
                 <Label htmlFor="username">Nombre de usuario</Label>
-                <Input id="username" type="text" required />
+                <Input
+                  id="username"
+                  type="text"
+                  required
+                  value={username}
+                  onChange={(e) => setUsername(e.target.value)}
+                />
               </div>
               <div className="grid gap-2">
                 <Label htmlFor="password">Contraseña</Label>
-                <Input id="password" type="password" required />
+                <Input
+                  id="password"
+                  type="password"
+                  required
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                />
               </div>
+              {error && <p className="text-red-500">{error}</p>}
               <Button type="submit" className="w-full">
                 Iniciar Sesión
               </Button>
             </div>
             <div className="mt-4 text-center text-sm">
               ¿Quieres crear una cuenta?
-              <Link href="/register" className="text-blue-500"> Registrarse</Link>
+              <Link href="/register" className="text-blue-500">
+                {" "}
+                Registrarse
+              </Link>
             </div>
           </form>
         </CardContent>
       </Card>
-    </div>)
+    </div>
   );
 }
