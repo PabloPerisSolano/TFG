@@ -41,8 +41,7 @@ export function AuthProvider({ children }) {
   const handleLogin = (accessToken, refreshToken) => {
     localStorage.setItem("accessToken", accessToken);
     localStorage.setItem("refreshToken", refreshToken);
-    setIsLoggedIn(true); // quitar cuando se implemente el fetchUserData
-    //fetchUserData(accessToken);
+    fetchUserData(accessToken);
   };
 
   const handleLogout = () => {
