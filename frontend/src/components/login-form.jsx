@@ -25,7 +25,7 @@ export function LoginForm({ className, ...props }) {
     e.preventDefault();
 
     try {
-      const response = await fetch(`${API_BASE_URL}/api/users/login/`, {
+      const response = await fetch(`${API_BASE_URL}users/login/`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -34,7 +34,6 @@ export function LoginForm({ className, ...props }) {
       });
 
       if (!response.ok) {
-        const errorData = await response.json();
         setError("Credenciales incorrectas.");
         return;
       }
@@ -48,7 +47,7 @@ export function LoginForm({ className, ...props }) {
       // Redirigir al usuario a la página de inicio
       router.push("/");
     } catch (error) {
-      setError("Ocurrió un error inesperado");
+      setError("No se pudo conectar con el servidor.");
     }
   };
 
