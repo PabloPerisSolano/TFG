@@ -13,13 +13,15 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import Link from "next/link";
-import { API_BASE_URL } from "@/config";
+import { API_BASE_URL } from "@/config/config";
+import { useAuth } from "@/context/AuthContext";
 
 export function LoginForm({ className, ...props }) {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const router = useRouter();
+  const { handleLogin } = useAuth();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -40,9 +42,7 @@ export function LoginForm({ className, ...props }) {
 
       const data = await response.json();
 
-      // Guardar los tokens en localStorage
-      localStorage.setItem("accessToken", data.access);
-      localStorage.setItem("refreshToken", data.refresh);
+      handleLogin(data.access, data.refresh);
 
       // Redirigir al usuario a la página de inicio
       router.push("/");

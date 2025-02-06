@@ -13,7 +13,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import Link from "next/link";
-import { API_BASE_URL } from "@/config";
+import { API_BASE_URL } from "@/config/config";
 
 export function RegisterForm({ className, ...props }) {
   const [username, setUsername] = useState("");
