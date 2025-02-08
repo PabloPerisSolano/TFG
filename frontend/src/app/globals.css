@@ -4,15 +4,19 @@
 
 body {
   margin: 0;
-  color: #ededed;
-  background: #0a0a0a;
+  color: #ffffff;
+  background: linear-gradient(100deg, #6a11cb, #2575fc);
+  background-attachment: fixed;
+  background-size: cover;
   font-family: var(--font-roboto);
 }
 
-.grid-rows-layout {
-  display: grid;
-  min-height: 100dvh;
-  grid-template-rows: auto 1fr auto;
+header{
+  background-color: #1f2937;
+}
+
+footer{
+  background-color: #1f2937;
 }
 
 @layer base {

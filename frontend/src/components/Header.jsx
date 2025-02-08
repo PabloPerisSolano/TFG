@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import { FaUser, FaSignOutAlt, FaSignInAlt, FaUserPlus } from "react-icons/fa";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import Image from "next/image";
@@ -10,34 +10,44 @@ export default function Header() {
   const { isLoggedIn, user, handleLogout } = useAuth();
 
   return (
-    <div className="flex justify-between items-center p-3 bg-gray-800 text-white">
-      <Link href="/">
+    <div className="p-3 flex justify-between items-center">
+      <Link href={isLoggedIn ? "/quizzes" : "/"}>
         <Image
           src="/LogoQuizGenerate.png"
           alt="QuizGenerate Logo"
           width={120}
           height={49}
+          className="rounded-md transition-transform duration-200 hover:scale-105 active:scale-95"
         />
       </Link>
-      <div>
-        {isLoggedIn ? (
-          <div className="flex gap-4">
-            <span className="mr-4">Bienvenido, {user?.username}</span>
-            <Button onClick={handleLogout} variant="destructive">
-              Cerrar Sesión
+
+      {isLoggedIn ? (
+        <div className="flex gap-4">
+          <Button variant="secondary">
+            <FaUser />
+            <span>{user?.username}</span>
+          </Button>
+          <Button onClick={handleLogout} variant="destructive">
+            <FaSignOutAlt />
+            <span>Cerrar Sesión</span>
+          </Button>
+        </div>
+      ) : (
+        <div className="flex gap-4">
+          <Link href="/login">
+            <Button variant="secondary">
+              <FaSignInAlt />
+              <span>Iniciar Sesión</span>
             </Button>
-          </div>
-        ) : (
-          <div className="flex gap-4">
-            <Button asChild>
-              <Link href="/login">Iniciar Sesión</Link>
+          </Link>
+          <Link href="/register">
+            <Button variant="secondary">
+              <FaUserPlus />
+              <span>Registrarse</span>
             </Button>
-            <Button asChild>
-              <Link href="/register">Registrarse</Link>
-            </Button>
-          </div>
-        )}
-      </div>
+          </Link>
+        </div>
+      )}
     </div>
   );
 }

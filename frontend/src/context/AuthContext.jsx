@@ -1,6 +1,7 @@
 "use client";
 
 import { createContext, useContext, useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
 import { API_BASE_URL } from "@/config/config";
 
 const AuthContext = createContext();
@@ -8,6 +9,7 @@ const AuthContext = createContext();
 export function AuthProvider({ children }) {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [user, setUser] = useState(null);
+  const router = useRouter();
 
   useEffect(() => {
     const accessToken = localStorage.getItem("accessToken");
@@ -42,9 +44,11 @@ export function AuthProvider({ children }) {
     localStorage.setItem("accessToken", accessToken);
     localStorage.setItem("refreshToken", refreshToken);
     fetchUserData(accessToken);
+    router.push("/quizzes");
   };
 
   const handleLogout = () => {
+    router.push("/");
     localStorage.removeItem("accessToken");
     localStorage.removeItem("refreshToken");
     setIsLoggedIn(false);

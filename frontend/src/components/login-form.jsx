@@ -43,9 +43,6 @@ export function LoginForm({ className, ...props }) {
       const data = await response.json();
 
       handleLogin(data.access, data.refresh);
-
-      // Redirigir al usuario a la página de inicio
-      router.push("/");
     } catch (error) {
       setError("No se pudo conectar con el servidor.");
     }

@@ -1,15 +1,16 @@
-"use client";
-
-import HomeAuthenticated from "@/components/HomeAuthenticated";
-import HomeUnauthenticated from "@/components/HomeUnauthenticated";
-import { useAuth } from "@/context/AuthContext";
+import Footer from "@/components/Footer";
 
 export default function Home() {
-  const { isLoggedIn, user } = useAuth();
-
   return (
     <div>
-      {isLoggedIn ? <HomeAuthenticated user={user} /> : <HomeUnauthenticated />}
+      <h1 className="text-4xl font-bold">QuizGenerate</h1>
+      <p className="mt-2 text-lg">
+        Crea y gestiona tus cuestionarios fácilmente
+      </p>
+
+      <footer>
+        <Footer />
+      </footer>
     </div>
   );
 }

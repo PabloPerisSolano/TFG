@@ -1,6 +1,5 @@
 import { Roboto } from "next/font/google";
-import "@/styles/globals.css";
-import Footer from "@/components/Footer";
+import "./globals.css";
 import Header from "@/components/Header";
 import { AuthProvider } from "@/context/AuthContext";
 
@@ -25,17 +24,10 @@ export default function RootLayout({ children }) {
         </head>
 
         <body className={`${roboto.variable} antialiased`}>
-          <div className="grid-rows-layout">
-            <header>
-              <Header />
-            </header>
-
-            <main>{children}</main>
-
-            <footer>
-              <Footer />
-            </footer>
-          </div>
+          <header>
+            <Header />
+          </header>
+          <main>{children}</main>
         </body>
       </html>
     </AuthProvider>
