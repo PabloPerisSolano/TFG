@@ -1,40 +1,31 @@
-import React from "react";
 import Link from "next/link";
-import { FaUser, FaSignOutAlt, FaSignInAlt, FaUserPlus } from "react-icons/fa";
+import { FaListAlt, FaPlusCircle, FaMagic } from "react-icons/fa";
 import { Button } from "@/components/ui/button";
 
 export default function Sidebar() {
+  const menuItems = [
+    { href: "/quizzes", icon: <FaListAlt />, label: "Mis Cuestionarios" },
+    { href: "/creator", icon: <FaPlusCircle />, label: "Crear Cuestionario" },
+    { href: "/generator", icon: <FaMagic />, label: "Generar Cuestionario" },
+  ];
+
   return (
     <div className=" bg-gray-700">
-      <div className="p-4">
-        <h2 className="text-xl font-bold">Menu</h2>
+      <div className="pt-3">
+        <h2 className="text-2xl font-bold text-center">Menu</h2>
       </div>
       <nav className="flex-1 p-4">
         <ul>
-          <li className="mb-2">
-            <Link href="/quizzes">
-              <Button variant="secondary">
-                <FaSignInAlt />
-                <span>Mis Cuestionarios</span>
-              </Button>
-            </Link>
-          </li>
-          <li className="mb-2">
-            <Link
-              href="/creator"
-              className="block p-2 rounded hover:bg-gray-700"
-            >
-              Crear Cuestionario
-            </Link>
-          </li>
-          <li className="mb-2">
-            <Link
-              href="/generator"
-              className="block p-2 rounded hover:bg-gray-700"
-            >
-              Generar Cuestionario
-            </Link>
-          </li>
+          {menuItems.map((item) => (
+            <li key={item.href} className="mb-2">
+              <Link href={item.href}>
+                <Button variant="secondary" className="w-full">
+                  {item.icon}
+                  <span>{item.label}</span>
+                </Button>
+              </Link>
+            </li>
+          ))}
         </ul>
       </nav>
     </div>
