@@ -10,7 +10,7 @@ export default function Sidebar() {
   ];
 
   return (
-    <div className=" bg-gray-700">
+    <div className="bg-gray-700">
       <div className="pt-3">
         <h2 className="text-2xl font-bold text-center">Menu</h2>
       </div>

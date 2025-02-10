@@ -12,7 +12,7 @@ export default function QuizzesPage() {
   }
 
   return (
-    <AuthenticatedLayout>
+    <AuthenticatedLayout title="Mis Cuestionarios">
       <UserQuizzes user={user} />
     </AuthenticatedLayout>
   );

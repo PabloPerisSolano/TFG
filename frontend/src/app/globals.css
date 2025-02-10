@@ -19,6 +19,13 @@ footer{
   background-color: #1f2937;
 }
 
+.panel {
+  margin-top: 0.75rem; /* mt-3 */
+  margin-left: 0.75rem; /* ml-3 */
+  height: 32rem;
+  width: 66rem;
+}
+
 @layer base {
   :root {
     --background: 0 0% 100%;

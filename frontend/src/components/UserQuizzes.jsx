@@ -4,7 +4,8 @@ import { useEffect, useState } from "react";
 import { useAuth } from "@/context/AuthContext";
 import { API_BASE_URL } from "@/config/config";
 import Link from "next/link";
-import { FaPlus } from "react-icons/fa";
+import { FaPlusCircle, FaExclamationTriangle } from "react-icons/fa";
+import { Button } from "@/components/ui/button";
 
 export default function UserQuizzes() {
   const { user } = useAuth();
@@ -41,7 +42,6 @@ export default function UserQuizzes() {
 
   return (
     <div>
-      <h2>Tus Cuestionarios</h2>
       {quizzes.length > 0 ? (
         <ul>
           {quizzes.map((quiz) => (
@@ -49,13 +49,16 @@ export default function UserQuizzes() {
           ))}
         </ul>
       ) : (
-        <div>
-          <p>No tienes ningún cuestionario todavía.</p>
+        <div className="flex flex-col items-center justify-center h-full text-center p-6">
+          <FaExclamationTriangle className="text-6xl mb-4" />
+          <p className="text-xl font-semibold mb-4">
+            No tienes ningún cuestionario todavía.
+          </p>
           <Link href="/creator">
-            <div className="btn btn-primary inline-flex items-center">
-              <FaPlus className="mr-2" /> {/* Icono de plus */}
+            <Button variant="secondary" className="w-full">
+              <FaPlusCircle />
               <span>Crear un nuevo cuestionario</span>
-            </div>
+            </Button>
           </Link>
         </div>
       )}
