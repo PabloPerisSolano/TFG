@@ -35,7 +35,7 @@ export default function Header() {
       ) : (
         <div className="flex gap-4">
           <Link href="/login">
-            <Button variant="secondary">
+            <Button variant="secondary" className="ml-4">
               <FaSignInAlt />
               <span>Iniciar Sesión</span>
             </Button>
