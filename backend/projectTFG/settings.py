@@ -152,7 +152,8 @@ SIMPLE_JWT = {
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:3000",
     "http://192.168.18.17:3000",
+    "http://127.0.0.1:8000",
 ]
 
 # CORS_ALLOW_ALL_ORIGINS = True
-ALLOWED_HOSTS = ['localhost', '127.0.0.1', '192.168.18.17']
+ALLOWED_HOSTS = ['localhost', '127.0.0.1', '192.168.18.17', '0.0.0.0']
