@@ -2,6 +2,8 @@ import { Roboto } from "next/font/google";
 import "./globals.css";
 import Header from "@/components/Header";
 import { AuthProvider } from "@/context/AuthContext";
+import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
+import { AppSidebar } from "@/components/app-sidebar";
 
 const roboto = Roboto({
   variable: "--font-roboto",
@@ -24,10 +26,16 @@ export default function RootLayout({ children }) {
         </head>
 
         <body className={`${roboto.variable} antialiased`}>
-          <header>
-            <Header />
-          </header>
-          <main>{children}</main>
+          <SidebarProvider>
+            <AppSidebar />
+            <main className="w-full">
+              <header className="flex items-center">
+                <SidebarTrigger className="ml-2" />
+                <Header />
+              </header>
+              {children}
+            </main>
+          </SidebarProvider>
         </body>
       </html>
     </AuthProvider>

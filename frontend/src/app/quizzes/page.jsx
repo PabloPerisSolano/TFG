@@ -3,6 +3,8 @@
 import AuthenticatedLayout from "@/components/AuthenticatedLayout";
 import UserQuizzes from "@/components/UserQuizzes";
 import { useAuth } from "@/context/AuthContext";
+import { SidebarTrigger } from "@/components/ui/sidebar";
+import { AppSidebar } from "@/components/app-sidebar";
 
 export default function QuizzesPage() {
   const { isLoggedIn, user } = useAuth();
@@ -12,8 +14,9 @@ export default function QuizzesPage() {
   }
 
   return (
-    <AuthenticatedLayout title="Mis Cuestionarios">
-      <UserQuizzes user={user} />
-    </AuthenticatedLayout>
+    <p>QuizzesPage</p>
+    // <AuthenticatedLayout title="Mis Cuestionarios">
+    //   <UserQuizzes user={user} />
+    // </AuthenticatedLayout>
   );
 }
