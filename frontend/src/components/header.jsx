@@ -4,7 +4,7 @@ import { FaSignInAlt } from "react-icons/fa";
 import { Button } from "@/components/ui/button";
 import Image from "next/image";
 import Link from "next/link";
-import { useAuth } from "@/context/AuthContext";
+import { useAuth } from "@/context/auth-context";
 import { DropdownMenuPerfil } from "@/components/menu-perfil";
 
 export default function Header() {

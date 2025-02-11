@@ -1,5 +1,15 @@
-import { Calendar, Home, Inbox, Search, Settings } from "lucide-react";
+"use client";
+
+import {
+  FaHome,
+  FaSignInAlt,
+  FaUserPlus,
+  FaListAlt,
+  FaPlusCircle,
+  FaMagic,
+} from "react-icons/fa";
 import Link from "next/link";
+import { useAuth } from "@/context/auth-context";
 
 import {
   Sidebar,
@@ -12,42 +22,28 @@ import {
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
 
-// Menu items.
-const items = [
-  {
-    title: "Home",
-    url: "#",
-    icon: Home,
-  },
-  {
-    title: "Inbox",
-    url: "#",
-    icon: Inbox,
-  },
-  {
-    title: "Calendar",
-    url: "#",
-    icon: Calendar,
-  },
-  {
-    title: "Search",
-    url: "#",
-    icon: Search,
-  },
-  {
-    title: "Settings",
-    url: "#",
-    icon: Settings,
-  },
+const guestItems = [
+  { title: "Inicio", url: "/", icon: FaHome },
+  { title: "Iniciar Sesión", url: "/login", icon: FaSignInAlt },
+  { title: "Registrarse", url: "/register", icon: FaUserPlus },
+];
+
+const userItems = [
+  { title: "Mis Cuestionarios", url: "/quizzes", icon: FaListAlt },
+  { title: "Crear Cuestionario", url: "/creator", icon: FaPlusCircle },
+  { title: "Generar Cuestionario", url: "/generator", icon: FaMagic },
 ];
 
 export function AppSidebar() {
+  const { isLoggedIn } = useAuth();
+
+  const items = isLoggedIn ? userItems : guestItems;
+
   return (
-    // <Sidebar variant="floating" collapsible="icon">
     <Sidebar collapsible="icon">
       <SidebarContent>
         <SidebarGroup>
-          <SidebarGroupLabel>Application</SidebarGroupLabel>
+          <SidebarGroupLabel>Quiz Generate</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
               {items.map((item) => (
