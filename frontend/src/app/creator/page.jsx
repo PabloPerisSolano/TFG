@@ -6,15 +6,17 @@ import PleaseLogin from "@/components/please-login";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Card, CardContent } from "@/components/ui/card";
+import {
+  Card,
+  CardHeader,
+  CardTitle,
+  CardDescription,
+  CardContent,
+  CardFooter,
+} from "@/components/ui/card";
 import { Textarea } from "@/components/ui/textarea";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import {
-  Select,
-  SelectItem,
-  SelectTrigger,
-  SelectContent,
-} from "@/components/ui/select";
+import { Trash2 } from "lucide-react";
 
 export default function CreatorPage() {
   const { isLoggedIn } = useAuth();
@@ -35,61 +37,77 @@ export default function CreatorPage() {
     ]);
   };
 
+  const removeQuestion = (index) => {
+    const updatedQuestions = questions.filter((_, i) => i !== index);
+    setQuestions(updatedQuestions);
+  };
+
   const updateQuestion = (index, value) => {
     const updatedQuestions = [...questions];
     updatedQuestions[index].question = value;
     setQuestions(updatedQuestions);
   };
 
-  const updateAnswerCount = (index, count) => {
+  const addAnswer = (index) => {
     const updatedQuestions = [...questions];
-    const newAnswers = new Array(parseInt(count)).fill("");
-    updatedQuestions[index].answers = newAnswers;
-    updatedQuestions[index].correctIndex = 0;
+    if (updatedQuestions[index].answers.length < 4) {
+      updatedQuestions[index].answers.push("");
+      setQuestions(updatedQuestions);
+    }
+  };
+
+  const removeAnswer = (qIndex, aIndex) => {
+    const updatedQuestions = [...questions];
+    updatedQuestions[qIndex].answers = updatedQuestions[qIndex].answers.filter(
+      (_, i) => i !== aIndex
+    );
     setQuestions(updatedQuestions);
   };
 
   return (
-    <div className="max-w-2xl mx-auto p-4">
-      <h1 className="text-2xl font-bold mb-4">Crear Cuestionario</h1>
-      <Card>
-        <CardContent className="p-4 space-y-4">
-          <Label>Título</Label>
+    <Card className="mt-4 mx-auto max-w-3xl">
+      <CardHeader>
+        <CardTitle className="text-3xl font-bold">Crear Cuestionario</CardTitle>
+        <CardDescription>
+          Crea un cuestionario con preguntas y respuestas
+        </CardDescription>
+      </CardHeader>
+      <CardContent className="space-y-5">
+        <section>
+          <Label className="font-semibold">Título</Label>
           <Input
             value={title}
             onChange={(e) => setTitle(e.target.value)}
             placeholder="Título del cuestionario"
           />
-          <Label>Descripción</Label>
+        </section>
+        <section>
+          <Label className="font-semibold">Descripción</Label>
           <Textarea
             value={description}
             onChange={(e) => setDescription(e.target.value)}
             placeholder="Descripción del cuestionario"
           />
+        </section>
+        <section>
           {questions.map((q, index) => (
             <div key={index} className="space-y-2 border p-4 rounded-md">
-              <Label>Pregunta {index + 1}</Label>
+              <div className="flex justify-between items-center">
+                <Label>Pregunta {index + 1}</Label>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={() => removeQuestion(index)}
+                >
+                  <Trash2 className="w-5 h-5 text-red-500" />
+                </Button>
+              </div>
               <Input
                 value={q.question}
                 onChange={(e) => updateQuestion(index, e.target.value)}
                 placeholder="Escribe tu pregunta"
               />
-              <Label>Número de respuestas</Label>
-              <Select
-                value={q.answers.length.toString()}
-                onValueChange={(value) => updateAnswerCount(index, value)}
-              >
-                <SelectTrigger className="w-full">
-                  Número de respuestas
-                </SelectTrigger>
-                <SelectContent>
-                  {[2, 3, 4].map((num) => (
-                    <SelectItem key={num} value={num.toString()}>
-                      {num}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+
               <Label>Opciones de respuesta</Label>
               <RadioGroup
                 value={q.correctIndex.toString()}
@@ -112,15 +130,31 @@ export default function CreatorPage() {
                       }}
                       placeholder={`Respuesta ${ansIndex + 1}`}
                     />
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      onClick={() => removeAnswer(index, ansIndex)}
+                    >
+                      <Trash2 className="w-4 h-4 text-red-500" />
+                    </Button>
                   </div>
                 ))}
               </RadioGroup>
+
+              {q.answers.length < 4 && (
+                <Button variant="outline" onClick={() => addAnswer(index)}>
+                  Añadir Respuesta
+                </Button>
+              )}
             </div>
           ))}
-          <Button onClick={addQuestion}>Añadir Pregunta</Button>
-          <Button className="w-full">Guardar Cuestionario</Button>
-        </CardContent>
-      </Card>
-    </div>
+        </section>
+
+        <Button onClick={addQuestion}>Añadir Pregunta</Button>
+      </CardContent>
+      <CardFooter>
+        <Button className="w-full">Guardar Cuestionario</Button>
+      </CardFooter>
+    </Card>
   );
 }
