@@ -89,11 +89,11 @@ export default function CreatorPage() {
             placeholder="Descripción del cuestionario"
           />
         </section>
-        <section>
+        <section className="space-y-5">
           {questions.map((q, index) => (
-            <div key={index} className="space-y-2 border p-4 rounded-md">
-              <div className="flex justify-between items-center">
-                <Label>Pregunta {index + 1}</Label>
+            <div key={index} className="space-y-5 p-4 border rounded-md">
+              <article>
+                <Label className="font-semibold">Pregunta {index + 1}</Label>
                 <Button
                   variant="ghost"
                   size="icon"
@@ -101,46 +101,48 @@ export default function CreatorPage() {
                 >
                   <Trash2 className="w-5 h-5 text-red-500" />
                 </Button>
-              </div>
-              <Input
-                value={q.question}
-                onChange={(e) => updateQuestion(index, e.target.value)}
-                placeholder="Escribe tu pregunta"
-              />
-
-              <Label>Opciones de respuesta</Label>
-              <RadioGroup
-                value={q.correctIndex.toString()}
-                onValueChange={(value) => {
-                  const updatedQuestions = [...questions];
-                  updatedQuestions[index].correctIndex = parseInt(value);
-                  setQuestions(updatedQuestions);
-                }}
-              >
-                {q.answers.map((ans, ansIndex) => (
-                  <div key={ansIndex} className="flex items-center space-x-2">
-                    <RadioGroupItem value={ansIndex.toString()} />
-                    <Input
-                      value={ans}
-                      onChange={(e) => {
-                        const updatedQuestions = [...questions];
-                        updatedQuestions[index].answers[ansIndex] =
-                          e.target.value;
-                        setQuestions(updatedQuestions);
-                      }}
-                      placeholder={`Respuesta ${ansIndex + 1}`}
-                    />
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      onClick={() => removeAnswer(index, ansIndex)}
-                    >
-                      <Trash2 className="w-4 h-4 text-red-500" />
-                    </Button>
-                  </div>
-                ))}
-              </RadioGroup>
-
+                <Input
+                  value={q.question}
+                  onChange={(e) => updateQuestion(index, e.target.value)}
+                  placeholder="Escribe tu pregunta"
+                />
+              </article>
+              <article>
+                <Label className="font-semibold">
+                  Seleccione la respuesta correcta
+                </Label>
+                <RadioGroup
+                  value={q.correctIndex.toString()}
+                  onValueChange={(value) => {
+                    const updatedQuestions = [...questions];
+                    updatedQuestions[index].correctIndex = parseInt(value);
+                    setQuestions(updatedQuestions);
+                  }}
+                >
+                  {q.answers.map((ans, ansIndex) => (
+                    <div key={ansIndex} className="flex items-center space-x-2">
+                      <RadioGroupItem value={ansIndex.toString()} />
+                      <Input
+                        value={ans}
+                        onChange={(e) => {
+                          const updatedQuestions = [...questions];
+                          updatedQuestions[index].answers[ansIndex] =
+                            e.target.value;
+                          setQuestions(updatedQuestions);
+                        }}
+                        placeholder={`Respuesta ${ansIndex + 1}`}
+                      />
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        onClick={() => removeAnswer(index, ansIndex)}
+                      >
+                        <Trash2 className="w-4 h-4 text-red-500" />
+                      </Button>
+                    </div>
+                  ))}
+                </RadioGroup>
+              </article>
               {q.answers.length < 4 && (
                 <Button variant="outline" onClick={() => addAnswer(index)}>
                   Añadir Respuesta

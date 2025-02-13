@@ -20,6 +20,7 @@ import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
+  useSidebar,
 } from "@/components/ui/sidebar";
 
 const guestItems = [
@@ -36,8 +37,13 @@ const userItems = [
 
 export function AppSidebar() {
   const { isLoggedIn } = useAuth();
+  const { setOpenMobile } = useSidebar();
 
   const items = isLoggedIn ? userItems : guestItems;
+
+  const handleItemClick = () => {
+    setOpenMobile(false); // Cierra la barra lateral
+  };
 
   return (
     <Sidebar collapsible="icon">
@@ -47,7 +53,7 @@ export function AppSidebar() {
           <SidebarGroupContent>
             <SidebarMenu>
               {items.map((item) => (
-                <SidebarMenuItem key={item.title}>
+                <SidebarMenuItem key={item.title} onClick={handleItemClick}>
                   <SidebarMenuButton asChild>
                     <Link href={item.url}>
                       <item.icon />
