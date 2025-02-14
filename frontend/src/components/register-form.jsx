@@ -14,7 +14,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import Link from "next/link";
-import { API_BASE_URL } from "@/config/config";
+import { API_BASE_URL, TRANSITION_DURATION } from "@/config/config";
 import { useToast } from "@/hooks/use-toast";
 
 export function RegisterForm({ className, ...props }) {
@@ -39,9 +39,10 @@ export function RegisterForm({ className, ...props }) {
       if (!response.ok) {
         const errorData = await response.json();
         toast({
-          title: "Error",
+          title: "Error de registro",
           description: errorData.error,
           variant: "destructive",
+          duration: TRANSITION_DURATION,
         });
         return;
       }
@@ -51,17 +52,19 @@ export function RegisterForm({ className, ...props }) {
         title: "Usuario registrado",
         description: "Se ha registrado correctamente.",
         variant: "success",
+        duration: TRANSITION_DURATION,
       });
 
       // Redirigir al usuario a la página de inicio de sesión
       setTimeout(() => {
         router.push("/login");
-      }, 1000);
+      }, TRANSITION_DURATION);
     } catch (error) {
       toast({
-        title: "Error",
+        title: "Error de servidor",
         description: "No se pudo conectar con el servidor.",
         variant: "destructive",
+        duration: TRANSITION_DURATION,
       });
     }
   };

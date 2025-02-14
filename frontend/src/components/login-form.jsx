@@ -13,7 +13,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import Link from "next/link";
 import { useAuth } from "@/context/auth-context";
-import { API_BASE_URL } from "@/config/config";
+import { API_BASE_URL, TRANSITION_DURATION } from "@/config/config";
 import { useToast } from "@/hooks/use-toast";
 
 export function LoginForm({ className, ...props }) {
@@ -36,9 +36,10 @@ export function LoginForm({ className, ...props }) {
 
       if (!response.ok) {
         toast({
-          title: "Error",
+          title: "Error de inicio de sesión",
           description: "Credenciales incorrectas.",
           variant: "destructive",
+          duration: TRANSITION_DURATION,
         });
         return;
       }
@@ -48,9 +49,10 @@ export function LoginForm({ className, ...props }) {
       handleLogin(data.access, data.refresh);
     } catch (error) {
       toast({
-        title: "Error",
+        title: "Error de servidor",
         description: "No se pudo conectar con el servidor.",
         variant: "destructive",
+        duration: TRANSITION_DURATION,
       });
     }
   };

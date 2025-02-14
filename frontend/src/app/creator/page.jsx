@@ -20,7 +20,7 @@ import { Trash2 } from "lucide-react";
 import { FaPlus, FaPlusCircle, FaSave } from "react-icons/fa";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { API_BASE_URL } from "@/config/config";
+import { API_BASE_URL, TRANSITION_DURATION } from "@/config/config";
 import { useToast } from "@/hooks/use-toast";
 
 export default function CreatorPage() {
@@ -105,25 +105,28 @@ export default function CreatorPage() {
           title: "Cuestionario creado",
           description: "El cuestionario se ha guardado correctamente.",
           variant: "success",
+          duration: TRANSITION_DURATION,
         });
 
         setTimeout(() => {
           router.push("/quizzes");
-        }, 1000);
+        }, TRANSITION_DURATION);
       } else {
         // Manejar errores
         const errorData = await response.json();
         toast({
-          title: "Error",
+          title: "Error de creación",
           description: "Rellena adecuadamente los campos.",
           variant: "destructive",
+          duration: TRANSITION_DURATION,
         });
       }
     } catch (error) {
       toast({
-        title: "Error",
+        title: "Error de servidor",
         description: "No se pudo conectar con el servidor.",
         variant: "destructive",
+        duration: TRANSITION_DURATION,
       });
     }
   };
