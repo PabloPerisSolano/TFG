@@ -13,14 +13,13 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import Link from "next/link";
 import { useAuth } from "@/context/auth-context";
-import { API_BASE_URL, TRANSITION_DURATION } from "@/config/config";
-import { useToast } from "@/hooks/use-toast";
+import { API_BASE_URL } from "@/config/config";
+import { showServerErrorToast, showErrorToast } from "@/utils/toastUtils";
 
 export function LoginForm({ className, ...props }) {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const { handleLogin } = useAuth();
-  const { toast } = useToast();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -35,11 +34,9 @@ export function LoginForm({ className, ...props }) {
       });
 
       if (!response.ok) {
-        toast({
+        showErrorToast({
           title: "Error de inicio de sesión",
           description: "Credenciales incorrectas.",
-          variant: "destructive",
-          duration: TRANSITION_DURATION,
         });
         return;
       }
@@ -48,12 +45,7 @@ export function LoginForm({ className, ...props }) {
 
       handleLogin(data.access, data.refresh);
     } catch (error) {
-      toast({
-        title: "Error de servidor",
-        description: "No se pudo conectar con el servidor.",
-        variant: "destructive",
-        duration: TRANSITION_DURATION,
-      });
+      showServerErrorToast();
     }
   };
 

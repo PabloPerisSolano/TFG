@@ -15,14 +15,17 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import Link from "next/link";
 import { API_BASE_URL, TRANSITION_DURATION } from "@/config/config";
-import { useToast } from "@/hooks/use-toast";
+import {
+  showServerErrorToast,
+  showSuccessToast,
+  showErrorToast,
+} from "@/utils/toastUtils";
 
 export function RegisterForm({ className, ...props }) {
   const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const router = useRouter();
-  const { toast } = useToast();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -38,21 +41,16 @@ export function RegisterForm({ className, ...props }) {
 
       if (!response.ok) {
         const errorData = await response.json();
-        toast({
+        showErrorToast({
           title: "Error de registro",
           description: errorData.error,
-          variant: "destructive",
-          duration: TRANSITION_DURATION,
         });
         return;
       }
 
-      const data = await response.json();
-      toast({
+      showSuccessToast({
         title: "Usuario registrado",
         description: "Se ha registrado correctamente.",
-        variant: "success",
-        duration: TRANSITION_DURATION,
       });
 
       // Redirigir al usuario a la página de inicio de sesión
@@ -60,12 +58,7 @@ export function RegisterForm({ className, ...props }) {
         router.push("/login");
       }, TRANSITION_DURATION);
     } catch (error) {
-      toast({
-        title: "Error de servidor",
-        description: "No se pudo conectar con el servidor.",
-        variant: "destructive",
-        duration: TRANSITION_DURATION,
-      });
+      showServerErrorToast();
     }
   };
 

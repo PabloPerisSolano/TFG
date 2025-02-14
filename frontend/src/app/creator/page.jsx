@@ -21,7 +21,11 @@ import { FaPlus, FaPlusCircle, FaSave } from "react-icons/fa";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { API_BASE_URL, TRANSITION_DURATION } from "@/config/config";
-import { useToast } from "@/hooks/use-toast";
+import {
+  showServerErrorToast,
+  showSuccessToast,
+  showErrorToast,
+} from "@/utils/toastUtils";
 
 export default function CreatorPage() {
   const { isLoggedIn, user } = useAuth();
@@ -31,7 +35,6 @@ export default function CreatorPage() {
   const [questions, setQuestions] = useState([
     { question: "", answers: ["", ""], correctIndex: 0 },
   ]);
-  const { toast } = useToast();
 
   if (!isLoggedIn) {
     return <PleaseLogin />;
@@ -100,34 +103,22 @@ export default function CreatorPage() {
       });
 
       if (response.ok) {
-        // Mostrar mensaje flotante de éxito
-        toast({
+        showSuccessToast({
           title: "Cuestionario creado",
           description: "El cuestionario se ha guardado correctamente.",
-          variant: "success",
-          duration: TRANSITION_DURATION,
         });
 
         setTimeout(() => {
           router.push("/quizzes");
         }, TRANSITION_DURATION);
       } else {
-        // Manejar errores
-        const errorData = await response.json();
-        toast({
+        showErrorToast({
           title: "Error de creación",
           description: "Rellena adecuadamente los campos.",
-          variant: "destructive",
-          duration: TRANSITION_DURATION,
         });
       }
     } catch (error) {
-      toast({
-        title: "Error de servidor",
-        description: "No se pudo conectar con el servidor.",
-        variant: "destructive",
-        duration: TRANSITION_DURATION,
-      });
+      showServerErrorToast();
     }
   };
 

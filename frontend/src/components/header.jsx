@@ -12,7 +12,7 @@ export default function Header() {
 
   return (
     <div className="p-2 flex justify-between w-full items-center">
-      <Link href={isLoggedIn ? "/quizzes" : "/"}>
+      <Link href="/">
         <Image
           src="/LogoQuizGenerate.png"
           alt="QuizGenerate Logo"
