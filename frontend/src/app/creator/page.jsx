@@ -17,14 +17,21 @@ import {
 import { Textarea } from "@/components/ui/textarea";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Trash2 } from "lucide-react";
+import { FaPlus, FaPlusCircle, FaSave } from "react-icons/fa";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { API_BASE_URL } from "@/config/config";
+import { useToast } from "@/hooks/use-toast";
 
 export default function CreatorPage() {
-  const { isLoggedIn } = useAuth();
+  const { isLoggedIn, user } = useAuth();
+  const router = useRouter();
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [questions, setQuestions] = useState([
     { question: "", answers: ["", ""], correctIndex: 0 },
   ]);
+  const { toast } = useToast();
 
   if (!isLoggedIn) {
     return <PleaseLogin />;
@@ -62,6 +69,63 @@ export default function CreatorPage() {
       (_, i) => i !== aIndex
     );
     setQuestions(updatedQuestions);
+  };
+
+  const handleSaveQuiz = async () => {
+    try {
+      // Preparar los datos del cuestionario
+      const quizData = {
+        title,
+        description,
+        questions: questions.map((q) => ({
+          text: q.question,
+          answers: q.answers.map((ans, index) => ({
+            text: ans,
+            is_correct: index === q.correctIndex,
+          })),
+        })),
+      };
+
+      // Obtener el token de acceso
+      const accessToken = localStorage.getItem("accessToken");
+
+      // Enviar los datos al backend
+      const response = await fetch(`${API_BASE_URL}users/${user.id}/quizzes/`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${accessToken}`,
+        },
+        body: JSON.stringify(quizData),
+      });
+
+      if (response.ok) {
+        // Mostrar mensaje flotante de éxito
+        toast({
+          title: "Cuestionario creado",
+          description: "El cuestionario se ha guardado correctamente.",
+          variant: "success",
+        });
+
+        setTimeout(() => {
+          router.push("/quizzes");
+        }, 1000);
+      } else {
+        // Manejar errores
+        const errorData = await response.json();
+        toast({
+          title: "Error",
+          description: "Rellena adecuadamente los campos.",
+          variant: "destructive",
+        });
+      }
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "No se pudo conectar con el servidor.",
+        variant: "destructive",
+      });
+    }
   };
 
   return (
@@ -145,6 +209,7 @@ export default function CreatorPage() {
               </article>
               {q.answers.length < 4 && (
                 <Button variant="outline" onClick={() => addAnswer(index)}>
+                  <FaPlusCircle />
                   Añadir Respuesta
                 </Button>
               )}
@@ -152,10 +217,18 @@ export default function CreatorPage() {
           ))}
         </section>
 
-        <Button onClick={addQuestion}>Añadir Pregunta</Button>
+        <Button onClick={addQuestion}>
+          <FaPlus />
+          Añadir Pregunta
+        </Button>
       </CardContent>
-      <CardFooter>
-        <Button className="w-full">Guardar Cuestionario</Button>
+      <CardFooter className="flex justify-end">
+        <Button variant="outline" className="mr-2" asChild>
+          <Link href="/quizzes">Cancelar</Link>
+        </Button>
+        <Button onClick={handleSaveQuiz}>
+          <FaSave /> Guardar Cuestionario
+        </Button>
       </CardFooter>
     </Card>
   );

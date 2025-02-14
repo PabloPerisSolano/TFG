@@ -14,12 +14,13 @@ import { Label } from "@/components/ui/label";
 import Link from "next/link";
 import { useAuth } from "@/context/auth-context";
 import { API_BASE_URL } from "@/config/config";
+import { useToast } from "@/hooks/use-toast";
 
 export function LoginForm({ className, ...props }) {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
-  const [error, setError] = useState("");
   const { handleLogin } = useAuth();
+  const { toast } = useToast();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -34,7 +35,11 @@ export function LoginForm({ className, ...props }) {
       });
 
       if (!response.ok) {
-        setError("Credenciales incorrectas.");
+        toast({
+          title: "Error",
+          description: "Credenciales incorrectas.",
+          variant: "destructive",
+        });
         return;
       }
 
@@ -42,7 +47,11 @@ export function LoginForm({ className, ...props }) {
 
       handleLogin(data.access, data.refresh);
     } catch (error) {
-      setError("No se pudo conectar con el servidor.");
+      toast({
+        title: "Error",
+        description: "No se pudo conectar con el servidor.",
+        variant: "destructive",
+      });
     }
   };
 
@@ -76,7 +85,6 @@ export function LoginForm({ className, ...props }) {
                   onChange={(e) => setPassword(e.target.value)}
                 />
               </div>
-              {error && <p className="text-red-500">{error}</p>}
               <Button type="submit" className="w-full">
                 Iniciar Sesión
               </Button>

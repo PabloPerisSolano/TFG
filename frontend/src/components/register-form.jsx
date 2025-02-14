@@ -15,14 +15,14 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import Link from "next/link";
 import { API_BASE_URL } from "@/config/config";
+import { useToast } from "@/hooks/use-toast";
 
 export function RegisterForm({ className, ...props }) {
   const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [error, setError] = useState("");
-  const [success, setSuccess] = useState("");
   const router = useRouter();
+  const { toast } = useToast();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -38,20 +38,31 @@ export function RegisterForm({ className, ...props }) {
 
       if (!response.ok) {
         const errorData = await response.json();
-        setError(errorData.error);
+        toast({
+          title: "Error",
+          description: errorData.error,
+          variant: "destructive",
+        });
         return;
       }
 
       const data = await response.json();
-      setSuccess(data.message);
-      setError("");
+      toast({
+        title: "Usuario registrado",
+        description: "Se ha registrado correctamente.",
+        variant: "success",
+      });
 
       // Redirigir al usuario a la página de inicio de sesión
       setTimeout(() => {
         router.push("/login");
       }, 1000);
     } catch (error) {
-      setError("No se pudo conectar con el servidor.");
+      toast({
+        title: "Error",
+        description: "No se pudo conectar con el servidor.",
+        variant: "destructive",
+      });
     }
   };
 
@@ -98,8 +109,6 @@ export function RegisterForm({ className, ...props }) {
                   onChange={(e) => setPassword(e.target.value)}
                 />
               </div>
-              {error && <p className="text-red-500">{error}</p>}
-              {success && <p className="text-green-500">{success}</p>}
               <Button type="submit" className="w-full">
                 Crear Cuenta
               </Button>

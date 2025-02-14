@@ -4,6 +4,7 @@ import Header from "@/components/header";
 import { AuthProvider } from "@/context/auth-context";
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/app-sidebar";
+import { Toaster } from "@/components/ui/toaster";
 
 const roboto = Roboto({
   variable: "--font-roboto",
@@ -34,6 +35,7 @@ export default function RootLayout({ children }) {
                 <Header />
               </header>
               {children}
+              <Toaster />
             </main>
           </SidebarProvider>
         </body>
