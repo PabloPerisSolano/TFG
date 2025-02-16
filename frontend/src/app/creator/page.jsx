@@ -26,6 +26,7 @@ import {
   showSuccessToast,
   showErrorToast,
 } from "@/utils/toastUtils";
+import ConfirmDialog from "@/components/confirm-dialog";
 
 export default function CreatorPage() {
   const { isLoggedIn, user } = useAuth();
@@ -217,9 +218,17 @@ export default function CreatorPage() {
         </Button>
       </CardContent>
       <CardFooter className="flex justify-end">
-        <Button variant="outline" className="mr-2" asChild>
-          <Link href="/quizzes">Cancelar</Link>
-        </Button>
+        <ConfirmDialog
+          title="¿Seguro que quieres perder el progreso de creación?"
+          description="Al confirmar, no se guardará la información del cuestionario."
+          onConfirm={() => router.push("/quizzes")}
+          triggerButton={
+            <Button variant="outline" className="mr-2">
+              Cancelar
+            </Button>
+          }
+        />
+
         <Button onClick={handleSaveQuiz}>
           <FaSave /> Guardar Cuestionario
         </Button>

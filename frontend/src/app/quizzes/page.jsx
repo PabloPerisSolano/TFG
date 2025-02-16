@@ -179,9 +179,11 @@ export default function QuizzesPage() {
                       </Button>
                     }
                   />
-                  <Button>
-                    <FaEye /> Ver detalles
-                  </Button>
+                  <Link href={`/quizzes/${quiz.id}`}>
+                    <Button>
+                      <FaEye /> Ver detalles
+                    </Button>
+                  </Link>
                 </CardFooter>
               </Card>
             ))}
