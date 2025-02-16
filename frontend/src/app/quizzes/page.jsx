@@ -15,9 +15,14 @@ import {
 import { Skeleton } from "@/components/ui/skeleton";
 import { Button } from "@/components/ui/button";
 import { API_BASE_URL } from "@/config/config";
-import { showServerErrorToast, showErrorToast } from "@/utils/toastUtils";
+import {
+  showServerErrorToast,
+  showErrorToast,
+  showSuccessToast,
+} from "@/utils/toastUtils";
 import { FaTrashAlt, FaEye, FaPlusCircle, FaSort } from "react-icons/fa";
 import { Input } from "@/components/ui/input";
+import ConfirmDialog from "@/components/confirm-dialog";
 
 export default function QuizzesPage() {
   const { isLoggedIn, user } = useAuth();
@@ -80,12 +85,6 @@ export default function QuizzesPage() {
   // Función para eliminar un cuestionario
   const handleDelete = async (quizId) => {
     const accessToken = localStorage.getItem("accessToken");
-
-    // Confirmar la eliminación
-    const confirmDelete = window.confirm(
-      "¿Seguro que quieres eliminar este cuestionario?"
-    );
-    if (!confirmDelete) return;
 
     try {
       const res = await fetch(
@@ -150,6 +149,7 @@ export default function QuizzesPage() {
               placeholder="Buscar por título..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
+              className="bg-white text-black"
             />
             <Button
               onClick={() => setSortOrder(sortOrder === "asc" ? "desc" : "asc")}
@@ -169,12 +169,16 @@ export default function QuizzesPage() {
                   <CardDescription>{quiz.description}</CardDescription>
                 </CardHeader>
                 <CardFooter className="justify-end space-x-2">
-                  <Button
-                    variant="destructive"
-                    onClick={() => handleDelete(quiz.id)}
-                  >
-                    <FaTrashAlt /> Eliminar
-                  </Button>
+                  <ConfirmDialog
+                    title="¿Seguro que quieres eliminar este cuestionario?"
+                    description="Se eliminará permanentemente el cuestionario."
+                    onConfirm={() => handleDelete(quiz.id)}
+                    triggerButton={
+                      <Button variant="destructive">
+                        <FaTrashAlt /> Eliminar
+                      </Button>
+                    }
+                  />
                   <Button>
                     <FaEye /> Ver detalles
                   </Button>
