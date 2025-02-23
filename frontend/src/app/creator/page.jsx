@@ -61,10 +61,8 @@ export default function CreatorPage() {
 
   const addAnswer = (index) => {
     const updatedQuestions = [...questions];
-    if (updatedQuestions[index].answers.length < 4) {
-      updatedQuestions[index].answers.push("");
-      setQuestions(updatedQuestions);
-    }
+    updatedQuestions[index].answers.push("");
+    setQuestions(updatedQuestions);
   };
 
   const removeAnswer = (qIndex, aIndex) => {
@@ -202,12 +200,11 @@ export default function CreatorPage() {
                   ))}
                 </RadioGroup>
               </article>
-              {q.answers.length < 4 && (
-                <Button variant="outline" onClick={() => addAnswer(index)}>
-                  <FaPlusCircle />
-                  Añadir Respuesta
-                </Button>
-              )}
+
+              <Button variant="outline" onClick={() => addAnswer(index)}>
+                <FaPlusCircle />
+                Añadir Respuesta
+              </Button>
             </div>
           ))}
         </section>

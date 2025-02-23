@@ -9,16 +9,37 @@ class AnswerSerializer(serializers.ModelSerializer):
         fields = ['id', 'text', 'is_correct']
 
 
-class QuestionSerializer(serializers.ModelSerializer):
+class QuestionListSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Question
+        fields = ['id', 'text']
+
+
+class QuestionDetailSerializer(serializers.ModelSerializer):
     answers = AnswerSerializer(many=True)
 
     class Meta:
         model = Question
         fields = ['id', 'text', 'answers']
 
+    def create(self, validated_data):
+        answers_data = validated_data.pop('answers')
+        question = Question.objects.create(**validated_data)
 
-class QuizSerializer(serializers.ModelSerializer):
-    questions = QuestionSerializer(many=True)
+        for answer_data in answers_data:
+            Answer.objects.create(question=question, **answer_data)
+
+        return question
+
+
+class QuizListSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Quiz
+        fields = ['id', 'title', 'description']
+
+
+class QuizDetailSerializer(serializers.ModelSerializer):
+    questions = QuestionDetailSerializer(many=True)
 
     class Meta:
         model = Quiz
@@ -39,9 +60,7 @@ class QuizSerializer(serializers.ModelSerializer):
             for answer_data in answers_data:
                 answers.append(Answer(question=question, **answer_data))
 
-        # Inserta todas las preguntas de una vez
         Question.objects.bulk_create(questions)
-        # Inserta todas las respuestas de una vez
         Answer.objects.bulk_create(answers)
 
         return quiz

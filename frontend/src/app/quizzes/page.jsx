@@ -72,17 +72,14 @@ export default function QuizzesPage() {
     return <PleaseLogin />;
   }
 
-  // Filtrar por título
   const filteredQuizzes = quizzes.filter((quiz) =>
     quiz.title.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
-  // Ordenar por fecha de creación o por ID
   const sortedQuizzes = [...filteredQuizzes].sort((a, b) => {
     return sortOrder === "asc" ? a.id - b.id : b.id - a.id;
   });
 
-  // Función para eliminar un cuestionario
   const handleDelete = async (quizId) => {
     const accessToken = localStorage.getItem("accessToken");
 
@@ -105,7 +102,6 @@ export default function QuizzesPage() {
         return;
       }
 
-      // Actualizar el estado quitando el cuestionario eliminado
       setQuizzes((prevQuizzes) =>
         prevQuizzes.filter((quiz) => quiz.id !== quizId)
       );
