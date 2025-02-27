@@ -17,7 +17,7 @@ import {
 import { Textarea } from "@/components/ui/textarea";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Trash2 } from "lucide-react";
-import { FaPlus, FaPlusCircle, FaSave } from "react-icons/fa";
+import { FaPlus, FaPlusCircle, FaSave, FaTimes } from "react-icons/fa";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { API_BASE_URL, TRANSITION_DURATION } from "@/config/config";
@@ -122,114 +122,121 @@ export default function CreatorPage() {
   };
 
   return (
-    <Card className="mt-4 mx-auto max-w-3xl">
-      <CardHeader>
-        <CardTitle className="text-3xl font-bold">Crear Cuestionario</CardTitle>
-        <CardDescription>
-          Crea un cuestionario con preguntas y respuestas
-        </CardDescription>
-      </CardHeader>
-      <CardContent className="space-y-5">
-        <section>
-          <Label className="font-semibold">Título</Label>
-          <Input
-            value={title}
-            onChange={(e) => setTitle(e.target.value)}
-            placeholder="Título del cuestionario"
-          />
-        </section>
-        <section>
-          <Label className="font-semibold">Descripción</Label>
-          <Textarea
-            value={description}
-            onChange={(e) => setDescription(e.target.value)}
-            placeholder="Descripción del cuestionario"
-          />
-        </section>
-        <section className="space-y-5">
-          {questions.map((q, index) => (
-            <div key={index} className="space-y-5 p-4 border rounded-md">
-              <article>
-                <Label className="font-semibold">Pregunta {index + 1}</Label>
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  onClick={() => removeQuestion(index)}
-                >
-                  <Trash2 className="w-5 h-5 text-red-500" />
-                </Button>
-                <Input
-                  value={q.question}
-                  onChange={(e) => updateQuestion(index, e.target.value)}
-                  placeholder="Escribe tu pregunta"
-                />
-              </article>
-              <article>
-                <Label className="font-semibold">
-                  Seleccione la respuesta correcta
-                </Label>
-                <RadioGroup
-                  value={q.correctIndex.toString()}
-                  onValueChange={(value) => {
-                    const updatedQuestions = [...questions];
-                    updatedQuestions[index].correctIndex = parseInt(value);
-                    setQuestions(updatedQuestions);
-                  }}
-                >
-                  {q.answers.map((ans, ansIndex) => (
-                    <div key={ansIndex} className="flex items-center space-x-2">
-                      <RadioGroupItem value={ansIndex.toString()} />
-                      <Input
-                        value={ans}
-                        onChange={(e) => {
-                          const updatedQuestions = [...questions];
-                          updatedQuestions[index].answers[ansIndex] =
-                            e.target.value;
-                          setQuestions(updatedQuestions);
-                        }}
-                        placeholder={`Respuesta ${ansIndex + 1}`}
-                      />
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        onClick={() => removeAnswer(index, ansIndex)}
+    <div className="p-4">
+      <Card className="mx-auto max-w-3xl">
+        <CardHeader>
+          <CardTitle className="text-3xl font-bold">
+            Crear Cuestionario
+          </CardTitle>
+          <CardDescription>
+            Crea un cuestionario con preguntas y respuestas
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-5">
+          <section>
+            <Label className="font-semibold">Título</Label>
+            <Input
+              value={title}
+              onChange={(e) => setTitle(e.target.value)}
+              placeholder="Título del cuestionario"
+            />
+          </section>
+          <section>
+            <Label className="font-semibold">Descripción</Label>
+            <Textarea
+              value={description}
+              onChange={(e) => setDescription(e.target.value)}
+              placeholder="Descripción del cuestionario"
+            />
+          </section>
+          <section className="space-y-5">
+            {questions.map((q, index) => (
+              <div key={index} className="space-y-5 p-4 border rounded-md">
+                <article>
+                  <Label className="font-semibold">Pregunta {index + 1}</Label>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    onClick={() => removeQuestion(index)}
+                  >
+                    <Trash2 className="w-5 h-5 text-red-500" />
+                  </Button>
+                  <Input
+                    value={q.question}
+                    onChange={(e) => updateQuestion(index, e.target.value)}
+                    placeholder="Escribe tu pregunta"
+                  />
+                </article>
+                <article>
+                  <Label className="font-semibold">
+                    Seleccione la respuesta correcta
+                  </Label>
+                  <RadioGroup
+                    value={q.correctIndex.toString()}
+                    onValueChange={(value) => {
+                      const updatedQuestions = [...questions];
+                      updatedQuestions[index].correctIndex = parseInt(value);
+                      setQuestions(updatedQuestions);
+                    }}
+                  >
+                    {q.answers.map((ans, ansIndex) => (
+                      <div
+                        key={ansIndex}
+                        className="flex items-center space-x-2"
                       >
-                        <Trash2 className="w-4 h-4 text-red-500" />
-                      </Button>
-                    </div>
-                  ))}
-                </RadioGroup>
-              </article>
+                        <RadioGroupItem value={ansIndex.toString()} />
+                        <Input
+                          value={ans}
+                          onChange={(e) => {
+                            const updatedQuestions = [...questions];
+                            updatedQuestions[index].answers[ansIndex] =
+                              e.target.value;
+                            setQuestions(updatedQuestions);
+                          }}
+                          placeholder={`Respuesta ${ansIndex + 1}`}
+                        />
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          onClick={() => removeAnswer(index, ansIndex)}
+                        >
+                          <Trash2 className="w-4 h-4 text-red-500" />
+                        </Button>
+                      </div>
+                    ))}
+                  </RadioGroup>
+                </article>
 
-              <Button variant="outline" onClick={() => addAnswer(index)}>
-                <FaPlusCircle />
-                Añadir Respuesta
+                <Button variant="outline" onClick={() => addAnswer(index)}>
+                  <FaPlusCircle />
+                  Añadir Respuesta
+                </Button>
+              </div>
+            ))}
+          </section>
+
+          <Button onClick={addQuestion}>
+            <FaPlus />
+            Añadir Pregunta
+          </Button>
+        </CardContent>
+        <CardFooter className="flex justify-end">
+          <ConfirmDialog
+            title="¿Seguro que quieres perder el progreso de creación?"
+            description="Al confirmar, no se guardará la información del cuestionario."
+            onConfirm={() => router.push("/quizzes")}
+            triggerButton={
+              <Button variant="outline" className="mr-2">
+                <FaTimes /> Cancelar
               </Button>
-            </div>
-          ))}
-        </section>
+            }
+          />
 
-        <Button onClick={addQuestion}>
-          <FaPlus />
-          Añadir Pregunta
-        </Button>
-      </CardContent>
-      <CardFooter className="flex justify-end">
-        <ConfirmDialog
-          title="¿Seguro que quieres perder el progreso de creación?"
-          description="Al confirmar, no se guardará la información del cuestionario."
-          onConfirm={() => router.push("/quizzes")}
-          triggerButton={
-            <Button variant="outline" className="mr-2">
-              Cancelar
-            </Button>
-          }
-        />
-
-        <Button onClick={handleSaveQuiz}>
-          <FaSave /> Guardar Cuestionario
-        </Button>
-      </CardFooter>
-    </Card>
+          <Button onClick={handleSaveQuiz}>
+            <FaSave /> Guardar Cuestionario
+          </Button>
+        </CardFooter>
+      </Card>
+    </div>
   );
 }

@@ -26,6 +26,7 @@ import {
   FaPlusCircle,
   FaExclamationTriangle,
   FaReply,
+  FaClipboardCheck,
 } from "react-icons/fa";
 import ConfirmDialog from "@/components/confirm-dialog";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
@@ -394,26 +395,35 @@ export default function QuizDetailsPage() {
     );
 
   return (
-    <div className="mx-auto mt-4 max-w-3xl space-y-8">
-      <section className="space-y-2">
-        <EditableField
-          value={quiz.title}
-          field="title"
-          onUpdate={(updatedValue) => handleUpdateQuiz("title", updatedValue)}
-          className="text-3xl font-bold"
-        />
+    <div className="mx-auto p-4 max-w-3xl space-y-8">
+      <section className="flex justify-between ">
+        <article className="space-y-2">
+          <EditableField
+            value={quiz.title}
+            field="title"
+            onUpdate={(updatedValue) => handleUpdateQuiz("title", updatedValue)}
+            className="text-3xl font-bold"
+          />
 
-        <EditableField
-          value={quiz.description}
-          field="description"
-          onUpdate={(updatedValue) =>
-            handleUpdateQuiz("description", updatedValue)
-          }
-          className="text-lg"
-          isTextarea={true}
-        />
+          <EditableField
+            value={quiz.description}
+            field="description"
+            onUpdate={(updatedValue) =>
+              handleUpdateQuiz("description", updatedValue)
+            }
+            className="text-lg"
+            isTextarea={true}
+          />
+        </article>
+        <article>
+          <Link href={`/quizzes/${quiz.id}/take`}>
+            <Button variant="secondary">
+              <FaClipboardCheck />
+              Realizar Cuestionario
+            </Button>
+          </Link>
+        </article>
       </section>
-
       <section>
         {quiz.questions.length === 0 ? (
           <article className="flex items-center space-x-2">
@@ -523,7 +533,7 @@ export default function QuizDetailsPage() {
           inputPlaceholder="Escriba la nueva pregunta..."
           onSave={(newQuestionText) => handleAddQuestion(newQuestionText)}
         >
-          <Button className="w-full max-w-xl mb-4">
+          <Button className="w-full max-w-xl mb-4" variant="secondary">
             <FaPlus /> Añadir pregunta
           </Button>
         </AddItemDialog>
