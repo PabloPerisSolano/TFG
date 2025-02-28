@@ -1,5 +1,5 @@
 from django.urls import path
-from .views import QuizListCreateView, QuizDetailView, QuestionListCreateView, QuestionDetailView, AnswerListCreateView, AnswerDetailView
+from .views import QuizListCreateView, QuizDetailView, QuestionListCreateView, QuestionDetailView, AnswerListCreateView, AnswerDetailView, GeneratorView
 
 urlpatterns = [
     path('', QuizListCreateView.as_view(), name='quiz-list-create'),
@@ -14,4 +14,6 @@ urlpatterns = [
          AnswerListCreateView.as_view(), name='answer-list-create'),
     path('<int:quiz_id>/questions/<int:question_id>/answers/<int:pk>/',
          AnswerDetailView.as_view(), name='answer-detail'),
+
+    path('generator/', GeneratorView.as_view(), name='generator'),
 ]
