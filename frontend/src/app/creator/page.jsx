@@ -75,7 +75,6 @@ export default function CreatorPage() {
 
   const handleSaveQuiz = async () => {
     try {
-      // Preparar los datos del cuestionario
       const quizData = {
         title,
         description,
@@ -88,10 +87,8 @@ export default function CreatorPage() {
         })),
       };
 
-      // Obtener el token de acceso
       const accessToken = localStorage.getItem("accessToken");
 
-      // Enviar los datos al backend
       const response = await fetch(`${API_BASE_URL}users/${user.id}/quizzes/`, {
         method: "POST",
         headers: {
@@ -138,7 +135,7 @@ export default function CreatorPage() {
             <Input
               value={title}
               onChange={(e) => setTitle(e.target.value)}
-              placeholder="Título del cuestionario"
+              placeholder="Escribe el título del cuestionario..."
             />
           </section>
           <section>
@@ -146,7 +143,7 @@ export default function CreatorPage() {
             <Textarea
               value={description}
               onChange={(e) => setDescription(e.target.value)}
-              placeholder="Descripción del cuestionario"
+              placeholder="Escibe una descripción del cuestionario..."
             />
           </section>
           <section className="space-y-5">
@@ -164,7 +161,7 @@ export default function CreatorPage() {
                   <Input
                     value={q.question}
                     onChange={(e) => updateQuestion(index, e.target.value)}
-                    placeholder="Escribe tu pregunta"
+                    placeholder="Escribe tu pregunta..."
                   />
                 </article>
                 <article>
@@ -193,7 +190,7 @@ export default function CreatorPage() {
                               e.target.value;
                             setQuestions(updatedQuestions);
                           }}
-                          placeholder={`Respuesta ${ansIndex + 1}`}
+                          placeholder={`Respuesta ${ansIndex + 1}...`}
                         />
                         <Button
                           variant="ghost"

@@ -38,7 +38,6 @@ export default function QuizzesPage() {
     }
 
     const fetchQuizzes = async () => {
-      // Obtener el token de acceso
       const accessToken = localStorage.getItem("accessToken");
 
       try {
@@ -145,7 +144,7 @@ export default function QuizzesPage() {
               placeholder="Buscar por título..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="bg-white text-black"
+              className="bg-white text-gray-800"
             />
             <Button
               onClick={() => setSortOrder(sortOrder === "asc" ? "desc" : "asc")}

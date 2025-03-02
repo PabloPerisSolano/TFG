@@ -8,7 +8,7 @@ from django.db.models import Prefetch
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
-from openai import OpenAI
+from openai import OpenAI, APIConnectionError, APIError
 import json
 from dotenv import load_dotenv
 import os
@@ -56,11 +56,41 @@ class QuestionListCreateView(generics.ListCreateAPIView):
             return QuestionDetailSerializer
         return QuestionListSerializer
 
+    def create(self, request, *args, **kwargs):
+        user_id = self.kwargs['user_id']
+        quiz_id = self.kwargs['quiz_id']
+        quiz = get_object_or_404(Quiz, id=quiz_id, user_id=user_id)
+
+        data = request.data
+
+        if isinstance(data, list):
+            questions = []
+            answers_to_create = []
+
+            for question_data in data:
+                answers_data = question_data.pop('answers', [])
+                question = Question(quiz=quiz, **question_data)
+                questions.append(question)
+
+                for answer_data in answers_data:
+                    answers_to_create.append(
+                        Answer(question=question, **answer_data))
+
+            Question.objects.bulk_create(questions)
+            Answer.objects.bulk_create(answers_to_create)
+
+            return Response({"message": "Questions and answers created successfully"}, status=status.HTTP_201_CREATED)
+        else:
+            serializer = self.get_serializer(data=data)
+            serializer.is_valid(raise_exception=True)
+            self.perform_create(serializer)
+            headers = self.get_success_headers(serializer.data)
+            return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
+
     def perform_create(self, serializer):
         user_id = self.kwargs['user_id']
         quiz_id = self.kwargs['quiz_id']
-        quiz = get_object_or_404(
-            Quiz, id=quiz_id, user_id=user_id)
+        quiz = get_object_or_404(Quiz, id=quiz_id, user_id=user_id)
         serializer.save(quiz=quiz)
 
 
@@ -102,81 +132,85 @@ class AnswerDetailView(generics.RetrieveUpdateDestroyAPIView):
 
 
 class GeneratorView(APIView):
-    permission_classes = [IsAuthenticated]  # 👈 Asegura autenticación
+    permission_classes = [IsAuthenticated]
 
     def post(self, request, *args, **kwargs):
         text = request.data.get('text')
-        if not text:
-            return Response({"error": "Text is required"}, status=status.HTTP_400_BAD_REQUEST)
+        numPreguntas = request.data.get('numPreguntas')
+        numOpciones = request.data.get('numOpciones')
+
+        MIN_QUESTIONS = 1
+        MAX_QUESTIONS = 20
+        MIN_OPTIONS = 2
+        MAX_OPTIONS = 4
+
+        if not text or not numPreguntas or not numOpciones:
+            return Response({"error": "Text, numPreguntas and numOpciones are required"}, status=status.HTTP_400_BAD_REQUEST)
+
+        if not isinstance(numPreguntas, int) or numPreguntas < MIN_QUESTIONS or numPreguntas > MAX_QUESTIONS:
+            return Response({"error": f"numPreguntas must be an integer between {MIN_QUESTIONS} and {MAX_QUESTIONS}"}, status=status.HTTP_400_BAD_REQUEST)
+
+        if not isinstance(numOpciones, int) or numOpciones < MIN_OPTIONS or numOpciones > MAX_OPTIONS:
+            return Response({"error": f"numOpciones must be an integer between {MIN_OPTIONS} and {MAX_OPTIONS}"}, status=status.HTTP_400_BAD_REQUEST)
 
         try:
             load_dotenv()
 
-            # Obtener la API key desde las variables de entorno
             openai_api_key = os.getenv("OPENROUTER_API_KEY")
+
+            if not openai_api_key:
+                return Response({"error": "API key not found in environment variables"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
             client = OpenAI(api_key=openai_api_key,
                             base_url="https://openrouter.ai/api/v1")
 
             response = client.chat.completions.create(
-                model="deepseek/deepseek-r1:free",
+                model="deepseek/deepseek-chat:free",
                 messages=[
                     {
                         "role": "system",
-                        "content": "Eres un generador de cuestionarios. A partir de un texto dado, generas preguntas y respuestas en JSON."
+                        "content": "Eres un generador de cuestionarios tipo test. A partir de un texto dado, generas un número dado de preguntas y un número dado de respuestas en JSON."
                     },
                     {
                         "role": "user",
-                        "content": f"""A partir del siguiente texto, genera un cuestionario en formato JSON con preguntas y respuestas. 
-                        El formato debe ser:
-                        {{
-                          "title": "Título del cuestionario",
-                          "description": "Descripción del cuestionario",
-                          "questions": [
+                        "content": f"""Genera {numPreguntas} preguntas con {numOpciones} respuestas en JSON a partir de este texto. La respuesta correcta is_correct no debe ser siempre la primera. Formato:
+                        [
                             {{
-                              "text": "Pregunta 1",
-                              "answers": [
-                                {{
-                                  "text": "Respuesta correcta",
-                                  "is_correct": true
-                                }},
-                                {{
-                                  "text": "Respuesta incorrecta 1",
-                                  "is_correct": false
-                                }},
-                                {{
-                                  "text": "Respuesta incorrecta 2",
-                                  "is_correct": false
-                                }}
-                              ]
-                            }}
-                          ]
-                        }}
-
+                                "text": "Pregunta",
+                                "answers": [
+                                    {{"text": "Respuesta correcta", "is_correct": true}},
+                                    {{"text": "Respuesta incorrecta", "is_correct": false}}
+                                ]
+                            }}, 
+                            {{...}}
+                        ]
                         Texto: {text}"""
                     }
                 ],
                 stream=False
             )
+            questions_json = response.choices[0].message.content.strip()
 
-            quiz_json = response.choices[0].message.content.strip()
-            if quiz_json.startswith('```json') and quiz_json.endswith('```'):
-                quiz_json = quiz_json[7:-3].strip()
-            print(quiz_json)
+            if questions_json.startswith('```json'):
+                questions_json = questions_json[7:-3].strip()
+            elif questions_json.startswith('```'):
+                questions_json = questions_json[3:-3].strip()
 
             try:
-                quiz_data = json.loads(quiz_json)
+                questions_data = json.loads(questions_json)
+                if not isinstance(questions_data, list):
+                    return Response({"error": "Invalid format: Expected a list of questions"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+                for question in questions_data:
+                    if "text" not in question or "answers" not in question:
+                        return Response({"error": "Invalid format: Each question must have 'text' and 'answers'"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
             except json.JSONDecodeError:
                 return Response({"error": "Failed to parse OpenAI response"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
-            # Asociamos el quiz al usuario autenticado
-            serializer = QuizDetailSerializer(
-                data=quiz_data, context={"request": request})
-            if serializer.is_valid():
-                # 👈 Guardamos el usuario en la BD
-                serializer.save(user=request.user)
-                return Response({"message": "Quiz created successfully", "quiz": serializer.data}, status=status.HTTP_201_CREATED)
-            else:
-                return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+            return Response({"questions": questions_data}, status=status.HTTP_200_OK)
 
+        except APIConnectionError as e:
+            return Response({"error": f"Failed to connect to OpenAI API: {str(e)}"}, status=status.HTTP_503_SERVICE_UNAVAILABLE)
+        except APIError as e:
+            return Response({"error": f"OpenAI API error: {str(e)}"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
         except Exception as e:
             return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)

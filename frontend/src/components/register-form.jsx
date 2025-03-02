@@ -20,6 +20,7 @@ import {
   showSuccessToast,
   showErrorToast,
 } from "@/utils/toastUtils";
+import { FaUserPlus } from "react-icons/fa";
 
 export function RegisterForm({ className, ...props }) {
   const [username, setUsername] = useState("");
@@ -53,7 +54,6 @@ export function RegisterForm({ className, ...props }) {
         description: "Se ha registrado correctamente.",
       });
 
-      // Redirigir al usuario a la página de inicio de sesión
       setTimeout(() => {
         router.push("/login");
       }, TRANSITION_DURATION);
@@ -82,6 +82,7 @@ export function RegisterForm({ className, ...props }) {
                   required
                   value={username}
                   onChange={(e) => setUsername(e.target.value)}
+                  autoFocus
                 />
               </div>
               <div className="grid gap-2">
@@ -106,13 +107,13 @@ export function RegisterForm({ className, ...props }) {
                 />
               </div>
               <Button type="submit" className="w-full">
+                <FaUserPlus />
                 Crear Cuenta
               </Button>
             </div>
             <div className="mt-4 text-center text-sm">
-              ¿Ya tienes una cuenta?
+              ¿Ya tienes una cuenta?{" "}
               <Link href="/login" className="text-blue-500">
-                {" "}
                 Iniciar sesión
               </Link>
             </div>

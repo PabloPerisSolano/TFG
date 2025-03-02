@@ -15,6 +15,7 @@ import Link from "next/link";
 import { useAuth } from "@/context/auth-context";
 import { API_BASE_URL } from "@/config/config";
 import { showServerErrorToast, showErrorToast } from "@/utils/toastUtils";
+import { FaSignInAlt } from "react-icons/fa";
 
 export function LoginForm({ className, ...props }) {
   const [username, setUsername] = useState("");
@@ -54,7 +55,7 @@ export function LoginForm({ className, ...props }) {
       <Card>
         <CardHeader>
           <CardTitle className="text-2xl">Iniciar Sesión</CardTitle>
-          <CardDescription>Introduce tus datos de acceso.</CardDescription>
+          <CardDescription>Introduce tus credenciales.</CardDescription>
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSubmit}>
@@ -67,6 +68,7 @@ export function LoginForm({ className, ...props }) {
                   required
                   value={username}
                   onChange={(e) => setUsername(e.target.value)}
+                  autoFocus
                 />
               </div>
               <div className="grid gap-2">
@@ -80,13 +82,13 @@ export function LoginForm({ className, ...props }) {
                 />
               </div>
               <Button type="submit" className="w-full">
+                <FaSignInAlt />
                 Iniciar Sesión
               </Button>
             </div>
             <div className="mt-4 text-center text-sm">
-              ¿Quieres crear una cuenta?
+              ¿Quieres crear una cuenta?{" "}
               <Link href="/register" className="text-blue-500">
-                {" "}
                 Registrarse
               </Link>
             </div>
