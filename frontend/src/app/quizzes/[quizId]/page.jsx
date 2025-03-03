@@ -419,7 +419,7 @@ export default function QuizDetailsPage() {
           <Link href={`/quizzes/${quiz.id}/take`}>
             <Button variant="secondary">
               <FaClipboardCheck />
-              Realizar Cuestionario
+              Evaluar
             </Button>
           </Link>
         </article>

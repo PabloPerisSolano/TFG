@@ -137,17 +137,21 @@ export default function CreateQuizPage() {
         return;
       }
 
+      setTitle("");
+      setDescription("");
+      setText("");
+      setNumPreguntas(2);
+      setNumOpciones(2);
+
       showSuccessToast({
         title: "Cuestionario creado exitosamente",
         description:
           "El cuestionario se ha guardado correctamente en tus cuestionarios.",
       });
 
-      setTitle("");
-      setDescription("");
-      setText("");
-      setNumPreguntas(2);
-      setNumOpciones(2);
+      setTimeout(() => {
+        router.push("/quizzes");
+      }, TRANSITION_DURATION);
     } catch (err) {
       showServerErrorToast();
     } finally {
