@@ -1,3 +1,5 @@
+"use client";
+
 import Footer from "@/components/footer";
 import { Button } from "@/components/ui/button";
 import {
@@ -7,108 +9,123 @@ import {
   CarouselNext,
   CarouselPrevious,
 } from "@/components/ui/carousel";
+import Autoplay from "embla-carousel-autoplay";
 import {
   Card,
   CardHeader,
   CardTitle,
   CardDescription,
 } from "@/components/ui/card";
+import Link from "next/link";
+import { FaPlayCircle, FaArrowRight, FaUserPlus } from "react-icons/fa";
 
 export default function Home() {
   return (
-    <div className="flex flex-col min-h-screen">
-      {/* Header */}
-      <header className="bg-gradient-to-r from-blue-600 to-purple-600 py-20 text-white text-center">
-        <h1 className="text-5xl font-bold">QuizGenerate</h1>
-        <p className="mt-4 text-xl">
+    <div className="min-h-screen space-y-10 mt-6">
+      <section className="text-center space-y-6 bg-white text-gray-950 p-6 max-w-3xl mx-auto rounded-3xl shadow-lg">
+        <article className="flex items-center space-x-2 justify-center">
+          <img
+            src="/favicon.png"
+            alt="QuizGenerate Logo"
+            width={60}
+            className="rounded-md"
+          />
+          <h1 className="text-5xl font-bold text-gray-800">QuizGenerate</h1>
+        </article>
+        <p className="text-xl">
           Crea y gestiona tus cuestionarios de manera fácil y rápida
         </p>
-        <Button className="mt-6 bg-white text-blue-600 hover:bg-gray-100">
-          Comenzar ahora
-        </Button>
-      </header>
+        <Link href="/login">
+          <Button className="mt-6">
+            <FaPlayCircle />
+            Comenzar ahora
+          </Button>
+        </Link>
+      </section>
 
-      {/* Carrusel */}
-      <section className="container mx-auto px-4 py-12">
-        <h2 className="text-3xl font-bold text-center mb-8">¿Cómo funciona?</h2>
-        <Carousel className="w-full max-w-4xl mx-auto">
+      <section>
+        <Carousel
+          className="p-6"
+          plugins={[
+            Autoplay({
+              delay: 5000,
+            }),
+          ]}
+        >
+          <h2 className="text-center text-2xl font-bold">¿Cómo funciona?</h2>
           <CarouselContent>
-            <CarouselItem>
+            <CarouselItem className="space-y-6">
+              <article className="flex justify-center space-x-2 items-center mt-5">
+                <h2 className="text-2xl font-bold">
+                  Crea un cuestionario tipo test
+                </h2>
+                <FaArrowRight className="text-2xl" />
+              </article>
               <img
-                src="/LogoQuizGenerate.png"
-                alt="Captura de pantalla 1"
+                src="/crearQuiz.png"
+                alt="Captura de pantalla 3"
                 className="rounded-lg shadow-lg"
               />
             </CarouselItem>
-            <CarouselItem>
+            <CarouselItem className="space-y-6">
+              <article className="flex justify-center space-x-2 items-center mt-5">
+                <h2 className="text-2xl font-bold">Gestiónalo a tu manera</h2>
+                <FaArrowRight className="text-2xl" />
+              </article>
               <img
-                src="/screenshot2.png"
-                alt="Captura de pantalla 2"
-                className="rounded-lg shadow-lg"
-              />
-            </CarouselItem>
-            <CarouselItem>
-              <img
-                src="/screenshot3.png"
+                src="/gestionarQuiz.png"
                 alt="Captura de pantalla 3"
                 className="rounded-lg shadow-lg"
               />
             </CarouselItem>
           </CarouselContent>
-          <CarouselPrevious />
-          <CarouselNext />
         </Carousel>
       </section>
 
-      {/* Características */}
-      <section className="bg-gray-50 py-12">
-        <div className="container mx-auto px-4">
-          <h2 className="text-3xl font-bold text-center mb-8">
-            Características
-          </h2>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <Card>
-              <CardHeader>
-                <CardTitle>Creación rápida</CardTitle>
-                <CardDescription>
-                  Crea cuestionarios en minutos con nuestra interfaz intuitiva.
-                </CardDescription>
-              </CardHeader>
-            </Card>
-            <Card>
-              <CardHeader>
-                <CardTitle>Personalización</CardTitle>
-                <CardDescription>
-                  Personaliza tus quizzes con temas, colores y más.
-                </CardDescription>
-              </CardHeader>
-            </Card>
-            <Card>
-              <CardHeader>
-                <CardTitle>Comparte fácilmente</CardTitle>
-                <CardDescription>
-                  Comparte tus quizzes con un enlace o intégralos en tu sitio
-                  web.
-                </CardDescription>
-              </CardHeader>
-            </Card>
-          </div>
+      <section className="bg-gray-50 text-gray-900 py-12 rounded-3xl max-w-3xl mx-auto p-4">
+        <h2 className="text-3xl font-bold text-center mb-8">Características</h2>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <Card>
+            <CardHeader>
+              <CardTitle>Creación rápida</CardTitle>
+              <CardDescription>
+                Crea cuestionarios en minutos con nuestra interfaz intuitiva.
+              </CardDescription>
+            </CardHeader>
+          </Card>
+          <Card>
+            <CardHeader>
+              <CardTitle>Personalización</CardTitle>
+              <CardDescription>
+                Personaliza tus quizzes añadiendo preguntas y respuestas.
+              </CardDescription>
+            </CardHeader>
+          </Card>
+          <Card>
+            <CardHeader>
+              <CardTitle>Evaluacíon</CardTitle>
+              <CardDescription>
+                Pon a prueba tu conocimiento realizando los cuestionarios.
+              </CardDescription>
+            </CardHeader>
+          </Card>
         </div>
       </section>
 
-      {/* Llamado a la acción (CTA) */}
-      <section className="bg-gradient-to-r from-blue-600 to-purple-600 py-20 text-white text-center">
+      <section className="text-center">
         <h2 className="text-4xl font-bold">¿Listo para comenzar?</h2>
         <p className="mt-4 text-xl">
           Regístrate ahora y empieza a crear tus cuestionarios.
         </p>
-        <Button className="mt-6 bg-white text-blue-600 hover:bg-gray-100">
-          Registrarse
-        </Button>
+        <Link href="/register">
+          <Button className="mt-6" variant="secondary">
+            <FaUserPlus />
+            Registrarse
+          </Button>
+        </Link>
       </section>
 
-      {/* Footer */}
-      <footer className="mt-auto">
+      <footer>
         <Footer />
       </footer>
     </div>

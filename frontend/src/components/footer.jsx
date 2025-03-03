@@ -1,30 +1,36 @@
 import React from "react";
 import Link from "next/link";
+import { FaInstagram, FaGoogle } from "react-icons/fa";
 
 export default function Footer() {
   return (
     <div className="p-3 container mx-auto px-4 flex flex-wrap justify-between">
+      <section className="w-full md:w-1/3 mb-6 md:mb-0">
+        <article className="flex items-center space-x-2 mb-2">
+          <img
+            src="/favicon.png"
+            width={20}
+            alt="QuizGenerate Logo"
+            className="rounded-md"
+          />
+          <h2 className="text-xl font-bold">QuizGenerate</h2>
+        </article>
+        <p>TFG: Pablo Peris Solano. 2025</p>
+      </section>
+
       <div className="w-full md:w-1/3 mb-6 md:mb-0">
-        <h2 className="text-xl font-bold mb-2">QuizGenerate</h2>
-        <p>© TFG: Pablo Peris Solano. 2025</p>
-      </div>
-      <div className="w-full md:w-1/3 mb-6 md:mb-0">
-        <h2 className="text-xl font-bold mb-2">Enlaces</h2>
+        <h2 className="text-xl font-bold mb-2">Contacto</h2>
         <ul>
           <li className="mb-2">
-            <Link href="/about" className="hover:underline">
-              Acerca de
-            </Link>
-          </li>
-          <li className="mb-2">
-            <Link href="/contact" className="hover:underline">
-              Contacto
-            </Link>
-          </li>
-          <li className="mb-2">
-            <Link href="/privacy" className="hover:underline">
-              Política de Privacidad
-            </Link>
+            <article className="flex items-center space-x-2">
+              <FaGoogle />
+              <a
+                href="mailto:pabloperissolano@gmail.com"
+                className="hover:underline"
+              >
+                pabloperissolano@gmail.com
+              </a>
+            </article>
           </li>
         </ul>
       </div>
@@ -33,32 +39,14 @@ export default function Footer() {
         <ul className="flex space-x-4">
           <li>
             <a
-              href="https://facebook.com"
+              href="https://www.instagram.com/pabloperiss_03/"
               target="_blank"
               rel="noopener noreferrer"
-              className="hover:underline"
+              className="hover:underline "
             >
-              Facebook
-            </a>
-          </li>
-          <li>
-            <a
-              href="https://twitter.com"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="hover:underline"
-            >
-              Twitter
-            </a>
-          </li>
-          <li>
-            <a
-              href="https://instagram.com"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="hover:underline"
-            >
-              Instagram
+              <article className="flex items-center space-x-2">
+                <FaInstagram /> <p>Instagram</p>
+              </article>
             </a>
           </li>
         </ul>
