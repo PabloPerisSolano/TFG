@@ -11,5 +11,4 @@ urlpatterns = [
     path('refresh/', TokenRefreshView.as_view(), name='token_refresh'),
     path('me/', UserDetailView.as_view(), name='user_detail'),
     path('change-password/', ChangePasswordView.as_view(), name='change-password'),
-    path('<int:user_id>/quizzes/', include('apps.quizzes.urls')),
 ]

@@ -22,15 +22,6 @@ class QuestionDetailSerializer(serializers.ModelSerializer):
         model = Question
         fields = ['id', 'text', 'answers']
 
-    def create(self, validated_data):
-        answers_data = validated_data.pop('answers')
-        question = Question.objects.create(**validated_data)
-
-        for answer_data in answers_data:
-            Answer.objects.create(question=question, **answer_data)
-
-        return question
-
 
 class QuizListSerializer(serializers.ModelSerializer):
     class Meta:
