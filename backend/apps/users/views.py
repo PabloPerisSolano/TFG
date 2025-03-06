@@ -6,6 +6,49 @@ from rest_framework.permissions import AllowAny
 from rest_framework.permissions import IsAuthenticated
 from .serializers import UserSerializer
 from django.contrib.auth import update_session_auth_hash
+from rest_framework_simplejwt.views import TokenObtainPairView
+
+
+class CustomTokenObtainPairView(TokenObtainPairView):
+    def post(self, request, *args, **kwargs):
+        response = super().post(request, *args, **kwargs)
+
+        if response.status_code == status.HTTP_200_OK:
+            access_token = response.data['access']
+            refresh_token = response.data['refresh']
+
+            response.set_cookie(
+                'accessToken',
+                access_token,
+                httponly=True,
+                secure=False,
+                samesite='Lax',
+                max_age=3600,
+            )
+            response.set_cookie(
+                'refreshToken',
+                refresh_token,
+                httponly=True,
+                secure=False,
+                samesite='Lax',
+                max_age=7 * 24 * 3600,
+            )
+
+            del response.data['access']
+            del response.data['refresh']
+
+        return response
+
+
+class LogoutView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request):
+        response = Response({"message": "Logout successful"},
+                            status=status.HTTP_200_OK)
+        response.delete_cookie('accessToken')
+        response.delete_cookie('refreshToken')
+        return response
 
 
 class RegisterView(APIView):
@@ -72,7 +115,6 @@ class ChangePasswordView(APIView):
         user.set_password(new_password)
         user.save()
 
-        # Actualizar la sesión del usuario para evitar que se cierre la sesión después de cambiar la contraseña
         update_session_auth_hash(request, user)
 
         return Response({'message': 'Contraseña cambiada exitosamente'}, status=status.HTTP_200_OK)

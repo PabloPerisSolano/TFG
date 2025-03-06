@@ -3,6 +3,7 @@
 import { createContext, useContext, useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { API_BASE_URL } from "@/config/config";
+import { showErrorToast } from "@/utils/toastUtils";
 
 const AuthContext = createContext();
 
@@ -12,19 +13,14 @@ export function AuthProvider({ children }) {
   const router = useRouter();
 
   useEffect(() => {
-    const accessToken = localStorage.getItem("accessToken");
-    if (accessToken) {
-      fetchUserData(accessToken);
-    }
+    fetchUserData();
   }, []);
 
-  const fetchUserData = async (token) => {
+  const fetchUserData = async () => {
     try {
       const response = await fetch(`${API_BASE_URL}users/me/`, {
         method: "GET",
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
+        credentials: "include",
       });
 
       if (response.ok) {
@@ -35,24 +31,35 @@ export function AuthProvider({ children }) {
         handleLogout();
       }
     } catch (error) {
-      console.error("Error fetching user data:", error);
       handleLogout();
+      showErrorToast({
+        title: "Error de servidor",
+        description: error.message || error.toString(),
+      });
     }
   };
 
-  const handleLogin = (accessToken, refreshToken) => {
-    localStorage.setItem("accessToken", accessToken);
-    localStorage.setItem("refreshToken", refreshToken);
-    fetchUserData(accessToken);
+  const handleLogin = () => {
+    fetchUserData();
     router.push("/quizzes");
   };
 
-  const handleLogout = () => {
-    router.push("/");
-    localStorage.removeItem("accessToken");
-    localStorage.removeItem("refreshToken");
-    setIsLoggedIn(false);
-    setUser(null);
+  const handleLogout = async () => {
+    try {
+      await fetch(`${API_BASE_URL}users/logout/`, {
+        method: "POST",
+        credentials: "include",
+      });
+
+      setIsLoggedIn(false);
+      setUser(null);
+      router.push("/");
+    } catch (error) {
+      showErrorToast({
+        title: "Error de servidor",
+        description: error.message || error.toString(),
+      });
+    }
   };
 
   return (

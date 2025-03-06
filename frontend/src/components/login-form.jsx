@@ -42,9 +42,7 @@ export function LoginForm({ className, ...props }) {
         return;
       }
 
-      const data = await response.json();
-
-      handleLogin(data.access, data.refresh);
+      handleLogin();
     } catch (error) {
       showServerErrorToast();
     }
