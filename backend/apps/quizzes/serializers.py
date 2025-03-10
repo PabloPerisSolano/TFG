@@ -16,7 +16,7 @@ class QuestionListSerializer(serializers.ModelSerializer):
 
 
 class QuestionDetailSerializer(serializers.ModelSerializer):
-    answers = AnswerSerializer(many=True)
+    answers = AnswerSerializer(many=True, required=False, allow_empty=True)
 
     class Meta:
         model = Question

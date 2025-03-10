@@ -85,9 +85,10 @@ class QuestionListCreateView(generics.ListCreateAPIView):
             serializer.is_valid(raise_exception=True)
             question = serializer.save(quiz=quiz)
 
-            answers = [Answer(question=question, **answer_data)
-                       for answer_data in answers_data]
-            Answer.objects.bulk_create(answers)
+            if answers_data:
+                answers = [Answer(question=question, **answer_data)
+                           for answer_data in answers_data]
+                Answer.objects.bulk_create(answers)
 
             return Response(serializer.data, status=status.HTTP_201_CREATED)
 

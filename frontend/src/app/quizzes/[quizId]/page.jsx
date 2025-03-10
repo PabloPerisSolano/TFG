@@ -119,9 +119,11 @@ export default function QuizDetailsPage() {
       });
 
       if (!res.ok) {
+        const errorData = await res.json();
+        console.log(errorData);
         showErrorToast({
           title: "Error al añadir la pregunta",
-          description: "No se pudo añadir la pregunta al cuestionario.",
+          description: "No se pudo añadir la pregunta.",
         });
         return;
       }
