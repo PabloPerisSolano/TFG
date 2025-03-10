@@ -29,7 +29,7 @@ import {
 import ConfirmDialog from "@/components/confirm-dialog";
 
 export default function CreatorPage() {
-  const { isLoggedIn, user } = useAuth();
+  const { isLoggedIn } = useAuth();
   const router = useRouter();
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
@@ -89,7 +89,7 @@ export default function CreatorPage() {
 
       const accessToken = localStorage.getItem("accessToken");
 
-      const response = await fetch(`${API_BASE_URL}users/${user.id}/quizzes/`, {
+      const response = await fetch(`${API_BASE_URL}quizzes/`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

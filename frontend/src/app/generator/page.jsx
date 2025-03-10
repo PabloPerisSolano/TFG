@@ -23,7 +23,7 @@ import { Label } from "@/components/ui/label";
 import { FaMagic } from "react-icons/fa";
 
 export default function CreateQuizPage() {
-  const { isLoggedIn, user } = useAuth();
+  const { isLoggedIn } = useAuth();
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [numPreguntas, setNumPreguntas] = useState(2);
@@ -46,21 +46,18 @@ export default function CreateQuizPage() {
       const accessToken = localStorage.getItem("accessToken");
 
       // Paso 1: Crear el cuestionario
-      const quizResponse = await fetch(
-        `${API_BASE_URL}users/${user.id}/quizzes/`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${accessToken}`,
-          },
-          body: JSON.stringify({
-            title,
-            description,
-            questions: [],
-          }),
-        }
-      );
+      const quizResponse = await fetch(`${API_BASE_URL}quizzes/`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${accessToken}`,
+        },
+        body: JSON.stringify({
+          title,
+          description,
+          questions: [],
+        }),
+      });
 
       if (!quizResponse.ok) {
         const errorData = await quizResponse.json();
@@ -75,7 +72,7 @@ export default function CreateQuizPage() {
 
       // Paso 2: Generar preguntas
       const questionsResponse = await fetch(
-        `${API_BASE_URL}users/${user.id}/quizzes/generator/`,
+        `${API_BASE_URL}quizzes/generator/`,
         {
           method: "POST",
           headers: {
@@ -95,7 +92,7 @@ export default function CreateQuizPage() {
             "Se ha producido un error al generar las preguntas.",
         });
 
-        await fetch(`${API_BASE_URL}users/${user.id}/quizzes/${quizData.id}/`, {
+        await fetch(`${API_BASE_URL}quizzes/${quizData.id}/`, {
           method: "DELETE",
           headers: {
             Authorization: `Bearer ${accessToken}`,
@@ -108,7 +105,7 @@ export default function CreateQuizPage() {
 
       // Paso 3: Agregar las preguntas al cuestionario
       const res3 = await fetch(
-        `${API_BASE_URL}users/${user.id}/quizzes/${quizData.id}/questions/`,
+        `${API_BASE_URL}quizzes/${quizData.id}/questions/`,
         {
           method: "POST",
           headers: {
@@ -128,7 +125,7 @@ export default function CreateQuizPage() {
             "Se ha producido un error al agregar las preguntas.",
         });
 
-        await fetch(`${API_BASE_URL}users/${user.id}/quizzes/${quizData.id}/`, {
+        await fetch(`${API_BASE_URL}quizzes/${quizData.id}/`, {
           method: "DELETE",
           headers: {
             Authorization: `Bearer ${accessToken}`,

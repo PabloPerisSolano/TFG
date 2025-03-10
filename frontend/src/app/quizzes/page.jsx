@@ -25,23 +25,18 @@ import { Input } from "@/components/ui/input";
 import ConfirmDialog from "@/components/confirm-dialog";
 
 export default function QuizzesPage() {
-  const { isLoggedIn, user } = useAuth();
+  const { isLoggedIn } = useAuth();
   const [quizzes, setQuizzes] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
   const [sortOrder, setSortOrder] = useState("desc");
 
   useEffect(() => {
-    if (!user) {
-      setQuizzes([]);
-      return;
-    }
-
     const fetchQuizzes = async () => {
       const accessToken = localStorage.getItem("accessToken");
 
       try {
-        const res = await fetch(`${API_BASE_URL}users/${user.id}/quizzes/`, {
+        const res = await fetch(`${API_BASE_URL}quizzes/`, {
           headers: {
             Authorization: `Bearer ${accessToken}`,
           },
@@ -65,7 +60,7 @@ export default function QuizzesPage() {
     };
 
     fetchQuizzes();
-  }, [user]);
+  }, []);
 
   if (!isLoggedIn) {
     return <PleaseLogin />;
@@ -83,15 +78,12 @@ export default function QuizzesPage() {
     const accessToken = localStorage.getItem("accessToken");
 
     try {
-      const res = await fetch(
-        `${API_BASE_URL}users/${user.id}/quizzes/${quizId}/`,
-        {
-          method: "DELETE",
-          headers: {
-            Authorization: `Bearer ${accessToken}`,
-          },
-        }
-      );
+      const res = await fetch(`${API_BASE_URL}quizzes/${quizId}/`, {
+        method: "DELETE",
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+      });
 
       if (!res.ok) {
         showErrorToast({

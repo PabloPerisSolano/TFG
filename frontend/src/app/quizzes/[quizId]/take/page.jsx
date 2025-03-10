@@ -19,7 +19,7 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { FaAward, FaUpload } from "react-icons/fa";
 
 export default function TakeQuizPage() {
-  const { isLoggedIn, user } = useAuth();
+  const { isLoggedIn } = useAuth();
   const { quizId } = useParams();
   const [quiz, setQuiz] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -27,18 +27,15 @@ export default function TakeQuizPage() {
   const [score, setScore] = useState(null);
 
   useEffect(() => {
-    if (!user || !quizId) return;
+    if (!quizId) return;
 
     const fetchQuiz = async () => {
       const accessToken = localStorage.getItem("accessToken");
 
       try {
-        const res = await fetch(
-          `${API_BASE_URL}users/${user.id}/quizzes/${quizId}/`,
-          {
-            headers: { Authorization: `Bearer ${accessToken}` },
-          }
-        );
+        const res = await fetch(`${API_BASE_URL}quizzes/${quizId}/`, {
+          headers: { Authorization: `Bearer ${accessToken}` },
+        });
 
         if (!res.ok) {
           showErrorToast({
@@ -58,7 +55,7 @@ export default function TakeQuizPage() {
     };
 
     fetchQuiz();
-  }, [user, quizId]);
+  }, [quizId]);
 
   const handleAnswerChange = (questionId, answerId) => {
     setAnswers((prevAnswers) => ({
