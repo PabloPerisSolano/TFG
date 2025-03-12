@@ -182,6 +182,7 @@ export default function CreatorPage() {
                         className="flex items-center space-x-2"
                       >
                         <RadioGroupItem value={ansIndex.toString()} />
+                        <span>{String.fromCharCode(97 + ansIndex)})</span>
                         <Input
                           value={ans}
                           onChange={(e) => {

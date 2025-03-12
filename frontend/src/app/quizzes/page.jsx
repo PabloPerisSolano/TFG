@@ -20,7 +20,13 @@ import {
   showErrorToast,
   showSuccessToast,
 } from "@/utils/toastUtils";
-import { FaTrashAlt, FaEye, FaPlusCircle, FaSort } from "react-icons/fa";
+import {
+  FaTrashAlt,
+  FaEye,
+  FaPlusCircle,
+  FaSort,
+  FaClipboardCheck,
+} from "react-icons/fa";
 import { Input } from "@/components/ui/input";
 import ConfirmDialog from "@/components/confirm-dialog";
 
@@ -161,14 +167,23 @@ export default function QuizzesPage() {
                     description="Se eliminará permanentemente el cuestionario."
                     onConfirm={() => handleDelete(quiz.id)}
                     triggerButton={
-                      <Button variant="destructive">
-                        <FaTrashAlt /> Eliminar
+                      <Button
+                        variant="destructive"
+                        className="flex items-center"
+                      >
+                        <FaTrashAlt />
+                        <span className="hidden sm:inline">Eliminar</span>
                       </Button>
                     }
                   />
                   <Link href={`/quizzes/${quiz.id}`}>
                     <Button>
                       <FaEye /> Ver detalles
+                    </Button>
+                  </Link>
+                  <Link href={`/quizzes/${quiz.id}/take`}>
+                    <Button>
+                      <FaClipboardCheck /> Evaluar
                     </Button>
                   </Link>
                 </CardFooter>

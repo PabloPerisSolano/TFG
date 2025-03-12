@@ -16,7 +16,15 @@ import { useAuth } from "@/context/auth-context";
 import { Skeleton } from "@/components/ui/skeleton";
 import PleaseLogin from "@/components/please-login";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { FaAward, FaUpload } from "react-icons/fa";
+import { FaAward, FaUpload, FaCheck, FaTimes } from "react-icons/fa";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+} from "@/components/ui/dialog";
+import { ScrollArea } from "@/components/ui/scroll-area";
 
 export default function TakeQuizPage() {
   const { isLoggedIn } = useAuth();
@@ -25,6 +33,8 @@ export default function TakeQuizPage() {
   const [loading, setLoading] = useState(true);
   const [answers, setAnswers] = useState({});
   const [score, setScore] = useState(null);
+  const [showResultDialog, setShowResultDialog] = useState(false);
+  const [results, setResults] = useState([]);
 
   useEffect(() => {
     if (!quizId) return;
@@ -66,15 +76,25 @@ export default function TakeQuizPage() {
 
   const handleSubmit = () => {
     let newScore = 0;
-    quiz.questions.forEach((question) => {
+    const newResults = quiz.questions.map((question) => {
       const correctAnswer = question.answers.find((a) => a.is_correct);
-      if (answers[question.id] === correctAnswer?.id.toString()) {
+      const selectedAnswer = question.answers.find(
+        (a) => a.id.toString() === answers[question.id]
+      );
+      const isCorrect = answers[question.id] === correctAnswer?.id.toString();
+      if (isCorrect) {
         newScore += 1;
       }
+      return {
+        ...question,
+        isCorrect,
+        correctAnswer: correctAnswer?.text,
+        selectedAnswer: selectedAnswer?.text,
+      };
     });
     setScore(newScore);
-    console.log("Respuestas enviadas:", answers);
-    console.log("Puntuación:", score);
+    setResults(newResults);
+    setShowResultDialog(true);
   };
 
   if (!isLoggedIn) return <PleaseLogin />;
@@ -145,14 +165,51 @@ export default function TakeQuizPage() {
         </Button>
       </section>
 
-      {score !== null && (
-        <section className="bg-gray-100 p-4 rounded-md ">
-          <p className=" text-black text-2xl font-bold flex items-center justify-center">
-            <FaAward />
-            Tu puntuación: {score} / {quiz.questions.length}
-          </p>
-        </section>
-      )}
+      <Dialog open={showResultDialog} onOpenChange={setShowResultDialog}>
+        <DialogContent className="sm:max-w-[700px] text-black">
+          <DialogHeader>
+            <DialogTitle className="flex items-center justify-center">
+              <FaAward className="mr-2" />
+              Tu puntuación: {score} / {quiz.questions.length}
+            </DialogTitle>
+            <DialogDescription className="text-center">
+              Corrección de las respuestas:
+            </DialogDescription>
+          </DialogHeader>
+          <ScrollArea className="max-h-[450px]">
+            <div className="space-y-4">
+              {results.map((result, index) => (
+                <Card key={result.id}>
+                  <CardHeader>
+                    <CardTitle className="flex items-center">
+                      <span className="mr-2">{index + 1}.</span>
+                      <span className="text-lg font-semibold">
+                        {result.text}
+                      </span>
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    {result.isCorrect ? (
+                      <article className="flex items-center space-x-2">
+                        <FaCheck className="text-green-500" />
+                        <span>{result.correctAnswer}</span>
+                      </article>
+                    ) : (
+                      <article>
+                        <div className="flex items-center space-x-2">
+                          <FaTimes className="text-red-500" />
+                          <span>{result.selectedAnswer}</span>
+                        </div>
+                        Respuesta correcta: {result.correctAnswer}
+                      </article>
+                    )}
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          </ScrollArea>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
