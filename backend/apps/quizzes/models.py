@@ -3,10 +3,18 @@ from django.contrib.auth.models import User
 
 
 class Quiz(models.Model):
-    title = models.CharField(max_length=255)
-    description = models.TextField(blank=True, null=True)
-    user = models.ForeignKey(
+    author = models.ForeignKey(
         User, on_delete=models.CASCADE, related_name='quizzes')
+    title = models.CharField(max_length=255)
+    description = models.TextField(default="")
+    public = models.BooleanField(default=False)
+    time_limit = models.PositiveIntegerField(
+        default=3600)  # Tiempo límite en segundos
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    @property
+    def num_questions(self):
+        return self.questions.count()  # Propiedad calculada
 
     def __str__(self):
         return self.title

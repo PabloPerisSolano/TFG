@@ -1,44 +1,90 @@
 from .serializers import QuizDetailSerializer
-from rest_framework import generics
+from rest_framework import generics, status, permissions
 from rest_framework.permissions import IsAuthenticated
-from django.shortcuts import get_object_or_404
-from .models import Quiz, Question, Answer
-from .serializers import QuizDetailSerializer, QuizListSerializer, QuestionDetailSerializer, QuestionListSerializer, AnswerSerializer
-from django.db.models import Prefetch
+from rest_framework.pagination import PageNumberPagination
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from rest_framework import status
+from django.shortcuts import get_object_or_404
+from .models import Quiz, Question, Answer
+from .serializers import QuizCreateSerializer, QuizDetailSerializer, QuizListSerializer, QuestionCreateSerializer, QuestionDetailSerializer, QuestionListSerializer, AnswerSerializer
+from django.db.models import Prefetch
 from openai import OpenAI, APIConnectionError, APIError
 import json
 from dotenv import load_dotenv
 import os
 
 
-class QuizListCreateView(generics.ListCreateAPIView):
-    permission_classes = [IsAuthenticated]
+class IsAuthorOrReadOnly(permissions.BasePermission):
+    def has_object_permission(self, request, view, obj):
+        # Permitir acceso de solo lectura para cualquier solicitud
+        if request.method in permissions.SAFE_METHODS:
+            return True
+
+        # Verificar si el objeto es un Quiz
+        if isinstance(obj, Quiz):
+            return obj.author == request.user
+
+        # Verificar si el objeto es una Question
+        if isinstance(obj, Question):
+            return obj.quiz.author == request.user
+
+        # Verificar si el objeto es una Answer
+        if isinstance(obj, Answer):
+            return obj.question.quiz.author == request.user
+
+        return False
+
+
+class PublicQuizListView(generics.ListAPIView):
+    serializer_class = QuizListSerializer
+    pagination_class = PageNumberPagination
 
     def get_queryset(self):
-        return Quiz.objects.filter(user=self.request.user).order_by('id')
+        return Quiz.objects.filter(public=True).order_by('-created_at')
+
+
+class PublicQuizDetailView(generics.RetrieveAPIView):
+    serializer_class = QuizDetailSerializer
+
+    def get_object(self):
+        quiz_id = self.kwargs['quiz_id']
+        return get_object_or_404(Quiz, id=quiz_id, public=True)
+
+
+class UserQuizListCreateView(generics.ListCreateAPIView):
+    permission_classes = [IsAuthenticated]
+    pagination_class = PageNumberPagination
+
+    def get_queryset(self):
+        return Quiz.objects.filter(author=self.request.user).order_by('-created_at')
 
     def get_serializer_class(self):
         if self.request.method == 'POST':
-            return QuizDetailSerializer
+            return QuizCreateSerializer
         return QuizListSerializer
 
     def perform_create(self, serializer):
-        serializer.save(user=self.request.user)
+        serializer.save(author=self.request.user)
 
 
-class QuizDetailView(generics.RetrieveUpdateDestroyAPIView):
+class UserQuizDetailView(generics.RetrieveUpdateDestroyAPIView):
     serializer_class = QuizDetailSerializer
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated, IsAuthorOrReadOnly]
 
-    def get_queryset(self):
-        return Quiz.objects.filter(user=self.request.user).prefetch_related(
-            Prefetch('questions', queryset=Question.objects.order_by('id')),
-            Prefetch('questions__answers',
-                     queryset=Answer.objects.order_by('id'))
+    def get_object(self):
+        quiz_id = self.kwargs['quiz_id']
+
+        quiz = get_object_or_404(
+            Quiz.objects.prefetch_related(
+                Prefetch('questions', queryset=Question.objects.order_by('id')),
+                Prefetch('questions__answers',
+                         queryset=Answer.objects.order_by('id'))
+            ),
+            id=quiz_id,
+            author=self.request.user
         )
+
+        return quiz
 
 
 class QuestionListCreateView(generics.ListCreateAPIView):
@@ -46,60 +92,51 @@ class QuestionListCreateView(generics.ListCreateAPIView):
 
     def get_queryset(self):
         quiz_id = self.kwargs['quiz_id']
-        return Question.objects.filter(quiz_id=quiz_id, quiz__user=self.request.user)
+        return Question.objects.filter(quiz_id=quiz_id, quiz__author=self.request.user).order_by('id')
 
     def get_serializer_class(self):
         if self.request.method == 'POST':
-            return QuestionDetailSerializer
+            return QuestionCreateSerializer
         return QuestionListSerializer
 
-    def create(self, request, *args, **kwargs):
+    def get_serializer(self, *args, **kwargs):
+        # Si es una lista de preguntas en POST, usar many=True
+        if self.request.method == 'POST' and isinstance(kwargs.get('data', {}), list):
+            kwargs['many'] = True
+        return super().get_serializer(*args, **kwargs)
+
+    def perform_create(self, serializer):
         quiz_id = self.kwargs['quiz_id']
-        quiz = get_object_or_404(Quiz, id=quiz_id, user=self.request.user)
+        quiz = get_object_or_404(Quiz, id=quiz_id, author=self.request.user)
+        serializer.save(quiz=quiz)
 
-        data = request.data
+        # Convertir a lista si es una sola pregunta
+        created_questions = serializer.instance if isinstance(
+            serializer.instance, list) else [serializer.instance]
 
-        if isinstance(data, list):
-            questions = []
-            answers_to_create = []
-
-            for question_data in data:
-                answers_data = question_data.pop('answers', [])
-
-                question = Question(quiz=quiz, **question_data)
-                questions.append(question)
-
-                for answer_data in answers_data:
-                    answers_to_create.append(
-                        Answer(question=question, **answer_data))
-
-            Question.objects.bulk_create(questions)
-            Answer.objects.bulk_create(answers_to_create)
-
-            return Response({"message": "Questions and answers created successfully"}, status=status.HTTP_201_CREATED)
-
-        else:
-            answers_data = data.pop('answers', [])
-
-            serializer = self.get_serializer(data=data)
-            serializer.is_valid(raise_exception=True)
-            question = serializer.save(quiz=quiz)
-
-            if answers_data:
-                answers = [Answer(question=question, **answer_data)
-                           for answer_data in answers_data]
-                Answer.objects.bulk_create(answers)
-
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        response_serializer = QuestionDetailSerializer(
+            created_questions, many=True)
+        return Response(response_serializer.data, status=status.HTTP_201_CREATED)
 
 
 class QuestionDetailView(generics.RetrieveUpdateDestroyAPIView):
     serializer_class = QuestionDetailSerializer
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated, IsAuthorOrReadOnly]
 
-    def get_queryset(self):
+    def get_object(self):
         quiz_id = self.kwargs['quiz_id']
-        return Question.objects.filter(quiz_id=quiz_id, quiz__user=self.request.user).prefetch_related('answers')
+        question_id = self.kwargs['question_id']
+
+        question = get_object_or_404(
+            Question.objects.prefetch_related(
+                Prefetch('answers', queryset=Answer.objects.order_by('id'))
+            ),
+            id=question_id,
+            quiz_id=quiz_id,
+            quiz__author=self.request.user
+        )
+
+        return question
 
 
 class AnswerListCreateView(generics.ListCreateAPIView):
@@ -108,22 +145,31 @@ class AnswerListCreateView(generics.ListCreateAPIView):
 
     def get_queryset(self):
         question_id = self.kwargs['question_id']
-        return Answer.objects.filter(question_id=question_id, question__quiz__user=self.request.user)
+        return Answer.objects.filter(question_id=question_id, question__quiz__author=self.request.user).order_by('id')
 
     def perform_create(self, serializer):
         question_id = self.kwargs['question_id']
         question = get_object_or_404(
-            Question, id=question_id, quiz__user=self.request.user)
+            Question, id=question_id, quiz__author=self.request.user)
         serializer.save(question=question)
 
 
 class AnswerDetailView(generics.RetrieveUpdateDestroyAPIView):
     serializer_class = AnswerSerializer
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated, IsAuthorOrReadOnly]
 
-    def get_queryset(self):
+    def get_object(self):
         question_id = self.kwargs['question_id']
-        return Answer.objects.filter(question_id=question_id, question__quiz__user=self.request.user)
+        answer_id = self.kwargs['answer_id']
+
+        answer = get_object_or_404(
+            Answer,
+            id=answer_id,
+            question_id=question_id,
+            question__quiz__author=self.request.user
+        )
+
+        return answer
 
 
 class GeneratorView(APIView):

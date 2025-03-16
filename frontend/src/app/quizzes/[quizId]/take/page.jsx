@@ -16,7 +16,13 @@ import { useAuth } from "@/context/auth-context";
 import { Skeleton } from "@/components/ui/skeleton";
 import PleaseLogin from "@/components/please-login";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { FaAward, FaUpload, FaCheck, FaTimes } from "react-icons/fa";
+import {
+  FaAward,
+  FaUpload,
+  FaCheck,
+  FaTimes,
+  FaExclamationTriangle,
+} from "react-icons/fa";
 import {
   Dialog,
   DialogContent,
@@ -27,7 +33,6 @@ import {
 import { ScrollArea } from "@/components/ui/scroll-area";
 
 export default function TakeQuizPage() {
-  const { isLoggedIn } = useAuth();
   const { quizId } = useParams();
   const [quiz, setQuiz] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -40,12 +45,8 @@ export default function TakeQuizPage() {
     if (!quizId) return;
 
     const fetchQuiz = async () => {
-      const accessToken = localStorage.getItem("accessToken");
-
       try {
-        const res = await fetch(`${API_BASE_URL}quizzes/${quizId}/`, {
-          headers: { Authorization: `Bearer ${accessToken}` },
-        });
+        const res = await fetch(`${API_BASE_URL}quizzes/${quizId}/`);
 
         if (!res.ok) {
           showErrorToast({
@@ -76,20 +77,25 @@ export default function TakeQuizPage() {
 
   const handleSubmit = () => {
     let newScore = 0;
+
     const newResults = quiz.questions.map((question) => {
-      const correctAnswer = question.answers.find((a) => a.is_correct);
       const selectedAnswer = question.answers.find(
         (a) => a.id.toString() === answers[question.id]
       );
+
+      const correctAnswer = question.answers.find((a) => a.is_correct);
+
       const isCorrect = answers[question.id] === correctAnswer?.id.toString();
+
       if (isCorrect) {
         newScore += 1;
       }
+
       return {
         ...question,
-        isCorrect,
-        correctAnswer: correctAnswer?.text,
         selectedAnswer: selectedAnswer?.text,
+        correctAnswer: correctAnswer?.text,
+        isCorrect,
       };
     });
     setScore(newScore);
@@ -97,7 +103,6 @@ export default function TakeQuizPage() {
     setShowResultDialog(true);
   };
 
-  if (!isLoggedIn) return <PleaseLogin />;
   if (loading)
     return (
       <div className="mx-auto space-y-4 max-w-3xl mt-10">
@@ -113,28 +118,19 @@ export default function TakeQuizPage() {
           <FaExclamationTriangle />
           <p className="font-bold">No se ha encontrado el cuestionario.</p>
         </section>
-        <Link href="/quizzes">
-          <Button>
-            <FaReply />
-            Volver a mis cuestionarios
-          </Button>
-        </Link>
       </div>
     );
 
   return (
     <div className="mx-auto p-4 max-w-3xl space-y-8">
-      <section className="space-y-2">
-        <h1 className="text-3xl font-bold">{quiz.title}</h1>
-      </section>
+      <h1 className="text-3xl font-bold">{quiz.title}</h1>
 
       <section>
         {quiz.questions.map((question, questionIndex) => (
           <Card key={question.id} className="mt-4">
             <CardHeader>
-              <CardTitle className="flex items-center">
-                <span className="mr-2">{questionIndex + 1}.</span>
-                <span className="text-lg font-semibold">{question.text}</span>
+              <CardTitle className="text-lg">
+                {questionIndex + 1}. {question.text}
               </CardTitle>
             </CardHeader>
             <CardContent>
@@ -168,13 +164,11 @@ export default function TakeQuizPage() {
       <Dialog open={showResultDialog} onOpenChange={setShowResultDialog}>
         <DialogContent className="sm:max-w-[700px] text-black">
           <DialogHeader>
-            <DialogTitle className="flex items-center justify-center">
+            <DialogTitle className="flex items-center justify-center text-2xl">
               <FaAward className="mr-2" />
-              Tu puntuación: {score} / {quiz.questions.length}
+              Resultado: {score} / {quiz.questions.length}
             </DialogTitle>
-            <DialogDescription className="text-center">
-              Corrección de las respuestas:
-            </DialogDescription>
+            <DialogDescription>Revisión de las respuestas</DialogDescription>
           </DialogHeader>
           <ScrollArea className="max-h-[450px]">
             <div className="space-y-4">
@@ -200,7 +194,11 @@ export default function TakeQuizPage() {
                           <FaTimes className="text-red-500" />
                           <span>{result.selectedAnswer}</span>
                         </div>
-                        Respuesta correcta: {result.correctAnswer}
+                        Respuesta correcta:
+                        <span className="font-bold">
+                          {" "}
+                          {result.correctAnswer}
+                        </span>
                       </article>
                     )}
                   </CardContent>
