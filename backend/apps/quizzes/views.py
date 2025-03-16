@@ -99,24 +99,10 @@ class QuestionListCreateView(generics.ListCreateAPIView):
             return QuestionCreateSerializer
         return QuestionListSerializer
 
-    def get_serializer(self, *args, **kwargs):
-        # Si es una lista de preguntas en POST, usar many=True
-        if self.request.method == 'POST' and isinstance(kwargs.get('data', {}), list):
-            kwargs['many'] = True
-        return super().get_serializer(*args, **kwargs)
-
     def perform_create(self, serializer):
         quiz_id = self.kwargs['quiz_id']
         quiz = get_object_or_404(Quiz, id=quiz_id, author=self.request.user)
         serializer.save(quiz=quiz)
-
-        # Convertir a lista si es una sola pregunta
-        created_questions = serializer.instance if isinstance(
-            serializer.instance, list) else [serializer.instance]
-
-        response_serializer = QuestionDetailSerializer(
-            created_questions, many=True)
-        return Response(response_serializer.data, status=status.HTTP_201_CREATED)
 
 
 class QuestionDetailView(generics.RetrieveUpdateDestroyAPIView):
@@ -176,23 +162,28 @@ class GeneratorView(APIView):
     permission_classes = [IsAuthenticated]
 
     def post(self, request, *args, **kwargs):
-        text = request.data.get('text')
+        title = request.data.get('title')
+        description = request.data.get('description', "")
+        public = request.data.get('public', False)
+        time_limit = request.data.get('time_limit', 3600)
+
         numPreguntas = request.data.get('numPreguntas')
         numOpciones = request.data.get('numOpciones')
+        prompt = request.data.get('prompt')
 
         MIN_QUESTIONS = 1
         MAX_QUESTIONS = 20
         MIN_OPTIONS = 2
         MAX_OPTIONS = 4
 
-        if not text or not numPreguntas or not numOpciones:
-            return Response({"error": "Text, numPreguntas and numOpciones are required"}, status=status.HTTP_400_BAD_REQUEST)
+        if not title or not numPreguntas or not numOpciones or not prompt:
+            return Response({"error": "title, numPreguntas, numOpciones y prompt son obligatorios"}, status=status.HTTP_400_BAD_REQUEST)
 
         if not isinstance(numPreguntas, int) or numPreguntas < MIN_QUESTIONS or numPreguntas > MAX_QUESTIONS:
-            return Response({"error": f"numPreguntas must be an integer between {MIN_QUESTIONS} and {MAX_QUESTIONS}"}, status=status.HTTP_400_BAD_REQUEST)
+            return Response({"error": f"numPreguntas debe ser un entero entre {MIN_QUESTIONS} y {MAX_QUESTIONS}"}, status=status.HTTP_400_BAD_REQUEST)
 
         if not isinstance(numOpciones, int) or numOpciones < MIN_OPTIONS or numOpciones > MAX_OPTIONS:
-            return Response({"error": f"numOpciones must be an integer between {MIN_OPTIONS} and {MAX_OPTIONS}"}, status=status.HTTP_400_BAD_REQUEST)
+            return Response({"error": f"numOpciones debe ser un entero entre {MIN_OPTIONS} y {MAX_OPTIONS}"}, status=status.HTTP_400_BAD_REQUEST)
 
         try:
             load_dotenv()
@@ -200,7 +191,7 @@ class GeneratorView(APIView):
             openai_api_key = os.getenv("OPENROUTER_API_KEY")
 
             if not openai_api_key:
-                return Response({"error": "API key not found in environment variables"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+                return Response({"error": "API key no encontrada en las variables de entorno"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
             client = OpenAI(api_key=openai_api_key,
                             base_url="https://openrouter.ai/api/v1")
@@ -225,7 +216,7 @@ class GeneratorView(APIView):
                             }}, 
                             {{...}}
                         ]
-                        Texto: {text}"""
+                        Texto: {prompt}"""
                     }
                 ],
                 stream=False
@@ -239,18 +230,35 @@ class GeneratorView(APIView):
 
             try:
                 questions_data = json.loads(questions_json)
+
                 if not isinstance(questions_data, list):
-                    return Response({"error": "Invalid format: Expected a list of questions"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+                    return Response({"error": "Formato inválido: Se esperaba una lista de questions"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
                 for question in questions_data:
                     if "text" not in question or "answers" not in question:
-                        return Response({"error": "Invalid format: Each question must have 'text' and 'answers'"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+                        return Response({"error": "Formato inválido: Cada question debe tener 'text' y 'answers'"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
             except json.JSONDecodeError:
-                return Response({"error": "Failed to parse OpenAI response"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+                return Response({"error": "Error al parsear la respuesta de OpenAI"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
-            return Response({"questions": questions_data}, status=status.HTTP_200_OK)
+            # Creamos el quiz utilizando el QuizCreateSerializer
+            quiz_data = {
+                "title": title,
+                "description": description,
+                "public": public,
+                "time_limit": time_limit,
+                "questions": questions_data
+            }
+
+            quiz_serializer = QuizCreateSerializer(data=quiz_data)
+
+            if quiz_serializer.is_valid():
+                quiz = quiz_serializer.save(author=self.request.user)
+                quiz_detail_serializer = QuizDetailSerializer(quiz)
+                return Response(quiz_detail_serializer.data, status=status.HTTP_201_CREATED)
+            else:
+                return Response({"error": quiz_serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
 
         except APIConnectionError as e:
-            return Response({"error": f"Failed to connect to OpenAI API: {str(e)}"}, status=status.HTTP_503_SERVICE_UNAVAILABLE)
+            return Response({"error": f"Fallo al conectarse con OpenAI API: {str(e)}"}, status=status.HTTP_503_SERVICE_UNAVAILABLE)
         except APIError as e:
             return Response({"error": f"OpenAI API error: {str(e)}"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
         except Exception as e:

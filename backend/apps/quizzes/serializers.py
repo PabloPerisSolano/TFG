@@ -78,13 +78,20 @@ class QuizCreateSerializer(serializers.ModelSerializer):
         questions_data = validated_data.pop('questions', [])
         quiz = Quiz.objects.create(**validated_data)
 
+        questions = []
+        answers = []
+
         for question_data in questions_data:
             answers_data = question_data.pop('answers', [])
-            question = Question.objects.create(quiz=quiz, **question_data)
+            question = Question(quiz=quiz, **question_data)
+            questions.append(question)
 
-            if answers_data:
-                answers = [Answer(question=question, **answer_data)
-                           for answer_data in answers_data]
-                Answer.objects.bulk_create(answers)
+            for answer_data in answers_data:
+                answers.append(Answer(question=question, **answer_data))
+
+        if questions:
+            Question.objects.bulk_create(questions)
+        if answers:
+            Answer.objects.bulk_create(answers)
 
         return quiz

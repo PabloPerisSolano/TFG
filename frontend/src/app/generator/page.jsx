@@ -26,16 +26,18 @@ export default function CreateQuizPage() {
   const { isLoggedIn } = useAuth();
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
-  const [numPreguntas, setNumPreguntas] = useState(2);
+  const [public, setPublic] = useState(false);
+  const [time_limit, setTimeLimit] = useState(3600);
+  const [numPreguntas, setNumPreguntas] = useState(1);
   const [numOpciones, setNumOpciones] = useState(2);
-  const [text, setText] = useState("");
+  const [prompt, setPrompt] = useState("");
   const [loading, setLoading] = useState(false);
 
   const handleCreateQuiz = async () => {
     setLoading(true);
 
     try {
-      if (!title || !description || !text) {
+      if (!title || !prompt) {
         showErrorToast({
           title: "Campos incompletos",
           description: "Por favor, completa todos los campos.",
@@ -45,8 +47,7 @@ export default function CreateQuizPage() {
 
       const accessToken = localStorage.getItem("accessToken");
 
-      // Paso 1: Crear el cuestionario
-      const quizResponse = await fetch(`${API_BASE_URL}quizzes/`, {
+      const response = await fetch(`${API_BASE_URL}quizzes/me/generator/`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -55,12 +56,16 @@ export default function CreateQuizPage() {
         body: JSON.stringify({
           title,
           description,
-          questions: [],
+          public,
+          time_limit,
+          prompt,
+          numPreguntas,
+          numOpciones,
         }),
       });
 
-      if (!quizResponse.ok) {
-        const errorData = await quizResponse.json();
+      if (!response.ok) {
+        const errorData = await response.json();
         showErrorToast({
           title: "Error de creación",
           description: errorData.message || "Rellena adecuadamente los campos.",
@@ -68,77 +73,13 @@ export default function CreateQuizPage() {
         return;
       }
 
-      const quizData = await quizResponse.json();
-
-      // Paso 2: Generar preguntas
-      const questionsResponse = await fetch(
-        `${API_BASE_URL}quizzes/generator/`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${accessToken}`,
-          },
-          body: JSON.stringify({ numPreguntas, numOpciones, text }),
-        }
-      );
-
-      if (!questionsResponse.ok) {
-        const errorData = await questionsResponse.json();
-        showErrorToast({
-          title: "Error al generar preguntas",
-          description:
-            errorData.message ||
-            "Se ha producido un error al generar las preguntas.",
-        });
-
-        await fetch(`${API_BASE_URL}quizzes/${quizData.id}/`, {
-          method: "DELETE",
-          headers: {
-            Authorization: `Bearer ${accessToken}`,
-          },
-        });
-        return;
-      }
-
-      const { questions } = await questionsResponse.json();
-
-      // Paso 3: Agregar las preguntas al cuestionario
-      const res3 = await fetch(
-        `${API_BASE_URL}quizzes/${quizData.id}/questions/`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${accessToken}`,
-          },
-          body: JSON.stringify(questions),
-        }
-      );
-
-      if (!res3.ok) {
-        const errorData = await res3.json();
-        showErrorToast({
-          title: "Error al agregar preguntas",
-          description:
-            errorData.message ||
-            "Se ha producido un error al agregar las preguntas.",
-        });
-
-        await fetch(`${API_BASE_URL}quizzes/${quizData.id}/`, {
-          method: "DELETE",
-          headers: {
-            Authorization: `Bearer ${accessToken}`,
-          },
-        });
-        return;
-      }
-
       setTitle("");
       setDescription("");
-      setText("");
-      setNumPreguntas(2);
+      setPublic(false);
+      setTimeLimit(3600);
+      setNumPreguntas(1);
       setNumOpciones(2);
+      setPrompt("");
 
       showSuccessToast({
         title: "Cuestionario creado exitosamente",
@@ -192,7 +133,7 @@ export default function CreateQuizPage() {
                 <Label className="font-semibold">Nº Preguntas</Label>
                 <Input
                   type="number"
-                  min="2"
+                  min="1"
                   max="20"
                   value={numPreguntas}
                   onChange={(e) => {
@@ -220,8 +161,8 @@ export default function CreateQuizPage() {
             <Label className="font-semibold">Texto</Label>
             <Textarea
               placeholder="Escribe el texto del cual se generarán las preguntas..."
-              value={text}
-              onChange={(e) => setText(e.target.value)}
+              value={prompt}
+              onChange={(e) => setPrompt(e.target.value)}
               className="h-28"
             />
           </section>
