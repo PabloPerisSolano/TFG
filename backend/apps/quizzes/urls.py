@@ -1,10 +1,10 @@
 from django.urls import path, include
 from .views import (
+    PublicQuizListView, PublicQuizDetailView,
+    UserQuizListCreateView, UserQuizDetailView,
     QuestionListCreateView, QuestionDetailView,
     AnswerListCreateView, AnswerDetailView,
     GeneratorView,
-    PublicQuizListView, PublicQuizDetailView,
-    UserQuizListCreateView, UserQuizDetailView
 )
 
 urlpatterns = [

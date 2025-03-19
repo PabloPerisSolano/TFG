@@ -1,17 +1,15 @@
-from .serializers import QuizDetailSerializer
+from .serializers import QuizCreateSerializer, QuizDetailSerializer, QuizListSerializer, QuestionCreateSerializer, QuestionDetailSerializer, QuestionListSerializer, AnswerSerializer
+from .models import Quiz, Question, Answer
 from rest_framework import generics, status, permissions
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.pagination import PageNumberPagination
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from django.shortcuts import get_object_or_404
-from .models import Quiz, Question, Answer
-from .serializers import QuizCreateSerializer, QuizDetailSerializer, QuizListSerializer, QuestionCreateSerializer, QuestionDetailSerializer, QuestionListSerializer, AnswerSerializer
 from django.db.models import Prefetch
 from openai import OpenAI, APIConnectionError, APIError
+from decouple import config
 import json
-from dotenv import load_dotenv
-import os
 
 
 class IsAuthorOrReadOnly(permissions.BasePermission):
@@ -167,8 +165,8 @@ class GeneratorView(APIView):
         public = request.data.get('public', False)
         time_limit = request.data.get('time_limit', 3600)
 
-        numPreguntas = request.data.get('numPreguntas')
-        numOpciones = request.data.get('numOpciones')
+        num_preguntas = request.data.get('num_preguntas')
+        num_opciones = request.data.get('num_opciones')
         prompt = request.data.get('prompt')
 
         MIN_QUESTIONS = 1
@@ -176,19 +174,17 @@ class GeneratorView(APIView):
         MIN_OPTIONS = 2
         MAX_OPTIONS = 4
 
-        if not title or not numPreguntas or not numOpciones or not prompt:
-            return Response({"error": "title, numPreguntas, numOpciones y prompt son obligatorios"}, status=status.HTTP_400_BAD_REQUEST)
+        if not title or not num_preguntas or not num_opciones or not prompt:
+            return Response({"error": "title, num_preguntas, num_opciones y prompt son obligatorios"}, status=status.HTTP_400_BAD_REQUEST)
 
-        if not isinstance(numPreguntas, int) or numPreguntas < MIN_QUESTIONS or numPreguntas > MAX_QUESTIONS:
-            return Response({"error": f"numPreguntas debe ser un entero entre {MIN_QUESTIONS} y {MAX_QUESTIONS}"}, status=status.HTTP_400_BAD_REQUEST)
+        if not isinstance(num_preguntas, int) or num_preguntas < MIN_QUESTIONS or num_preguntas > MAX_QUESTIONS:
+            return Response({"error": f"num_preguntas debe ser un entero entre {MIN_QUESTIONS} y {MAX_QUESTIONS}"}, status=status.HTTP_400_BAD_REQUEST)
 
-        if not isinstance(numOpciones, int) or numOpciones < MIN_OPTIONS or numOpciones > MAX_OPTIONS:
-            return Response({"error": f"numOpciones debe ser un entero entre {MIN_OPTIONS} y {MAX_OPTIONS}"}, status=status.HTTP_400_BAD_REQUEST)
+        if not isinstance(num_opciones, int) or num_opciones < MIN_OPTIONS or num_opciones > MAX_OPTIONS:
+            return Response({"error": f"num_opciones debe ser un entero entre {MIN_OPTIONS} y {MAX_OPTIONS}"}, status=status.HTTP_400_BAD_REQUEST)
 
         try:
-            load_dotenv()
-
-            openai_api_key = os.getenv("OPENROUTER_API_KEY")
+            openai_api_key = config("OPENROUTER_API_KEY")
 
             if not openai_api_key:
                 return Response({"error": "API key no encontrada en las variables de entorno"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
@@ -205,7 +201,7 @@ class GeneratorView(APIView):
                     },
                     {
                         "role": "user",
-                        "content": f"""Genera {numPreguntas} preguntas con {numOpciones} respuestas en JSON a partir de este texto. La respuesta correcta is_correct no debe ser siempre la primera. Formato:
+                        "content": f"""Genera {num_preguntas} preguntas con {num_opciones} respuestas en JSON a partir de este texto. La respuesta correcta is_correct no debe ser siempre la primera. Formato:
                         [
                             {{
                                 "text": "Pregunta",
