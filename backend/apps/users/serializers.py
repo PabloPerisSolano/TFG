@@ -1,5 +1,7 @@
 from .models import CustomUser
 from rest_framework import serializers
+from django.contrib.auth import authenticate
+from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 
 
 class UserRegisterSerializer(serializers.ModelSerializer):
@@ -19,6 +21,8 @@ class UserRegisterSerializer(serializers.ModelSerializer):
 
 
 class UserDetailSerializer(serializers.ModelSerializer):
+    profile_picture_url = serializers.SerializerMethodField()
+
     class Meta:
         model = CustomUser
         fields = ['id', 'username', 'email', 'first_name',
@@ -50,3 +54,28 @@ class UserDetailSerializer(serializers.ModelSerializer):
             )
 
         return attrs
+
+
+class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
+    def validate(self, attrs):
+        username_or_email = attrs.get("username")
+        password = attrs.get("password")
+
+        if username_or_email and password:
+            # Intentar autenticar con email
+            user = authenticate(request=self.context.get(
+                "request"), email=username_or_email, password=password)
+            if not user:
+                # Si no funciona con email, intentar con username
+                user = authenticate(request=self.context.get(
+                    "request"), username=username_or_email, password=password)
+            if not user:
+                raise serializers.ValidationError("Credenciales inválidas.")
+        else:
+            raise serializers.ValidationError(
+                "Se requieren ambos campos: username/email y password.")
+
+        # Generar el token utilizando el usuario autenticado
+        data = super().validate(
+            {"username": user.username, "password": password})
+        return data

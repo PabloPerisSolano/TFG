@@ -1,17 +1,18 @@
-from .serializers import UserRegisterSerializer, UserDetailSerializer
+from .serializers import UserRegisterSerializer, UserDetailSerializer, CustomTokenObtainPairSerializer
 from .models import CustomUser
-from django.utils.crypto import get_random_string
-from django.conf import settings
-from django.core.mail import send_mail
 from rest_framework import status, generics, serializers
 from rest_framework.views import APIView
 from rest_framework.generics import CreateAPIView
 from rest_framework.response import Response
 from rest_framework.permissions import AllowAny, IsAuthenticated
-from rest_framework.parsers import MultiPartParser, FormParser
-from django.contrib.auth import update_session_auth_hash
-from django.contrib.auth.models import User
+from rest_framework.parsers import MultiPartParser, FormParser, JSONParser
+from rest_framework_simplejwt.views import TokenObtainPairView
+from rest_framework_simplejwt.tokens import RefreshToken
+from django.contrib.auth import update_session_auth_hash, get_user_model
 from django.utils import timezone
+from django.utils.crypto import get_random_string
+from django.conf import settings
+from django.core.mail import send_mail
 from datetime import timedelta
 
 
@@ -22,7 +23,7 @@ class RegisterView(CreateAPIView):
 
 class UserDetailView(generics.RetrieveUpdateDestroyAPIView):
     permission_classes = [IsAuthenticated]
-    parser_classes = [MultiPartParser, FormParser]
+    parser_classes = [MultiPartParser, FormParser, JSONParser]
     serializer_class = UserDetailSerializer
 
     def get_object(self):
@@ -62,17 +63,17 @@ class PasswordResetRequestView(APIView):
 
     def post(self, request):
         email = request.data.get('email')
+        User = get_user_model()
         user = User.objects.filter(email=email).first()
 
         if user:
             # Generar un token único
             token = get_random_string(length=32)
 
-            # Guardar el token en el perfil del usuario
-            profile, _ = CustomUser.objects.get_or_create(user=user)
-            profile.password_reset_token = token
-            profile.token_created_at = timezone.now()
-            profile.save()
+            # Guardar el token y la fecha de creación en el usuario
+            user.password_reset_token = token
+            user.token_created_at = timezone.now()
+            user.save()
 
             # Enviar el correo electrónico con el enlace de restablecimiento
             reset_link = f"{settings.FRONTEND_URL}/reset-password?token={token}"
@@ -96,25 +97,39 @@ class PasswordResetConfirmView(APIView):
         token = request.data.get('token')
         new_password = request.data.get('new_password')
 
-        # Buscar el perfil del usuario con el token
-        profile = CustomUser.objects.filter(
-            password_reset_token=token).first()
+        # Buscar al usuario con el token
+        user = CustomUser.objects.filter(password_reset_token=token).first()
 
-        if profile:
+        if user:
             # Verificar si el token ha expirado
-            if profile.token_created_at and (timezone.now() - profile.token_created_at) > timedelta(hours=24):
+            if user.token_created_at and (timezone.now() - user.token_created_at) > timedelta(hours=24):
                 return Response({'error': 'El token ha expirado'}, status=status.HTTP_400_BAD_REQUEST)
 
             # Restablecer la contraseña
-            user = profile.user
             user.set_password(new_password)
+            user.password_reset_token = None  # Invalidar el token
+            user.token_created_at = None
             user.save()
-
-            # Invalidar el token
-            profile.password_reset_token = None
-            profile.token_created_at = None
-            profile.save()
 
             return Response({'message': 'Contraseña restablecida exitosamente'}, status=status.HTTP_200_OK)
 
         return Response({'error': 'Token inválido o expirado'}, status=status.HTTP_400_BAD_REQUEST)
+
+
+class CustomTokenObtainPairView(TokenObtainPairView):
+    serializer_class = CustomTokenObtainPairSerializer
+
+
+class LogoutView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request):
+        try:
+            # Obtener el token de actualización del cuerpo de la solicitud
+            refresh_token = request.data.get("refresh")
+            token = RefreshToken(refresh_token)
+            # Agregar el token a la lista negra
+            token.blacklist()
+            return Response({"detail": "Sesión cerrada exitosamente."}, status=status.HTTP_205_RESET_CONTENT)
+        except Exception as e:
+            return Response({"detail": "Token inválido o ya está en la lista negra."}, status=status.HTTP_400_BAD_REQUEST)
