@@ -1,8 +1,9 @@
 # TFG - Generador de Quizzes
 
-**Trabajo Fin de Grado 2024-25**  
-Autor: **Pablo Peris Solano**  
-Grado en Ingeniería Informática
+### Trabajo Fin de Grado 2024-25
+
+**Grado en Ingeniería Informática**  
+**Autor:** Pablo Peris Solano
 
 ![Quiz Generate Logo](assets/LogoQuizGenerate.png)
 
@@ -85,13 +86,36 @@ source backend/.venv/bin/activate
 pip install -r backend/requirements.txt
 ```
 
-## Crear un archivo .env en backend/ con las siguientes variables:
+### 🛠️ Configuración del archivo `.env`
 
-SECRET_KEY=tu_clave_secreta
-DEBUG=True
-ALLOWED_HOSTS=localhost,127.0.0.1
-EMAIL_HOST_USER=tu_email@gmail.com
-EMAIL_HOST_PASSWORD=tu_contraseña
+Crea un archivo `.env` en la carpeta `backend/` con las siguientes variables:
+
+### Clave secreta para la seguridad de Django (debe ser única y secreta)
+
+```env
+SECRET_KEY="tu_clave_secreta"
+```
+
+### Modo de depuración (True para desarrollo, False para producción)
+
+```env
+DEBUG="True"
+```
+
+### Hosts permitidos (agrega los dominios o IPs que usarás)
+
+```env
+ALLOWED_HOSTS="localhost,127.0.0.1"
+```
+
+### Configuración del correo electrónico para el restablecimiento de contraseñas
+
+```env
+EMAIL_HOST_USER="tu_email@gmail.com"
+EMAIL_HOST_PASSWORD="tu_contraseña"
+```
+
+## Inicia el backend
 
 ```bash
 python manage.py migrate
@@ -118,31 +142,39 @@ npm run dev
 
 ### 📂 Estructura del proyecto
 
+```plaintext
 TFG/
-├── backend/ # Código del backend
-│ ├── apps/ # Aplicaciones Django personalizadas
-│ │ ├── users/ # Gestión de usuarios (autenticación, perfiles, etc.)
-│ │ └── quizzes/ # Lógica relacionada con los quizzes
-│ ├── projectTFG/ # Configuración principal de Django (settings, urls, wsgi, etc.)
-│ ├── db.sqlite3 # Base de datos SQLite (ignorado en producción)
-│ ├── manage.py
-│ ├── requirements.txt # Dependencias del backend
-│ └── .env # Variables de entorno (ignorado por Git)
-├── frontend/ # Código del frontend
-│ ├── src/ # Código fuente del frontend
-│ │ ├── app/ # Páginas y rutas principales (Next.js)
-│ │ ├── components/ # Componentes reutilizables de React
-│ │ ├── context/ # Contextos globales (autenticación, etc.)
-│ │ ├── lib/ # Utilidades y funciones auxiliares
-│ │ ├── public/ # Archivos estáticos (imágenes, íconos, etc.)
-│ │ └── styles/ # Archivos CSS y configuración de Tailwind
-│ ├── package.json # Dependencias del frontend
-│ ├── next.config.js # Configuración de Next.js
-│ └── .env.local # Variables de entorno del frontend (ignorado por Git)
-├── media/ # Archivos subidos por los usuarios (ignorado por Git)
-├── .gitignore # Archivos y carpetas ignorados por Git
-├── LICENSE # Licencia del proyecto
-└── README.md # Documentación del proyecto
+├── assets/                   # Multimedia del repositorio
+├── backend/                  # Código del backend
+│   ├── apps/                 # Aplicaciones Django personalizadas
+│   │   ├── users/            # Gestión de usuarios (autenticación, perfiles, etc.)
+│   │   └── quizzes/          # Lógica relacionada con los quizzes
+│   ├── projectTFG/           # Configuración principal de Django
+│   ├── manage.py             # Script de gestión de Django
+│   └── requirements.txt      # Dependencias del backend
+├── frontend/                 # Código del frontend
+|   ├── public/               # Multimedia del frontend
+│   ├── src/                  # Código fuente del frontend
+│   │   ├── app/              # Páginas y rutas principales (Next.js)
+│   │   ├── components/       # Componentes reutilizables de React
+│   │   ├── config/           # Configuración de constantes generales
+│   │   ├── context/          # Contextos globales (autenticación, etc.)
+│   │   ├── hooks/            # Hooks personalizados de React para lógica reutilizable
+│   │   ├── lib/              # Utilidades y funciones auxiliares
+│   │   └── utils/            # Funciones auxiliares y utilidades generales
+│   ├── README.md             # README del proyecto Next
+│   ├── components.json       # Configuración para la biblioteca shadcn/ui
+│   ├── eslint.config.mjs     # Configuración de eslint
+│   ├── jsconfig.json         # Configuración de alias para rutas en el proyecto
+│   ├── next.config.js        # Configuración de Next.js
+│   ├── package-lock.json     # Bloqueo de versiones de dependencias para consistencia
+│   ├── package.json          # Configuración del proyecto y lista de dependencias
+│   ├── postcss.config.mjs    # Configuración de PostCSS para procesar CSS
+│   └── tailwind.config.mjs   # Configuración de Tailwind CSS para personalizar
+├── .gitignore                # Archivos y carpetas ignorados por Git
+├── LICENSE                   # Licencia del proyecto
+└── README.md                 # Documentación del proyecto
+```
 
 ---
 
