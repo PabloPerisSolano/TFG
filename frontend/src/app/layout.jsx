@@ -30,7 +30,7 @@ export default function RootLayout({ children }) {
           <SidebarProvider>
             <AppSidebar />
             <main className="w-full">
-              <header className="flex items-center">
+              <header className="flex items-center bg-gray-800">
                 <SidebarTrigger className="ml-2" />
                 <Header />
               </header>

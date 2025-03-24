@@ -26,6 +26,8 @@ export function RegisterForm({ className, ...props }) {
   const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [first_name, setFirstName] = useState("");
+  const [last_name, setLastName] = useState("");
   const router = useRouter();
 
   const handleSubmit = async (e) => {
@@ -37,14 +39,20 @@ export function RegisterForm({ className, ...props }) {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ username, email, password }),
+        body: JSON.stringify({
+          username,
+          email,
+          password,
+          first_name,
+          last_name,
+        }),
       });
 
       if (!response.ok) {
         const errorData = await response.json();
         showErrorToast({
           title: "Error de registro",
-          description: errorData.error,
+          description: errorData.email || errorData.username,
         });
         return;
       }
@@ -71,9 +79,10 @@ export function RegisterForm({ className, ...props }) {
             Introduce tus datos de usuario para registrarte.
           </CardDescription>
         </CardHeader>
+
         <CardContent>
           <form onSubmit={handleSubmit}>
-            <div className="flex flex-col gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div className="grid gap-2">
                 <Label htmlFor="username">Nombre de usuario</Label>
                 <Input
@@ -85,6 +94,7 @@ export function RegisterForm({ className, ...props }) {
                   autoFocus
                 />
               </div>
+
               <div className="grid gap-2">
                 <Label htmlFor="email">Correo</Label>
                 <Input
@@ -96,6 +106,7 @@ export function RegisterForm({ className, ...props }) {
                   onChange={(e) => setEmail(e.target.value)}
                 />
               </div>
+
               <div className="grid gap-2">
                 <Label htmlFor="password">Contraseña</Label>
                 <Input
@@ -106,14 +117,37 @@ export function RegisterForm({ className, ...props }) {
                   onChange={(e) => setPassword(e.target.value)}
                 />
               </div>
-              <Button type="submit" className="w-full">
-                <FaUserPlus />
-                Crear Cuenta
-              </Button>
+
+              <div className="grid gap-2">
+                <Label htmlFor="username">Nombre de pila (opcional)</Label>
+                <Input
+                  id="first_name"
+                  type="text"
+                  value={first_name}
+                  onChange={(e) => setFirstName(e.target.value)}
+                />
+              </div>
+
+              <div className="grid gap-2">
+                <Label htmlFor="username">Apellidos (opcional)</Label>
+                <Input
+                  id="last_name"
+                  type="text"
+                  value={last_name}
+                  onChange={(e) => setLastName(e.target.value)}
+                />
+              </div>
+
+              <div className="md:col-span-2">
+                <Button type="submit" className="w-full">
+                  <FaUserPlus />
+                  Crear Cuenta
+                </Button>
+              </div>
             </div>
             <div className="mt-4 text-center text-sm">
               ¿Ya tienes una cuenta?{" "}
-              <Link href="/login" className="text-blue-500">
+              <Link href="/login" className="text-blue-500 hover:underline">
                 Iniciar sesión
               </Link>
             </div>

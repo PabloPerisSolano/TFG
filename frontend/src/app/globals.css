@@ -11,17 +11,9 @@ body {
   font-family: var(--font-roboto);
 }
 
-header{
-  background-color: #1f2937;
-}
-
-footer{
-  background-color: #1f2937;
-}
-
 .panel {
-  margin-top: 0.75rem; /* mt-3 */
-  margin-left: 0.75rem; /* ml-3 */
+  margin-top: 0.75rem;
+  margin-left: 0.75rem;
   height: 32rem;
   width: 66rem;
 }

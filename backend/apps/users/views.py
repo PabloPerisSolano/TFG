@@ -76,7 +76,7 @@ class PasswordResetRequestView(APIView):
             user.save()
 
             # Enviar el correo electrónico con el enlace de restablecimiento
-            reset_link = f"{settings.FRONTEND_URL}/reset-password?token={token}"
+            reset_link = f"{settings.FRONTEND_URL}/login/reset-password?token={token}"
             send_mail(
                 'Restablecer contraseña',
                 f'Usa este enlace para restablecer tu contraseña: {reset_link}',
@@ -96,6 +96,9 @@ class PasswordResetConfirmView(APIView):
     def post(self, request):
         token = request.data.get('token')
         new_password = request.data.get('new_password')
+
+        if not token:
+            return Response({'error': 'El token es obligatorio'}, status=status.HTTP_400_BAD_REQUEST)
 
         # Buscar al usuario con el token
         user = CustomUser.objects.filter(password_reset_token=token).first()
@@ -117,6 +120,7 @@ class PasswordResetConfirmView(APIView):
 
 
 class CustomTokenObtainPairView(TokenObtainPairView):
+    permission_classes = [AllowAny]
     serializer_class = CustomTokenObtainPairSerializer
 
 

@@ -4,7 +4,7 @@ import { FaInstagram, FaGoogle } from "react-icons/fa";
 
 export default function Footer() {
   return (
-    <div className="p-3 container mx-auto px-4 flex flex-wrap justify-between">
+    <div className="p-3 container mx-auto px-4 flex flex-wrap justify-between bg-gray-800">
       <section className="w-full md:w-1/3 mb-6 md:mb-0">
         <article className="flex items-center space-x-2 mb-2">
           <img
@@ -18,7 +18,7 @@ export default function Footer() {
         <p>TFG: Pablo Peris Solano. 2025</p>
       </section>
 
-      <div className="w-full md:w-1/3 mb-6 md:mb-0">
+      <section className="w-full md:w-1/3 mb-6 md:mb-0">
         <h2 className="text-xl font-bold mb-2">Contacto</h2>
         <ul>
           <li className="mb-2">
@@ -33,8 +33,9 @@ export default function Footer() {
             </article>
           </li>
         </ul>
-      </div>
-      <div className="w-full md:w-1/3">
+      </section>
+
+      <section className="w-full md:w-1/3">
         <h2 className="text-xl font-bold mb-2">Síguenos</h2>
         <ul className="flex space-x-4">
           <li>
@@ -50,7 +51,7 @@ export default function Footer() {
             </a>
           </li>
         </ul>
-      </div>
+      </section>
     </div>
   );
 }
