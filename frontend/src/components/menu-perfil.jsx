@@ -132,8 +132,12 @@ export function DropdownMenuPerfil() {
       const res = await fetch(`${API_BASE_URL}users/me/`, {
         method: "DELETE",
         headers: {
+          "Content-Type": "application/json",
           Authorization: `Bearer ${accessToken}`,
         },
+        body: JSON.stringify({
+          confirm_delete: true,
+        }),
       });
 
       if (!res.ok) {

@@ -1,4 +1,4 @@
-from .serializers import UserRegisterSerializer, UserDetailSerializer, CustomTokenObtainPairSerializer
+from .serializers import UserRegisterSerializer, UserDetailSerializer, CustomTokenObtainPairSerializer, GoogleLoginSerializer
 from .models import CustomUser
 from rest_framework import status, generics, serializers
 from rest_framework.views import APIView
@@ -137,3 +137,17 @@ class LogoutView(APIView):
             return Response({"detail": "Sesión cerrada exitosamente."}, status=status.HTTP_205_RESET_CONTENT)
         except Exception as e:
             return Response({"detail": "Token inválido o ya está en la lista negra."}, status=status.HTTP_400_BAD_REQUEST)
+
+
+class GoogleLoginView(APIView):
+    permission_classes = [AllowAny]
+
+    def post(self, request):
+        serializer = GoogleLoginSerializer(
+            data=request.data,
+            # Para generar URLs absolutas en UserDetailSerializer
+            context={'request': request}
+        )
+        if serializer.is_valid():
+            return Response(serializer.validated_data, status=status.HTTP_200_OK)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)

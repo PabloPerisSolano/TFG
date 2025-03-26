@@ -2,6 +2,9 @@ from .models import CustomUser
 from rest_framework import serializers
 from django.contrib.auth import authenticate
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
+from google.oauth2 import id_token
+from google.auth.transport import requests
+from rest_framework_simplejwt.tokens import RefreshToken
 
 
 class UserRegisterSerializer(serializers.ModelSerializer):
@@ -79,3 +82,44 @@ class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
         data = super().validate(
             {"username": user.username, "password": password})
         return data
+
+
+class GoogleLoginSerializer(serializers.Serializer):
+    token = serializers.CharField(required=True)
+
+    def validate(self, attrs):
+        token = attrs.get('token')
+        try:
+            # Verificar el token de Google
+            idinfo = id_token.verify_oauth2_token(
+                token,
+                requests.Request(),
+                "853763452683-54jmk80pnmrfqgqhhh1p2218th7q83ge.apps.googleusercontent.com"
+            )
+
+            # # Validar el dominio del correo (opcional)
+            # if 'hd' in idinfo and idinfo['hd'] != 'tu-dominio.com':
+            #     raise serializers.ValidationError(
+            #         "Dominio de correo no permitido.")
+
+            # Obtener o crear el usuario
+            email = idinfo.get('email')
+            user, created = CustomUser.objects.get_or_create(
+                email=email,
+                defaults={
+                    'username': email.split('@')[0],
+                    'first_name': idinfo.get('given_name', ''),
+                    'last_name': idinfo.get('family_name', ''),
+                }
+            )
+
+            # Generar tokens JWT (reutilizando la lógica de TokenObtainPairView)
+            refresh = RefreshToken.for_user(user)
+            return {
+                'access': str(refresh.access_token),
+                'refresh': str(refresh),
+                'user': UserDetailSerializer(user, context=self.context).data
+            }
+
+        except ValueError as e:
+            raise serializers.ValidationError(f"Token de Google inválido: {e}")
