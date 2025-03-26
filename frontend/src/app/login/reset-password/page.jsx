@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { useSearchParams } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -18,6 +18,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { Loader2 } from "lucide-react";
 
 export default function ResetPasswordPage() {
   const [new_password, setNewPassword] = useState("");
@@ -25,6 +26,7 @@ export default function ResetPasswordPage() {
   const [isLoading, setIsLoading] = useState(false);
   const searchParams = useSearchParams();
   const token = searchParams.get("token");
+  const router = useRouter();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -73,7 +75,6 @@ export default function ResetPasswordPage() {
         router.push("/login");
       }, TRANSITION_DURATION);
     } catch (error) {
-      console.log(error);
       showServerErrorToast();
     } finally {
       setIsLoading(false);
@@ -114,7 +115,14 @@ export default function ResetPasswordPage() {
             </section>
 
             <Button type="submit" className="w-full" disabled={isLoading}>
-              {isLoading ? "Procesando..." : "Restablecer contraseña"}
+              {isLoading ? (
+                <div>
+                  <Loader2 className="animate-spin" />
+                  "Procesando..."
+                </div>
+              ) : (
+                "Restablecer contraseña"
+              )}
             </Button>
           </form>
         </CardContent>
