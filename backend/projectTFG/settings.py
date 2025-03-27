@@ -172,3 +172,5 @@ AUTHENTICATION_BACKENDS = [
     'django.contrib.auth.backends.ModelBackend',
     'apps.users.backends.EmailAuthBackend',
 ]
+
+GOOGLE_CLIENT_ID = config('GOOGLE_CLIENT_ID')

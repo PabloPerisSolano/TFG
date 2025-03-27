@@ -5,6 +5,8 @@ from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from google.oauth2 import id_token
 from google.auth.transport import requests
 from rest_framework_simplejwt.tokens import RefreshToken
+from django.utils.text import slugify
+from django.conf import settings
 
 
 class UserRegisterSerializer(serializers.ModelSerializer):
@@ -87,39 +89,54 @@ class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
 class GoogleLoginSerializer(serializers.Serializer):
     token = serializers.CharField(required=True)
 
+    def _verify_google_token(self, token):
+        return id_token.verify_oauth2_token(
+            token,
+            requests.Request(),
+            settings.GOOGLE_CLIENT_ID,
+        )
+
+    def _generate_unique_username(self, email):
+        base_username = slugify(email.split('@')[0])
+        username = base_username
+        counter = 1
+
+        while CustomUser.objects.filter(username=username).exists():
+            username = f"{base_username}{counter}"
+            counter += 1
+
+        return username
+
+    def _sync_user_from_google(self, idinfo):
+        email = idinfo.get('email')
+
+        # Caso 1: Usuario existente con este email
+        existing_user = CustomUser.objects.filter(email=email).first()
+        if existing_user:
+            return existing_user
+
+        # Caso 2: Si no existe se crea el nuevo usuario
+        username = self._generate_unique_username(email)
+        return CustomUser.objects.create(
+            email=email,
+            username=username,
+            first_name=idinfo.get('given_name', ''),
+            last_name=idinfo.get('family_name', ''),
+        )
+
     def validate(self, attrs):
-        token = attrs.get('token')
         try:
-            # Verificar el token de Google
-            idinfo = id_token.verify_oauth2_token(
-                token,
-                requests.Request(),
-                "853763452683-54jmk80pnmrfqgqhhh1p2218th7q83ge.apps.googleusercontent.com"
-            )
-
-            # # Validar el dominio del correo (opcional)
-            # if 'hd' in idinfo and idinfo['hd'] != 'tu-dominio.com':
-            #     raise serializers.ValidationError(
-            #         "Dominio de correo no permitido.")
-
-            # Obtener o crear el usuario
-            email = idinfo.get('email')
-            user, created = CustomUser.objects.get_or_create(
-                email=email,
-                defaults={
-                    'username': email.split('@')[0],
-                    'first_name': idinfo.get('given_name', ''),
-                    'last_name': idinfo.get('family_name', ''),
-                }
-            )
-
-            # Generar tokens JWT (reutilizando la lógica de TokenObtainPairView)
-            refresh = RefreshToken.for_user(user)
-            return {
-                'access': str(refresh.access_token),
-                'refresh': str(refresh),
-                'user': UserDetailSerializer(user, context=self.context).data
-            }
-
+            idinfo = self._verify_google_token(attrs['token'])
+            user = self._sync_user_from_google(idinfo)
+            attrs['user'] = user
+            return attrs
         except ValueError as e:
-            raise serializers.ValidationError(f"Token de Google inválido: {e}")
+            raise serializers.ValidationError(f"Token inválido: {e}")
+
+    def create(self, validated_data):
+        user = validated_data['user']
+        refresh = RefreshToken.for_user(user)
+        return {
+            'access': str(refresh.access_token),
+            'refresh': str(refresh),
+        }

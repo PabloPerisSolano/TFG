@@ -85,9 +85,9 @@ class PasswordResetRequestView(APIView):
                 fail_silently=False,
             )
 
-            return Response({'message': 'Se ha enviado un enlace para restablecer la contraseña'}, status=status.HTTP_200_OK)
+            return Response({'message': f'Se ha enviado un enlace a {email} para restablecer la contraseña'}, status=status.HTTP_200_OK)
 
-        return Response({'error': 'No se encontró ningún usuario con este correo electrónico'}, status=status.HTTP_400_BAD_REQUEST)
+        return Response({'error': f'El correo {email} no está registrado'}, status=status.HTTP_400_BAD_REQUEST)
 
 
 class PasswordResetConfirmView(APIView):
@@ -139,15 +139,13 @@ class LogoutView(APIView):
             return Response({"detail": "Token inválido o ya está en la lista negra."}, status=status.HTTP_400_BAD_REQUEST)
 
 
-class GoogleLoginView(APIView):
+class GoogleLoginView(CreateAPIView):
     permission_classes = [AllowAny]
+    serializer_class = GoogleLoginSerializer
 
-    def post(self, request):
-        serializer = GoogleLoginSerializer(
-            data=request.data,
-            # Para generar URLs absolutas en UserDetailSerializer
-            context={'request': request}
-        )
-        if serializer.is_valid():
-            return Response(serializer.validated_data, status=status.HTTP_200_OK)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    def create(self, request):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        tokens = serializer.save()
+
+        return Response(tokens, status=status.HTTP_200_OK)
