@@ -1,4 +1,5 @@
 "use client";
+
 import { useState } from "react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -19,13 +20,14 @@ import {
   showErrorToast,
   showServerErrorToast,
 } from "@/utils/toastUtils";
-import { FaSignInAlt } from "react-icons/fa";
+import { FaSignInAlt, FaEye, FaEyeSlash } from "react-icons/fa";
 import AddItemDialog from "@/components/add-item-dialog";
 import { GoogleOAuthProvider, GoogleLogin } from "@react-oauth/google";
 
 export function LoginForm({ className, ...props }) {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
   const { handleLogin } = useAuth();
 
   const handleSubmit = async (e) => {
@@ -133,7 +135,7 @@ export function LoginForm({ className, ...props }) {
         <CardContent>
           <form onSubmit={handleSubmit}>
             <div className="flex flex-col gap-6">
-              <div className="grid gap-2">
+              <section className="grid gap-2">
                 <Label htmlFor="username">Email o Nombre de usuario</Label>
                 <Input
                   id="username"
@@ -143,13 +145,13 @@ export function LoginForm({ className, ...props }) {
                   onChange={(e) => setUsername(e.target.value)}
                   autoFocus
                 />
-              </div>
+              </section>
 
-              <div className="grid gap-2">
+              <section className="grid gap-2">
                 <article className="flex justify-between space-x-10">
                   <Label htmlFor="password">Contraseña</Label>
                   <AddItemDialog
-                    dialogTitle="Restablecer contraseña"
+                    dialogTitle="Email de recuperación"
                     inputPlaceholder="Escribe tu dirección de correo"
                     onSave={(email) => handlePasswordResetRequest(email)}
                   >
@@ -159,25 +161,37 @@ export function LoginForm({ className, ...props }) {
                   </AddItemDialog>
                 </article>
 
-                <Input
-                  id="password"
-                  type="password"
-                  required
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                />
-              </div>
+                <article className="relative flex items-center">
+                  <Input
+                    id="password"
+                    type={showPassword ? "text" : "password"}
+                    required
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                  />
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="icon"
+                    className="absolute right-0"
+                    onClick={() => setShowPassword(!showPassword)}
+                  >
+                    {showPassword ? <FaEyeSlash /> : <FaEye />}
+                  </Button>
+                </article>
+              </section>
 
               <Button type="submit" className="w-full">
                 <FaSignInAlt />
                 Iniciar Sesión
               </Button>
 
-              <div className="relative text-center text-sm after:absolute after:inset-0 after:top-1/2 after:z-0 after:flex after:items-center after:border-t after:border-border">
+              <section className="relative text-center text-sm after:absolute after:inset-0 after:top-1/2 after:z-0 after:flex after:items-center after:border-t after:border-border">
                 <span className="relative z-10 bg-background px-2 text-muted-foreground">
                   Acceder con
                 </span>
-              </div>
+              </section>
+
               <GoogleOAuthProvider clientId={GOOGLE_CLIENT_ID}>
                 <GoogleLogin
                   onSuccess={handleGoogleLoginSuccess}

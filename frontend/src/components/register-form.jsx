@@ -20,12 +20,13 @@ import {
   showSuccessToast,
   showErrorToast,
 } from "@/utils/toastUtils";
-import { FaUserPlus } from "react-icons/fa";
+import { FaUserPlus, FaEye, FaEyeSlash } from "react-icons/fa";
 
 export function RegisterForm({ className, ...props }) {
   const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
   const [first_name, setFirstName] = useState("");
   const [last_name, setLastName] = useState("");
   const router = useRouter();
@@ -109,13 +110,24 @@ export function RegisterForm({ className, ...props }) {
 
               <div className="grid gap-2">
                 <Label htmlFor="password">Contraseña</Label>
-                <Input
-                  id="password"
-                  type="password"
-                  required
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                />
+                <article className="relative flex items-center">
+                  <Input
+                    id="password"
+                    type={showPassword ? "text" : "password"}
+                    required
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                  />
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="icon"
+                    className="absolute right-0"
+                    onClick={() => setShowPassword(!showPassword)}
+                  >
+                    {showPassword ? <FaEyeSlash /> : <FaEye />}
+                  </Button>
+                </article>
               </div>
 
               <div className="grid gap-2">

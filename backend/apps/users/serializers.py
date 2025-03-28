@@ -26,18 +26,16 @@ class UserRegisterSerializer(serializers.ModelSerializer):
 
 
 class UserDetailSerializer(serializers.ModelSerializer):
-    profile_picture_url = serializers.SerializerMethodField()
-
     class Meta:
         model = CustomUser
         fields = ['id', 'username', 'email', 'first_name',
-                  'last_name', 'profile_picture', 'profile_picture_url']
+                  'last_name', 'profile_picture']
         read_only_fields = ['id']
 
-    def get_profile_picture_url(self, obj):
-        request = self.context.get('request')
-        if obj.profile_picture and request:
-            return request.build_absolute_uri(obj.profile_picture.url)
+    def get_profile_picture(self, obj):
+        if obj.profile_picture:
+            request = self.context.get('request')
+            return request.build_absolute_uri(obj.profile_picture.url) if request else None
         return None
 
     def validate(self, attrs):

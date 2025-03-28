@@ -31,6 +31,7 @@ export function AuthProvider({ children }) {
         const userData = await response.json();
         setIsLoggedIn(true);
         setUser(userData);
+        console.log("User data:", userData);
       } else {
         handleLogout();
       }
