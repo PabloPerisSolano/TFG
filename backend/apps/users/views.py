@@ -16,11 +16,6 @@ from django.core.mail import send_mail
 from datetime import timedelta
 
 
-class RegisterView(CreateAPIView):
-    permission_classes = [AllowAny]
-    serializer_class = UserRegisterSerializer
-
-
 class UserDetailView(generics.RetrieveUpdateDestroyAPIView):
     permission_classes = [IsAuthenticated]
     parser_classes = [MultiPartParser, FormParser, JSONParser]
@@ -34,6 +29,43 @@ class UserDetailView(generics.RetrieveUpdateDestroyAPIView):
             raise serializers.ValidationError(
                 {"detail": "Debe confirmar la eliminación de la cuenta."})
         instance.delete()
+
+
+class RegisterView(CreateAPIView):
+    permission_classes = [AllowAny]
+    serializer_class = UserRegisterSerializer
+
+
+class CustomTokenObtainPairView(TokenObtainPairView):
+    permission_classes = [AllowAny]
+    serializer_class = CustomTokenObtainPairSerializer
+
+
+class GoogleLoginView(CreateAPIView):
+    permission_classes = [AllowAny]
+    serializer_class = GoogleLoginSerializer
+
+    def create(self, request):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        tokens = serializer.save()
+
+        return Response(tokens, status=status.HTTP_200_OK)
+
+
+class LogoutView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request):
+        try:
+            # Obtener el token de actualización del cuerpo de la solicitud
+            refresh_token = request.data.get("refresh")
+            token = RefreshToken(refresh_token)
+            # Agregar el token a la lista negra
+            token.blacklist()
+            return Response({"detail": "Sesión cerrada exitosamente."}, status=status.HTTP_205_RESET_CONTENT)
+        except Exception as e:
+            return Response({"detail": "Token inválido o ya está en la lista negra."}, status=status.HTTP_400_BAD_REQUEST)
 
 
 class ChangePasswordView(APIView):
@@ -117,35 +149,3 @@ class PasswordResetConfirmView(APIView):
             return Response({'message': 'Contraseña restablecida exitosamente'}, status=status.HTTP_200_OK)
 
         return Response({'error': 'Token inválido o expirado'}, status=status.HTTP_400_BAD_REQUEST)
-
-
-class CustomTokenObtainPairView(TokenObtainPairView):
-    permission_classes = [AllowAny]
-    serializer_class = CustomTokenObtainPairSerializer
-
-
-class LogoutView(APIView):
-    permission_classes = [IsAuthenticated]
-
-    def post(self, request):
-        try:
-            # Obtener el token de actualización del cuerpo de la solicitud
-            refresh_token = request.data.get("refresh")
-            token = RefreshToken(refresh_token)
-            # Agregar el token a la lista negra
-            token.blacklist()
-            return Response({"detail": "Sesión cerrada exitosamente."}, status=status.HTTP_205_RESET_CONTENT)
-        except Exception as e:
-            return Response({"detail": "Token inválido o ya está en la lista negra."}, status=status.HTTP_400_BAD_REQUEST)
-
-
-class GoogleLoginView(CreateAPIView):
-    permission_classes = [AllowAny]
-    serializer_class = GoogleLoginSerializer
-
-    def create(self, request):
-        serializer = self.get_serializer(data=request.data)
-        serializer.is_valid(raise_exception=True)
-        tokens = serializer.save()
-
-        return Response(tokens, status=status.HTTP_200_OK)

@@ -9,22 +9,6 @@ from django.utils.text import slugify
 from django.conf import settings
 
 
-class UserRegisterSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = CustomUser
-        fields = ['id', 'username', 'password',
-                  'email', 'first_name', 'last_name']
-        read_only_fields = ['id']
-        extra_kwargs = {
-            'password': {'write_only': True},
-            'first_name': {'required': False},
-            'last_name': {'required': False},
-        }
-
-    def create(self, validated_data):
-        return CustomUser.objects.create_user(**validated_data)
-
-
 class UserDetailSerializer(serializers.ModelSerializer):
     class Meta:
         model = CustomUser
@@ -59,6 +43,22 @@ class UserDetailSerializer(serializers.ModelSerializer):
         return attrs
 
 
+class UserRegisterSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = CustomUser
+        fields = ['id', 'username', 'password',
+                  'email', 'first_name', 'last_name']
+        read_only_fields = ['id']
+        extra_kwargs = {
+            'password': {'write_only': True},
+            'first_name': {'required': False},
+            'last_name': {'required': False},
+        }
+
+    def create(self, validated_data):
+        return CustomUser.objects.create_user(**validated_data)
+
+
 class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
     def validate(self, attrs):
         username_or_email = attrs.get("username")
@@ -81,6 +81,7 @@ class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
         # Generar el token utilizando el usuario autenticado
         data = super().validate(
             {"username": user.username, "password": password})
+        data['user'] = UserDetailSerializer(user, context=self.context).data
         return data
 
 
@@ -137,4 +138,5 @@ class GoogleLoginSerializer(serializers.Serializer):
         return {
             'access': str(refresh.access_token),
             'refresh': str(refresh),
+            'user': UserDetailSerializer(user, context=self.context).data
         }

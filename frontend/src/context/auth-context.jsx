@@ -18,6 +18,34 @@ export function AuthProvider({ children }) {
     }
   }, []);
 
+  const updateUser = (updatedUser) => {
+    setUser(updatedUser);
+  };
+
+  const setTokens = (accessToken, refreshToken) => {
+    localStorage.setItem("accessToken", accessToken);
+    localStorage.setItem("refreshToken", refreshToken);
+  };
+
+  const removeTokens = () => {
+    localStorage.removeItem("accessToken");
+    localStorage.removeItem("refreshToken");
+  };
+
+  const handleLogin = (accessToken, refreshToken, user) => {
+    setTokens(accessToken, refreshToken);
+    setUser(user);
+    setIsLoggedIn(true);
+    router.push("/quizzes");
+  };
+
+  const closeSession = () => {
+    removeTokens();
+    setIsLoggedIn(false);
+    setUser(null);
+    router.push("/login");
+  };
+
   const fetchUserData = async (token) => {
     try {
       const response = await fetch(`${API_BASE_URL}users/me/`, {
@@ -31,34 +59,69 @@ export function AuthProvider({ children }) {
         const userData = await response.json();
         setIsLoggedIn(true);
         setUser(userData);
-        console.log("User data:", userData);
       } else {
-        handleLogout();
+        closeSession();
       }
     } catch (error) {
-      console.error("Error fetching user data:", error);
-      handleLogout();
+      closeSession();
     }
   };
 
-  const handleLogin = (accessToken, refreshToken) => {
-    localStorage.setItem("accessToken", accessToken);
-    localStorage.setItem("refreshToken", refreshToken);
-    fetchUserData(accessToken);
-    router.push("/quizzes");
+  const handleLogout = async () => {
+    const refreshToken = localStorage.getItem("refreshToken");
+    const accessToken = localStorage.getItem("accessToken");
+    if (!refreshToken || !accessToken) return;
+
+    try {
+      const response = await fetch(`${API_BASE_URL}auth/logout/`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${accessToken}`,
+        },
+        body: JSON.stringify({ refresh: refreshToken }),
+      });
+
+      closeSession();
+    } catch (error) {
+      closeSession();
+    }
   };
 
-  const handleLogout = () => {
-    router.push("/");
-    localStorage.removeItem("accessToken");
-    localStorage.removeItem("refreshToken");
-    setIsLoggedIn(false);
-    setUser(null);
+  const refreshAccessToken = async () => {
+    const refreshToken = localStorage.getItem("refreshToken");
+    if (!refreshToken) return;
+
+    try {
+      const response = await fetch(`${API_BASE_URL}auth/refresh/`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ refresh: refreshToken }),
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        setTokens(data.access, data.refresh);
+      } else {
+        closeSession();
+      }
+    } catch (error) {
+      closeSession();
+    }
   };
 
   return (
     <AuthContext.Provider
-      value={{ isLoggedIn, user, handleLogin, handleLogout }}
+      value={{
+        isLoggedIn,
+        user,
+        handleLogin,
+        handleLogout,
+        updateUser,
+        refreshAccessToken,
+      }}
     >
       {children}
     </AuthContext.Provider>

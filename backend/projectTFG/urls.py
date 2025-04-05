@@ -21,8 +21,11 @@ from django.conf.urls.static import static
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('api/users/', include('apps.users.urls')),
-    path('api/quizzes/', include('apps.quizzes.urls')),
+    path('api/v1/', include([
+        path('auth/', include('apps.users.urls_auth')),
+        path('users/', include('apps.users.urls_users')),
+        path('quizzes/', include('apps.quizzes.urls')),
+    ])),
 ]
 
 if settings.DEBUG:

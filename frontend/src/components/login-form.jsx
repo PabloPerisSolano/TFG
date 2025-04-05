@@ -34,7 +34,7 @@ export function LoginForm({ className, ...props }) {
     e.preventDefault();
 
     try {
-      const response = await fetch(`${API_BASE_URL}users/login/`, {
+      const response = await fetch(`${API_BASE_URL}auth/login/`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -52,7 +52,7 @@ export function LoginForm({ className, ...props }) {
 
       const data = await response.json();
 
-      handleLogin(data.access, data.refresh);
+      handleLogin(data.access, data.refresh, data.user);
     } catch (error) {
       showServerErrorToast();
     }
@@ -63,7 +63,7 @@ export function LoginForm({ className, ...props }) {
 
     try {
       const response = await fetch(
-        `${API_BASE_URL}users/password-reset-request/`,
+        `${API_BASE_URL}auth/password-reset-request/`,
         {
           method: "POST",
           headers: {
@@ -94,7 +94,7 @@ export function LoginForm({ className, ...props }) {
 
   const handleGoogleLoginSuccess = async (credentialResponse) => {
     try {
-      const response = await fetch(`${API_BASE_URL}users/google-login/`, {
+      const response = await fetch(`${API_BASE_URL}auth/google/`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -112,7 +112,7 @@ export function LoginForm({ className, ...props }) {
         return;
       }
 
-      handleLogin(jsonRes.access, jsonRes.refresh);
+      handleLogin(jsonRes.access, jsonRes.refresh, jsonRes.user);
     } catch (error) {
       showServerErrorToast();
     }

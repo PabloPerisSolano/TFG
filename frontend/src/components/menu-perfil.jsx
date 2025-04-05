@@ -17,6 +17,8 @@ import {
   FaSave,
   FaTrashAlt,
   FaPencilAlt,
+  FaEye,
+  FaEyeSlash,
 } from "react-icons/fa";
 import {
   Dialog,
@@ -37,7 +39,7 @@ import { API_BASE_URL } from "@/config/config";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 export function DropdownMenuPerfil() {
-  const { user, handleLogout } = useAuth();
+  const { user, handleLogout, updateUser, refreshAccessToken } = useAuth();
   const [isProfileDialogOpen, setIsProfileDialogOpen] = useState(false);
   const [isPasswordDialogOpen, setIsPasswordDialogOpen] = useState(false);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
@@ -51,8 +53,11 @@ export function DropdownMenuPerfil() {
     user.profile_picture || ""
   );
 
-  const [currentPassword, setCurrentPassword] = useState("");
-  const [newPassword, setNewPassword] = useState("");
+  const [current_password, setCurrentPassword] = useState("");
+  const [showCurrentPassword, setShowCurrentPassword] = useState(false);
+  const [new_password, setNewPassword] = useState("");
+  const [showNewPassword, setShowNewPassword] = useState(false);
+
   const [confirmText, setConfirmText] = useState("");
 
   const handleSaveChanges = async () => {
@@ -73,13 +78,43 @@ export function DropdownMenuPerfil() {
         }),
       });
 
+      const jsonRes = await res.json();
+
       if (!res.ok) {
+        if (res.status === 401) {
+          showErrorToast({
+            title: "Sesión expirada, inicia sesión de nuevo",
+            description:
+              "Tu sesión ha expirado, por favor inicia sesión de nuevo.",
+          });
+          return;
+        }
+
+        if (jsonRes.username) {
+          setUsername(user.username);
+          showErrorToast({
+            title: "Error al actualizar nombre de usuario",
+            description: jsonRes.username,
+          });
+        }
+
+        if (jsonRes.email) {
+          setEmail(user.email);
+          showErrorToast({
+            title: "Error al actualizar el email",
+            description: jsonRes.email,
+          });
+          return;
+        }
+
         showErrorToast({
           title: "Error al actualizar el perfil",
           description: "No se pudo actualizar el perfil.",
         });
         return;
       }
+
+      updateUser(jsonRes);
 
       showSuccessToast({
         title: "Perfil actualizado",
@@ -96,29 +131,36 @@ export function DropdownMenuPerfil() {
     const accessToken = localStorage.getItem("accessToken");
 
     try {
-      const res = await fetch(`${API_BASE_URL}users/change-password/`, {
+      const res = await fetch(`${API_BASE_URL}users/me/change-password/`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${accessToken}`,
         },
         body: JSON.stringify({
-          current_password: currentPassword,
-          new_password: newPassword,
+          current_password,
+          new_password,
         }),
       });
 
+      const jsonRes = await res.json();
+
       if (!res.ok) {
+        if (res.status === 401) {
+          console.log("Sesión expirada");
+          refreshAccessToken();
+        }
+
         showErrorToast({
           title: "Error al cambiar la contraseña",
-          description: "No se pudo cambiar la contraseña.",
+          description: jsonRes.error,
         });
         return;
       }
 
       showSuccessToast({
         title: "Contraseña cambiada",
-        description: "Se ha cambiado la contraseña correctamente.",
+        description: jsonRes.message,
       });
 
       setIsPasswordDialogOpen(false);
@@ -318,8 +360,16 @@ export function DropdownMenuPerfil() {
               <Label htmlFor="username">Nombre de usuario</Label>
               <Input
                 id="username"
-                value={user.username}
+                value={username}
                 onChange={(e) => setUsername(e.target.value)}
+              />
+            </div>
+            <div>
+              <Label htmlFor="email">Email</Label>
+              <Input
+                id="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
               />
             </div>
             <div>
@@ -338,14 +388,6 @@ export function DropdownMenuPerfil() {
                 value={last_name}
                 onChange={(e) => setLastName(e.target.value)}
                 placeholder="Escribe tus apellidos..."
-              />
-            </div>
-            <div>
-              <Label htmlFor="email">Email</Label>
-              <Input
-                id="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
               />
             </div>
           </div>
@@ -367,26 +409,50 @@ export function DropdownMenuPerfil() {
             <DialogTitle className="font-bold">Cambiar Contraseña</DialogTitle>
           </DialogHeader>
           <div className="space-y-4">
-            <div>
+            <section>
               <Label htmlFor="current_password">Contraseña Actual</Label>
-              <Input
-                id="current_password"
-                type="password"
-                value={currentPassword}
-                onChange={(e) => setCurrentPassword(e.target.value)}
-                placeholder="Escribe tu contraseña actual..."
-              />
-            </div>
-            <div>
+              <article className="relative flex items-center">
+                <Input
+                  id="current_password"
+                  type={showCurrentPassword ? "text" : "password"}
+                  required
+                  value={current_password}
+                  onChange={(e) => setCurrentPassword(e.target.value)}
+                  placeholder="Escribe tu contraseña actual..."
+                />
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="icon"
+                  className="absolute right-0"
+                  onClick={() => setShowCurrentPassword(!showCurrentPassword)}
+                >
+                  {showCurrentPassword ? <FaEyeSlash /> : <FaEye />}
+                </Button>
+              </article>
+            </section>
+            <section>
               <Label htmlFor="new_password">Nueva Contraseña</Label>
-              <Input
-                id="new_password"
-                type="password"
-                value={newPassword}
-                onChange={(e) => setNewPassword(e.target.value)}
-                placeholder="Escribe tu nueva contraseña..."
-              />
-            </div>
+              <article className="relative flex items-center">
+                <Input
+                  id="new_password"
+                  type={showNewPassword ? "text" : "password"}
+                  required
+                  value={new_password}
+                  onChange={(e) => setNewPassword(e.target.value)}
+                  placeholder="Escribe tu nueva actual..."
+                />
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="icon"
+                  className="absolute right-0"
+                  onClick={() => setShowNewPassword(!showNewPassword)}
+                >
+                  {showNewPassword ? <FaEyeSlash /> : <FaEye />}
+                </Button>
+              </article>
+            </section>
           </div>
           <DialogFooter>
             <Button onClick={handleChangePassword}>
