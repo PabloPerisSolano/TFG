@@ -42,7 +42,7 @@ export function AppSidebar() {
   const items = isLoggedIn ? userItems : guestItems;
 
   const handleItemClick = () => {
-    setOpenMobile(false); // Cierra la barra lateral
+    setOpenMobile(false);
   };
 
   return (

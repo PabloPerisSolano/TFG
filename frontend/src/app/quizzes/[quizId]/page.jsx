@@ -47,7 +47,7 @@ export default function QuizDetailsPage() {
       const accessToken = localStorage.getItem("accessToken");
 
       try {
-        const res = await fetch(`${API_BASE_URL}quizzes/${quizId}/`, {
+        const res = await fetch(`${API_BASE_URL}quizzes/me/${quizId}/`, {
           headers: { Authorization: `Bearer ${accessToken}` },
         });
 
@@ -75,7 +75,7 @@ export default function QuizDetailsPage() {
     const accessToken = localStorage.getItem("accessToken");
 
     try {
-      const res = await fetch(`${API_BASE_URL}quizzes/${quizId}/`, {
+      const res = await fetch(`${API_BASE_URL}quizzes/me/${quizId}/`, {
         method: "PATCH",
         headers: {
           Authorization: `Bearer ${accessToken}`,
@@ -109,14 +109,17 @@ export default function QuizDetailsPage() {
     const accessToken = localStorage.getItem("accessToken");
 
     try {
-      const res = await fetch(`${API_BASE_URL}quizzes/${quizId}/questions/`, {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${accessToken}`,
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ text: newQuestionText, answers: [] }),
-      });
+      const res = await fetch(
+        `${API_BASE_URL}quizzes/me/${quizId}/questions/`,
+        {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ text: newQuestionText, answers: [] }),
+        }
+      );
 
       if (!res.ok) {
         const errorData = await res.json();
@@ -148,7 +151,7 @@ export default function QuizDetailsPage() {
 
     try {
       const res = await fetch(
-        `${API_BASE_URL}quizzes/${quizId}/questions/${questionId}/`,
+        `${API_BASE_URL}quizzes/me/${quizId}/questions/${questionId}/`,
         {
           method: "PATCH",
           headers: {
@@ -188,7 +191,7 @@ export default function QuizDetailsPage() {
 
     try {
       const res = await fetch(
-        `${API_BASE_URL}quizzes/${quizId}/questions/${questionId}/`,
+        `${API_BASE_URL}quizzes/me/${quizId}/questions/${questionId}/`,
         {
           method: "DELETE",
           headers: {
@@ -225,7 +228,7 @@ export default function QuizDetailsPage() {
 
     try {
       const res = await fetch(
-        `${API_BASE_URL}quizzes/${quizId}/questions/${questionId}/answers/`,
+        `${API_BASE_URL}quizzes/me/${quizId}/questions/${questionId}/answers/`,
         {
           method: "POST",
           headers: {
@@ -275,7 +278,7 @@ export default function QuizDetailsPage() {
 
     try {
       const res = await fetch(
-        `${API_BASE_URL}quizzes/${quizId}/questions/${questionId}/answers/${answerId}/`,
+        `${API_BASE_URL}quizzes/me/${quizId}/questions/${questionId}/answers/${answerId}/`,
         {
           method: "PATCH",
           headers: {
@@ -325,7 +328,7 @@ export default function QuizDetailsPage() {
 
     try {
       const res = await fetch(
-        `${API_BASE_URL}quizzes/${quizId}/questions/${questionId}/answers/${answerId}/`,
+        `${API_BASE_URL}quizzes/me/${quizId}/questions/${questionId}/answers/${answerId}/`,
         {
           method: "DELETE",
           headers: {

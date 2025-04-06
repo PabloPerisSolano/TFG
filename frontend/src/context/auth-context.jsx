@@ -83,8 +83,8 @@ export function AuthProvider({ children }) {
     const currentTime = Date.now();
     const timeLeft = expirationTime - currentTime;
 
-    // Avisar 1 minuto antes de que expire
-    const adviseDuration = 60 * 1000;
+    // Avisar 5 minuto antes de que expire
+    const adviseDuration = 5 * 60 * 1000;
     const warningTime = timeLeft - adviseDuration;
 
     if (warningTime > 0) {
@@ -93,8 +93,8 @@ export function AuthProvider({ children }) {
           title: "Tu sesión expira pronto",
           description:
             "Expira en " +
-            adviseDuration / 1000 +
-            " segundos. ¿Deseas mantenerla?",
+            adviseDuration / (1000 * 60) +
+            " minutos. ¿Deseas mantenerla?",
           duration: adviseDuration,
           action: (
             <ToastAction altText="Mantener Sesión" onClick={refreshAccessToken}>

@@ -146,11 +146,6 @@ export function DropdownMenuPerfil() {
       const jsonRes = await res.json();
 
       if (!res.ok) {
-        if (res.status === 401) {
-          console.log("Sesión expirada");
-          refreshAccessToken();
-        }
-
         showErrorToast({
           title: "Error al cambiar la contraseña",
           description: jsonRes.error,

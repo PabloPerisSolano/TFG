@@ -1,6 +1,7 @@
 import { toast } from "@/hooks/use-toast";
-import { TRANSITION_DURATION } from "@/config/config";
 import { FaExclamationCircle, FaCheckCircle } from "react-icons/fa";
+
+const MESSAGE_DURATION = 2000;
 
 export const showSuccessToast = ({ title, description }) => {
   toast({
@@ -12,7 +13,7 @@ export const showSuccessToast = ({ title, description }) => {
     ),
     description: <div style={{ marginLeft: "1.35rem" }}>{description}</div>,
     variant: "success",
-    duration: TRANSITION_DURATION,
+    duration: MESSAGE_DURATION,
   });
 };
 
@@ -26,7 +27,7 @@ export const showErrorToast = ({ title, description }) => {
     ),
     description: <div style={{ marginLeft: "1.35rem" }}>{description}</div>,
     variant: "destructive",
-    duration: TRANSITION_DURATION,
+    duration: MESSAGE_DURATION,
   });
 };
 

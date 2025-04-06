@@ -20,7 +20,7 @@ import { Trash2 } from "lucide-react";
 import { FaPlus, FaPlusCircle, FaSave, FaTimes } from "react-icons/fa";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { API_BASE_URL, TRANSITION_DURATION } from "@/config/config";
+import { API_BASE_URL } from "@/config/config";
 import {
   showServerErrorToast,
   showSuccessToast,
@@ -89,7 +89,7 @@ export default function CreatorPage() {
 
       const accessToken = localStorage.getItem("accessToken");
 
-      const response = await fetch(`${API_BASE_URL}quizzes/`, {
+      const response = await fetch(`${API_BASE_URL}quizzes/me/`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -104,9 +104,7 @@ export default function CreatorPage() {
           description: "El cuestionario se ha guardado correctamente.",
         });
 
-        setTimeout(() => {
-          router.push("/quizzes");
-        }, TRANSITION_DURATION);
+        router.push("/quizzes");
       } else {
         showErrorToast({
           title: "Error de creación",

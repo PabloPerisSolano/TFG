@@ -14,7 +14,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import Link from "next/link";
-import { API_BASE_URL, TRANSITION_DURATION } from "@/config/config";
+import { API_BASE_URL } from "@/config/config";
 import {
   showServerErrorToast,
   showSuccessToast,
@@ -63,9 +63,7 @@ export function RegisterForm({ className, ...props }) {
         description: "Se ha registrado correctamente.",
       });
 
-      setTimeout(() => {
-        router.push("/login");
-      }, TRANSITION_DURATION);
+      router.push("/login");
     } catch (error) {
       showServerErrorToast();
     }

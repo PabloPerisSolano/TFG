@@ -46,6 +46,8 @@ class QuestionCreateSerializer(serializers.ModelSerializer):
 
 
 class QuizListSerializer(serializers.ModelSerializer):
+    author = serializers.StringRelatedField()
+
     class Meta:
         model = Quiz
         fields = ['id', 'author', 'title', 'description',
@@ -53,6 +55,7 @@ class QuizListSerializer(serializers.ModelSerializer):
 
 
 class QuizDetailSerializer(serializers.ModelSerializer):
+    author = serializers.StringRelatedField()
     questions = QuestionDetailSerializer(many=True, read_only=True)
 
     class Meta:

@@ -29,6 +29,7 @@ import {
 } from "react-icons/fa";
 import { Input } from "@/components/ui/input";
 import ConfirmDialog from "@/components/confirm-dialog";
+import { Switch } from "@/components/ui/switch";
 
 export default function QuizzesPage() {
   const { isLoggedIn } = useAuth();
@@ -42,7 +43,7 @@ export default function QuizzesPage() {
       const accessToken = localStorage.getItem("accessToken");
 
       try {
-        const res = await fetch(`${API_BASE_URL}quizzes/`, {
+        const res = await fetch(`${API_BASE_URL}quizzes/me/`, {
           headers: {
             Authorization: `Bearer ${accessToken}`,
           },
@@ -77,14 +78,17 @@ export default function QuizzesPage() {
   );
 
   const sortedQuizzes = [...filteredQuizzes].sort((a, b) => {
-    return sortOrder === "asc" ? a.id - b.id : b.id - a.id;
+    const dateA = new Date(a.created_at);
+    const dateB = new Date(b.created_at);
+
+    return sortOrder === "asc" ? dateA - dateB : dateB - dateA;
   });
 
   const handleDelete = async (quizId) => {
     const accessToken = localStorage.getItem("accessToken");
 
     try {
-      const res = await fetch(`${API_BASE_URL}quizzes/${quizId}/`, {
+      const res = await fetch(`${API_BASE_URL}quizzes/me/${quizId}/`, {
         method: "DELETE",
         headers: {
           Authorization: `Bearer ${accessToken}`,
@@ -106,6 +110,44 @@ export default function QuizzesPage() {
       showSuccessToast({
         title: "Eliminado",
         description: "El cuestionario se eliminó correctamente.",
+      });
+    } catch (error) {
+      showServerErrorToast();
+    }
+  };
+
+  const handleTogglePublic = async (quizId, isPublic) => {
+    const accessToken = localStorage.getItem("accessToken");
+
+    try {
+      const res = await fetch(`${API_BASE_URL}quizzes/me/${quizId}/`, {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${accessToken}`,
+        },
+        body: JSON.stringify({ public: isPublic }),
+      });
+
+      if (!res.ok) {
+        showErrorToast({
+          title: "Error al actualizar",
+          description: "No se pudo actualizar el estado del cuestionario.",
+        });
+        return;
+      }
+
+      setQuizzes((prevQuizzes) =>
+        prevQuizzes.map((quiz) =>
+          quiz.id === quizId ? { ...quiz, public: isPublic } : quiz
+        )
+      );
+
+      showSuccessToast({
+        title: "Cuestionario actualizado",
+        description: `El cuestionario ahora es ${
+          isPublic ? "público" : "privado"
+        }.`,
       });
     } catch (error) {
       showServerErrorToast();
@@ -156,11 +198,51 @@ export default function QuizzesPage() {
             {sortedQuizzes.map((quiz, index) => (
               <Card key={quiz.id}>
                 <CardHeader>
-                  <CardTitle>
-                    {index + 1}. {quiz.title}
-                  </CardTitle>
-                  <CardDescription>{quiz.description}</CardDescription>
+                  <div className="space-y-2">
+                    <section className="flex items-center justify-between">
+                      <CardTitle>
+                        {index + 1}. {quiz.title}
+                      </CardTitle>
+                      <article className="flex items-center space-x-2 bg-blue-500 p-2 rounded-2xl">
+                        <label className="text-sm text-white font-bold">
+                          Publicar
+                        </label>
+                        <Switch
+                          checked={quiz.public}
+                          onCheckedChange={(checked) =>
+                            handleTogglePublic(quiz.id, checked)
+                          }
+                        />
+                      </article>
+                    </section>
+
+                    <CardDescription>{quiz.description}</CardDescription>
+                  </div>
                 </CardHeader>
+                <CardContent className="text-sm ">
+                  <ul className="list-disc list-inside">
+                    <li>
+                      <label className="font-semibold">Autor:</label>{" "}
+                      {quiz.author}
+                    </li>
+                    <li>
+                      <label className="font-semibold">Tiempo:</label>{" "}
+                      {quiz.time_limit / 60} minutos
+                    </li>
+                    <li>
+                      <label className="font-semibold">
+                        Número de preguntas:
+                      </label>{" "}
+                      {quiz.num_questions}
+                    </li>
+                    <li>
+                      <label className="font-semibold">
+                        Fecha de creación:
+                      </label>{" "}
+                      {new Date(quiz.created_at).toLocaleDateString()}
+                    </li>
+                  </ul>
+                </CardContent>
                 <CardFooter className="justify-end space-x-2">
                   <ConfirmDialog
                     title="¿Seguro que quieres eliminar este cuestionario?"
