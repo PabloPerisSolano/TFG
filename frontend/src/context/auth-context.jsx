@@ -1,8 +1,13 @@
 "use client";
 
-import { createContext, useContext, useState, useEffect } from "react";
+import { createContext, useContext, useState, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { API_BASE_URL } from "@/config/config";
+import { jwtDecode } from "jwt-decode";
+import { toast } from "@/hooks/use-toast";
+import { ToastAction } from "@/components/ui/toast";
+import { showErrorToast, showServerErrorToast } from "@/utils/toastUtils";
+import { FaCheck } from "react-icons/fa";
 
 const AuthContext = createContext();
 
@@ -10,11 +15,15 @@ export function AuthProvider({ children }) {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [user, setUser] = useState(null);
   const router = useRouter();
+  const warningTimerRef = useRef(null);
+  const logoutTimerRef = useRef(null);
 
   useEffect(() => {
     const accessToken = localStorage.getItem("accessToken");
     if (accessToken) {
-      fetchUserData(accessToken);
+      if (isTokenValid(accessToken)) {
+        fetchUserData(accessToken);
+      }
     }
   }, []);
 
@@ -36,22 +45,80 @@ export function AuthProvider({ children }) {
     setTokens(accessToken, refreshToken);
     setUser(user);
     setIsLoggedIn(true);
+    iniciarTimeout(accessToken);
     router.push("/quizzes");
   };
 
   const closeSession = () => {
+    if (warningTimerRef.current) {
+      clearTimeout(warningTimerRef.current);
+    }
+    if (logoutTimerRef.current) {
+      clearTimeout(logoutTimerRef.current);
+    }
     removeTokens();
     setIsLoggedIn(false);
     setUser(null);
     router.push("/login");
   };
 
-  const fetchUserData = async (token) => {
+  const isTokenValid = (token) => {
+    const decoded = jwtDecode(token);
+    const expirationTime = decoded.exp * 1000;
+    return expirationTime > Date.now();
+  };
+
+  const iniciarTimeout = (accessToken) => {
+    // Limpiar temporizadores anteriores
+    if (warningTimerRef.current) {
+      clearTimeout(warningTimerRef.current);
+    }
+    if (logoutTimerRef.current) {
+      clearTimeout(logoutTimerRef.current);
+    }
+
+    // Decodificar token para obtener tiempo de expiración
+    const decoded = jwtDecode(accessToken);
+    const expirationTime = decoded.exp * 1000;
+    const currentTime = Date.now();
+    const timeLeft = expirationTime - currentTime;
+
+    // Avisar 1 minuto antes de que expire
+    const adviseDuration = 60 * 1000;
+    const warningTime = timeLeft - adviseDuration;
+
+    if (warningTime > 0) {
+      warningTimerRef.current = setTimeout(() => {
+        toast({
+          title: "Tu sesión expira pronto",
+          description:
+            "Expira en " +
+            adviseDuration / 1000 +
+            " segundos. ¿Deseas mantenerla?",
+          duration: adviseDuration,
+          action: (
+            <ToastAction altText="Mantener Sesión" onClick={refreshAccessToken}>
+              <div className="flex items-center space-x-2">
+                <FaCheck />
+                <span>Mantener Sesión</span>
+              </div>
+            </ToastAction>
+          ),
+        });
+      }, warningTime);
+    }
+
+    // Cerrar sesión cuando expire el token
+    logoutTimerRef.current = setTimeout(() => {
+      closeSession();
+    }, timeLeft);
+  };
+
+  const fetchUserData = async (accessToken) => {
     try {
       const response = await fetch(`${API_BASE_URL}users/me/`, {
-        method: "GET",
         headers: {
-          Authorization: `Bearer ${token}`,
+          Authorization: `Bearer ${accessToken}`,
         },
       });
 
@@ -59,11 +126,17 @@ export function AuthProvider({ children }) {
         const userData = await response.json();
         setIsLoggedIn(true);
         setUser(userData);
+        iniciarTimeout(accessToken);
       } else {
         closeSession();
+        showErrorToast({
+          title: "Error al cargar usuario",
+          description: "No se pudo cargar la información del usuario.",
+        });
       }
     } catch (error) {
       closeSession();
+      showServerErrorToast();
     }
   };
 
@@ -104,6 +177,7 @@ export function AuthProvider({ children }) {
       if (response.ok) {
         const data = await response.json();
         setTokens(data.access, data.refresh);
+        iniciarTimeout(data.access);
       } else {
         closeSession();
       }
@@ -120,7 +194,6 @@ export function AuthProvider({ children }) {
         handleLogin,
         handleLogout,
         updateUser,
-        refreshAccessToken,
       }}
     >
       {children}
