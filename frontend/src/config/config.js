@@ -1,4 +1,6 @@
-export const TRANSITION_DURATION = 1000;
+export const MIN_QUIZ_TIME = 1; // Minutos
+export const MAX_QUIZ_TIME = 120; // Minutos
+
 export const API_BASE_URL = "http://192.168.18.17:8000/api/v1/";
 // export const API_BASE_URL = "http://localhost:8000/api/v1/";
 // export const API_BASE_URL = "http://127.0.0.1:8000/api/v1/";

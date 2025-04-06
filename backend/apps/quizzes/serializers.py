@@ -68,6 +68,7 @@ class QuizDetailSerializer(serializers.ModelSerializer):
 
 class QuizCreateSerializer(serializers.ModelSerializer):
     questions = QuestionCreateSerializer(many=True, required=False)
+    description = serializers.CharField(required=False, allow_blank=True)
 
     class Meta:
         model = Quiz

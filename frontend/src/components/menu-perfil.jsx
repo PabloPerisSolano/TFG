@@ -81,15 +81,6 @@ export function DropdownMenuPerfil() {
       const jsonRes = await res.json();
 
       if (!res.ok) {
-        if (res.status === 401) {
-          showErrorToast({
-            title: "Sesión expirada, inicia sesión de nuevo",
-            description:
-              "Tu sesión ha expirado, por favor inicia sesión de nuevo.",
-          });
-          return;
-        }
-
         if (jsonRes.username) {
           setUsername(user.username);
           showErrorToast({

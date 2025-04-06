@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
-import { API_BASE_URL } from "@/config/config";
+import { API_BASE_URL, MIN_QUIZ_TIME, MAX_QUIZ_TIME } from "@/config/config";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -33,6 +33,7 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import AddItemDialog from "@/components/add-item-dialog";
 import { Skeleton } from "@/components/ui/skeleton";
 import Link from "next/link";
+import { Switch } from "@/components/ui/switch";
 
 export default function QuizDetailsPage() {
   const { isLoggedIn } = useAuth();
@@ -72,6 +73,22 @@ export default function QuizDetailsPage() {
   }, [quizId]);
 
   const handleUpdateQuiz = async (field, updatedValue) => {
+    if (field === "time_limit") {
+      if (
+        isNaN(updatedValue) ||
+        updatedValue < MIN_QUIZ_TIME ||
+        updatedValue > MAX_QUIZ_TIME
+      ) {
+        showErrorToast({
+          title: "Error al modificar el tiempo",
+          description: `El tiempo debe ser un número entre ${MIN_QUIZ_TIME} y ${MAX_QUIZ_TIME} minutos.`,
+        });
+        return;
+      }
+
+      updatedValue = updatedValue * 60;
+    }
+
     const accessToken = localStorage.getItem("accessToken");
 
     try {
@@ -94,10 +111,19 @@ export default function QuizDetailsPage() {
 
       const updatedQuiz = await res.json();
       setQuiz(updatedQuiz);
-      showSuccessToast({
-        title: "Cuestionario actualizado",
-        description: "El cuestionario se ha actualizado correctamente.",
-      });
+      if (field === "public") {
+        showSuccessToast({
+          title: "Cuestionario actualizado",
+          description: `El cuestionario ahora es ${
+            updatedValue ? "público" : "privado"
+          }.`,
+        });
+      } else {
+        showSuccessToast({
+          title: "Cuestionario actualizado",
+          description: "El cuestionario se ha actualizado correctamente.",
+        });
+      }
     } catch (error) {
       showServerErrorToast();
     }
@@ -396,28 +422,47 @@ export default function QuizDetailsPage() {
         <article className="space-y-2">
           <EditableField
             value={quiz.title}
-            field="title"
             onUpdate={(updatedValue) => handleUpdateQuiz("title", updatedValue)}
             className="text-3xl font-bold"
           />
-
-          <EditableField
-            value={quiz.description}
-            field="description"
-            onUpdate={(updatedValue) =>
-              handleUpdateQuiz("description", updatedValue)
-            }
-            className="text-lg"
-            isTextarea={true}
-          />
+          <div className="flex items-center space-x-2">
+            {quiz.description.trim() === "" ? (
+              <label>Descripción:</label>
+            ) : null}
+            <EditableField
+              value={quiz.description}
+              onUpdate={(updatedValue) =>
+                handleUpdateQuiz("description", updatedValue)
+              }
+              className="text-lg"
+              isTextarea={true}
+            />
+          </div>
+          <div className="flex items-center space-x-2">
+            <label className="font-semibold">Duración en minutos: </label>
+            <EditableField
+              value={quiz.time_limit / 60}
+              type="number"
+              onUpdate={(updatedValue) =>
+                handleUpdateQuiz("time_limit", updatedValue)
+              }
+            />
+          </div>
         </article>
-        <article>
+        <article className="flex flex-col items-center space-y-2">
           <Link href={`/quizzes/${quiz.id}/take`}>
             <Button variant="secondary">
               <FaClipboardCheck />
               Evaluar
             </Button>
           </Link>
+          <div className="flex items-center space-x-2 bg-slate-400 p-2 rounded-2xl">
+            <label className="text-sm text-white font-bold">Publicar</label>
+            <Switch
+              checked={quiz.public}
+              onCheckedChange={(checked) => handleUpdateQuiz("public", checked)}
+            />
+          </div>
         </article>
       </section>
       <section>

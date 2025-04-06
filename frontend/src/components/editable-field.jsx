@@ -9,12 +9,13 @@ export default function EditableField({
   onUpdate,
   className,
   isTextarea = false,
+  inputType = "text",
 }) {
   const [editing, setEditing] = useState(false);
   const [tempValue, setTempValue] = useState(value);
 
   const handleSave = async () => {
-    if (!tempValue.trim() || tempValue === value) {
+    if (!tempValue.toString().trim() || tempValue === value) {
       setEditing(false);
       return;
     }
@@ -37,6 +38,7 @@ export default function EditableField({
           />
         ) : (
           <Input
+            type={inputType}
             defaultValue={value}
             onChange={(e) => setTempValue(e.target.value)}
             onBlur={handleSave}

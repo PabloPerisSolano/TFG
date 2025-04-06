@@ -203,7 +203,7 @@ export default function QuizzesPage() {
                       <CardTitle>
                         {index + 1}. {quiz.title}
                       </CardTitle>
-                      <article className="flex items-center space-x-2 bg-blue-500 p-2 rounded-2xl">
+                      <article className="flex items-center space-x-2 bg-slate-400 p-2 rounded-2xl">
                         <label className="text-sm text-white font-bold">
                           Publicar
                         </label>
