@@ -4,16 +4,23 @@ import { createContext, useContext, useState, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { API_BASE_URL } from "@/config/config";
 import { jwtDecode } from "jwt-decode";
-import { toast } from "@/hooks/use-toast";
-import { ToastAction } from "@/components/ui/toast";
 import { showErrorToast, showServerErrorToast } from "@/utils/toastUtils";
-import { FaCheck } from "react-icons/fa";
+import { FaCheck, FaRedoAlt, FaSignOutAlt } from "react-icons/fa";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+} from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
 
 const AuthContext = createContext();
 
 export function AuthProvider({ children }) {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [user, setUser] = useState(null);
+  const [showTimeoutDialog, setShowTimeoutDialog] = useState(false);
   const router = useRouter();
   const warningTimerRef = useRef(null);
   const logoutTimerRef = useRef(null);
@@ -84,27 +91,12 @@ export function AuthProvider({ children }) {
     const timeLeft = expirationTime - currentTime;
 
     // Avisar 5 minuto antes de que expire
-    const adviseDuration = 5 * 60 * 1000;
+    const adviseDuration = 1 * 60 * 1000;
     const warningTime = timeLeft - adviseDuration;
 
     if (warningTime > 0) {
       warningTimerRef.current = setTimeout(() => {
-        toast({
-          title: "Tu sesión expira pronto",
-          description:
-            "Expira en " +
-            adviseDuration / (1000 * 60) +
-            " minutos. ¿Deseas mantenerla?",
-          duration: adviseDuration,
-          action: (
-            <ToastAction altText="Mantener Sesión" onClick={refreshAccessToken}>
-              <div className="flex items-center space-x-2">
-                <FaCheck />
-                <span>Mantener Sesión</span>
-              </div>
-            </ToastAction>
-          ),
-        });
+        setShowTimeoutDialog(true);
       }, warningTime);
     }
 
@@ -155,6 +147,8 @@ export function AuthProvider({ children }) {
         body: JSON.stringify({ refresh: refreshToken }),
       });
 
+      await response.json();
+
       closeSession();
     } catch (error) {
       closeSession();
@@ -197,6 +191,38 @@ export function AuthProvider({ children }) {
       }}
     >
       {children}
+
+      <Dialog open={showTimeoutDialog}>
+        <DialogContent
+          className="text-black"
+          onInteractOutside={(e) => e.preventDefault()}
+        >
+          <DialogHeader>
+            <DialogTitle>Tu sesión expirará en menos de 5 minutos</DialogTitle>
+          </DialogHeader>
+          <DialogFooter>
+            <Button
+              variant="destructive"
+              onClick={() => {
+                setShowTimeoutDialog(false);
+                handleLogout();
+              }}
+            >
+              <FaSignOutAlt />
+              Cerrar sesión
+            </Button>
+            <Button
+              onClick={() => {
+                setShowTimeoutDialog(false);
+                refreshAccessToken();
+              }}
+            >
+              <FaRedoAlt />
+              Mantener activa
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </AuthContext.Provider>
   );
 }
