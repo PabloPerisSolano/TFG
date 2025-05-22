@@ -6,6 +6,9 @@ const API_BASE_QUIZZES = `${API_BASE}quizzes/`;
 const API_BASE_QUIZZES_PUBLIC = `${API_BASE_QUIZZES}public/`;
 const API_BASE_QUIZZES_ME = `${API_BASE_QUIZZES}me/`;
 
+export const GOOGLE_CLIENT_ID =
+  "853763452683-54jmk80pnmrfqgqhhh1p2218th7q83ge.apps.googleusercontent.com";
+
 export const API_ROUTES = {
   // Auth
   REGISTER: `${API_BASE_AUTH}register/`,

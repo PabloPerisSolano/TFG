@@ -1,28 +1,23 @@
 import { Routes, Route } from "react-router-dom";
-import Layout from "@/components/Layout/Layout";
-import { PrivateRoute } from "@/components/PrivateRoute";
-import Espacios from "@/pages/Gestor/Espacios";
-import Eventos from "@/pages/Gestor/Eventos";
-import Login from "@/pages/Login/Login";
-import ListadoEventos from "@/pages/Usuario/ListadoEventos";
-import MisReservas from "@/pages/Usuario/MisReservas";
+import Layout from "@/components/layout";
+import PrivateRoute from "@/components/private-route";
+import Home from "@/pages/home";
+import { Login } from "@/pages/login";
 
 function App() {
   return (
     <Routes>
-      <Route path="/login" element={<Login />} />
-      <Route
-        path="/"
-        element={
-          <PrivateRoute>
-            <Layout />
-          </PrivateRoute>
-        }
-      >
-        <Route path="espacios" element={<Espacios />} />
-        <Route path="eventos" element={<Eventos />} />
-        <Route path="listado-eventos" element={<ListadoEventos />} />
-        <Route path="reservas" element={<MisReservas />} />
+      <Route element={<Layout />}>
+        <Route path="/" element={<Home />} />
+        <Route path="/login" element={<Login />} />
+        <Route
+          path="/privado"
+          element={
+            <PrivateRoute>
+              <div>Contenido privado</div>
+            </PrivateRoute>
+          }
+        ></Route>
       </Route>
     </Routes>
   );

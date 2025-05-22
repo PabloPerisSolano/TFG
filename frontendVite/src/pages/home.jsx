@@ -1,7 +1,6 @@
 import Autoplay from "embla-carousel-autoplay";
-import Link from "next/link";
-import { FaPlayCircle, FaArrowRight, FaUserPlus } from "react-icons/fa";
-import Footer from "@/components/footer";
+import { Play, ArrowBigRightDash, UserPlus } from "lucide-react";
+import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -13,8 +12,6 @@ import {
   Carousel,
   CarouselContent,
   CarouselItem,
-  CarouselNext,
-  CarouselPrevious,
 } from "@/components/ui/carousel";
 
 export default function Home() {
@@ -33,9 +30,9 @@ export default function Home() {
         <p className="text-xl">
           Crea y gestiona tus cuestionarios de manera fácil y rápida
         </p>
-        <Link href="/login">
+        <Link to="/login">
           <Button className="mt-6">
-            <FaPlayCircle />
+            <Play />
             Comenzar ahora
           </Button>
         </Link>
@@ -57,7 +54,7 @@ export default function Home() {
                 <h2 className="text-2xl font-bold">
                   Crea un cuestionario tipo test
                 </h2>
-                <FaArrowRight className="text-2xl" />
+                <ArrowBigRightDash className="text-2xl" />
               </article>
               <img
                 src="/crearQuiz.png"
@@ -68,7 +65,7 @@ export default function Home() {
             <CarouselItem className="space-y-6">
               <article className="flex justify-center space-x-2 items-center mt-5">
                 <h2 className="text-2xl font-bold">Gestiónalo a tu manera</h2>
-                <FaArrowRight className="text-2xl" />
+                <ArrowBigRightDash className="text-2xl" />
               </article>
               <img
                 src="/gestionarQuiz.png"
@@ -115,15 +112,13 @@ export default function Home() {
         <p className="mt-4 text-xl">
           Regístrate ahora y empieza a crear tus cuestionarios.
         </p>
-        <Link href="/register">
+        <Link to="/register">
           <Button className="mt-6" variant="secondary">
-            <FaUserPlus />
+            <UserPlus />
             Registrarse
           </Button>
         </Link>
       </section>
-
-      <Footer />
     </div>
   );
 }
