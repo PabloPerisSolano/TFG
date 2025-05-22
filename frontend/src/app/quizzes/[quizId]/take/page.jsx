@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { useParams } from "next/navigation";
 import { API_BASE_URL } from "@/config/config";
 import { Button } from "@/components/ui/button";
@@ -40,13 +40,23 @@ export default function TakeQuizPage() {
   const [score, setScore] = useState(null);
   const [showResultDialog, setShowResultDialog] = useState(false);
   const [results, setResults] = useState([]);
+  const [displayTime, setDisplayTime] = useState("0:00");
+  const timerRef = useRef({ id: null, remaining: 0 });
+  const isSubmitting = useRef(false);
+  const quizRef = useRef();
 
   useEffect(() => {
     if (!quizId) return;
 
     const fetchQuiz = async () => {
+      const accessToken = localStorage.getItem("accessToken");
+
       try {
-        const res = await fetch(`${API_BASE_URL}quizzes/${quizId}/`);
+        const res = await fetch(`${API_BASE_URL}quizzes/me/${quizId}/`, {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+          },
+        });
 
         if (!res.ok) {
           showErrorToast({
@@ -57,16 +67,68 @@ export default function TakeQuizPage() {
         }
 
         const data = await res.json();
+
         setQuiz(data);
+        quizRef.current = data;
+        startTimer(data.time_limit);
       } catch (error) {
-        showServerErrorToast();
+        showErrorToast({
+          title: "Error al cargar cuestionario",
+          description: error.message,
+        });
       } finally {
         setLoading(false);
       }
     };
 
     fetchQuiz();
+
+    return () => {
+      if (timerRef.current.id) {
+        clearTimeout(timerRef.current.id);
+      }
+    };
   }, [quizId]);
+
+  const startTimer = (time) => {
+    if (timerRef.current.id) {
+      clearTimeout(timerRef.current.id);
+    }
+
+    timerRef.current.remaining = time;
+    updateDisplayTime(time);
+
+    if (time <= 0) {
+      if (quizRef.current?.questions) {
+        handleSubmit();
+      }
+      return;
+    }
+
+    timerRef.current.id = setTimeout(() => {
+      startTimer(time - 1);
+    }, 1000);
+  };
+
+  const formatTime = (totalSeconds) => {
+    const hours = Math.floor(totalSeconds / 3600);
+    const minutes = Math.floor((totalSeconds % 3600) / 60);
+    const seconds = totalSeconds % 60;
+
+    // Formato HH:MM:SS (ej: 01:05:30)
+    if (hours > 0) {
+      return `${hours}:${minutes.toString().padStart(2, "0")}:${seconds
+        .toString()
+        .padStart(2, "0")}`;
+    }
+
+    // Formato MM:SS (ej: 15:30)
+    return `${minutes}:${seconds.toString().padStart(2, "0")}`;
+  };
+
+  const updateDisplayTime = (seconds) => {
+    setDisplayTime(formatTime(seconds));
+  };
 
   const handleAnswerChange = (questionId, answerId) => {
     setAnswers((prevAnswers) => ({
@@ -76,9 +138,20 @@ export default function TakeQuizPage() {
   };
 
   const handleSubmit = () => {
+    if (isSubmitting.current || !quizRef.current?.questions) return;
+    isSubmitting.current = true;
+
+    if (!quizRef.current?.questions) {
+      showErrorToast({
+        title: "Error al enviar respuestas",
+        description: "El cuestionario no está disponible",
+      });
+      return;
+    }
+
     let newScore = 0;
 
-    const newResults = quiz.questions.map((question) => {
+    const newResults = quizRef.current.questions.map((question) => {
       const selectedAnswer = question.answers.find(
         (a) => a.id.toString() === answers[question.id]
       );
@@ -98,9 +171,11 @@ export default function TakeQuizPage() {
         isCorrect,
       };
     });
+
     setScore(newScore);
     setResults(newResults);
     setShowResultDialog(true);
+    clearTimeout(timerRef.current.id);
   };
 
   if (loading)
@@ -123,7 +198,26 @@ export default function TakeQuizPage() {
 
   return (
     <div className="mx-auto p-4 max-w-3xl space-y-8">
-      <h1 className="text-3xl font-bold">{quiz.title}</h1>
+      <section className="flex justify-between items-center">
+        <article>
+          <h1 className="text-3xl font-bold">{quiz.title}</h1>
+          <label className="font-semibold">Autor:</label> {quiz.author}
+        </article>
+        <article>
+          <div className="flex space-x-2">
+            <label className="font-semibold">Tiempo restante:</label>
+            <p
+              className={
+                timerRef.current.remaining <= 10 ? "text-red-500 font-bold" : ""
+              }
+            >
+              {displayTime}
+            </p>
+          </div>
+          <label className="font-semibold">Nº preguntas:</label>{" "}
+          {quiz.num_questions}
+        </article>
+      </section>
 
       <section>
         {quiz.questions.map((question, questionIndex) => (

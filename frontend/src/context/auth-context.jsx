@@ -91,7 +91,7 @@ export function AuthProvider({ children }) {
     const timeLeft = expirationTime - currentTime;
 
     // Avisar 5 minuto antes de que expire
-    const adviseDuration = 1 * 60 * 1000;
+    const adviseDuration = 5 * 60 * 1000;
     const warningTime = timeLeft - adviseDuration;
 
     if (warningTime > 0) {
