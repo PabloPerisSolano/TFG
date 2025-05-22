@@ -48,6 +48,63 @@ class CustomTokenObtainPairView(TokenObtainPairView):
     permission_classes = [AllowAny]
     serializer_class = CustomTokenObtainPairSerializer
 
+    def post(self, request, *args, **kwargs):
+        response = super().post(request, *args, **kwargs)
+        access = response.data.get("access")
+        refresh = response.data.get("refresh")
+
+        # Añadir los tokens como cookies
+        if access:
+            response.set_cookie(
+                key="access_token",
+                value=access,
+                httponly=True,
+                secure=not settings.DEBUG,
+                samesite="Lax",
+                path="/",
+                max_age=60 * 30,  # 30 minutos
+            )
+        if refresh:
+            response.set_cookie(
+                key="refresh_token",
+                value=refresh,
+                httponly=True,
+                secure=not settings.DEBUG,
+                samesite="Lax",
+                path="/",
+                max_age=60 * 60 * 24,  # 1 día
+            )
+        return response
+
+
+class CookieTokenRefreshView(APIView):
+    permission_classes = [AllowAny]
+
+    def post(self, request):
+        refresh_token = request.COOKIES.get("refresh_token")
+        if not refresh_token:
+            return Response(
+                {"detail": "No refresh token"}, status=status.HTTP_401_UNAUTHORIZED
+            )
+        try:
+            refresh = RefreshToken(refresh_token)
+            access = str(refresh.access_token)
+            response = Response({"access": access, "detail": "Token refreshed"})
+            response.set_cookie(
+                key="access_token",
+                value=access,
+                httponly=True,
+                secure=not settings.DEBUG,
+                samesite="Lax",
+                path="/",
+                max_age=60 * 30,
+            )
+            return response
+        except Exception:
+            return Response(
+                {"detail": "Invalid refresh token"}, status=status.HTTP_401_UNAUTHORIZED
+            )
+
 
 class GoogleLoginView(CreateAPIView):
     permission_classes = [AllowAny]
@@ -65,21 +122,24 @@ class LogoutView(APIView):
     permission_classes = [IsAuthenticated]
 
     def post(self, request):
-        try:
-            # Obtener el token de actualización del cuerpo de la solicitud
-            refresh_token = request.data.get("refresh")
-            token = RefreshToken(refresh_token)
-            # Agregar el token a la lista negra
-            token.blacklist()
-            return Response(
-                {"detail": "Sesión cerrada exitosamente."},
-                status=status.HTTP_205_RESET_CONTENT,
-            )
-        except Exception as e:
-            return Response(
-                {"detail": "Token inválido o ya está en la lista negra."},
-                status=status.HTTP_400_BAD_REQUEST,
-            )
+
+        response = Response(
+            {"detail": "Sesión cerrada exitosamente."},
+            status=status.HTTP_205_RESET_CONTENT,
+        )
+        response.delete_cookie("access_token")
+        response.delete_cookie("refresh_token")
+        # Blacklist refresh token si lo envías en el body
+        refresh_token = request.data.get("refresh") or request.COOKIES.get(
+            "refresh_token"
+        )
+        if refresh_token:
+            try:
+                token = RefreshToken(refresh_token)
+                token.blacklist()
+            except Exception:
+                pass
+        return response
 
 
 class ChangePasswordView(APIView):
