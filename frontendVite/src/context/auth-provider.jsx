@@ -1,4 +1,3 @@
-import { useCallback } from "react";
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
@@ -10,11 +9,6 @@ export default function AuthProvider({ children }) {
   const fetchWithAuth = useFetchWithAuth();
   const [user, setUser] = useState(null);
   const navigate = useNavigate();
-
-  const closeSession = useCallback(() => {
-    setUser(null);
-    navigate("/login");
-  }, [navigate]);
 
   useEffect(() => {
     const fetchUserData = async () => {
@@ -31,7 +25,17 @@ export default function AuthProvider({ children }) {
     };
 
     fetchUserData();
-  }, [fetchWithAuth, closeSession]);
+  }, []);
+
+  const handleLogout = async () => {
+    await fetchWithAuth(API_ROUTES.LOGOUT);
+    closeSession();
+  };
+
+  const closeSession = () => {
+    setUser(null);
+    navigate("/login");
+  };
 
   const updateUser = (updatedUser) => {
     setUser(updatedUser);
@@ -39,21 +43,16 @@ export default function AuthProvider({ children }) {
 
   const handleLogin = (user) => {
     setUser(user);
-    navigate("/quizzes");
-  };
-
-  const handleLogout = async () => {
-    await fetchWithAuth(API_ROUTES.LOGOUT);
-    closeSession();
+    navigate("/my-quizzes");
   };
 
   return (
     <AuthContext.Provider
       value={{
         user,
+        updateUser,
         handleLogin,
         handleLogout,
-        updateUser,
       }}
     >
       {children}

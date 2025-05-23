@@ -17,7 +17,7 @@ import {
 export default function Home() {
   return (
     <div className="min-h-screen space-y-10 mt-6">
-      <section className="text-center space-y-6 bg-white text-gray-950 p-6 max-w-3xl mx-auto rounded-3xl shadow-lg">
+      <section className="text-center space-y-6 bg-white  p-6 max-w-3xl mx-auto rounded-3xl shadow-2xl">
         <article className="flex items-center space-x-2 justify-center">
           <img
             src="/favicon.png"
@@ -25,7 +25,7 @@ export default function Home() {
             width={60}
             className="rounded-md"
           />
-          <h1 className="text-5xl font-bold text-gray-800">QuizGenerate</h1>
+          <h1 className="text-4xl md:text-5xl font-bold">QuizGenerate</h1>
         </article>
         <p className="text-xl">
           Crea y gestiona tus cuestionarios de manera fácil y rápida
@@ -52,7 +52,7 @@ export default function Home() {
             <CarouselItem className="space-y-6">
               <article className="flex justify-center space-x-2 items-center mt-5">
                 <h2 className="text-2xl font-bold">
-                  Crea un cuestionario tipo test
+                  Crea cuestionarios tipo test
                 </h2>
                 <ArrowBigRightDash className="text-2xl" />
               </article>
@@ -77,7 +77,7 @@ export default function Home() {
         </Carousel>
       </section>
 
-      <section className="bg-gray-50 text-gray-900 py-12 rounded-3xl max-w-3xl mx-auto p-4">
+      <section className="bg-white py-12 rounded-3xl max-w-3xl mx-auto p-4 shadow-2xl">
         <h2 className="text-3xl font-bold text-center mb-8">Características</h2>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           <Card>
@@ -113,7 +113,7 @@ export default function Home() {
           Regístrate ahora y empieza a crear tus cuestionarios.
         </p>
         <Link to="/register">
-          <Button className="mt-6" variant="secondary">
+          <Button className="mt-6">
             <UserPlus />
             Registrarse
           </Button>

@@ -1,6 +1,7 @@
 import { GoogleOAuthProvider, GoogleLogin } from "@react-oauth/google";
 import { LogIn, Eye, EyeOff } from "lucide-react";
 import { useState } from "react";
+import { Link } from "react-router-dom";
 import { toast } from "sonner";
 import { API_ROUTES, GOOGLE_CLIENT_ID } from "@/api/api";
 //import AddItemDialog from "@/components/add-item-dialog";
@@ -18,7 +19,7 @@ import useAuth from "@/hooks/use-auth";
 import { useFetchWithAuth } from "@/hooks/use-fetch-with-auth";
 import { cn } from "@/lib/utils";
 
-export function Login({ className, ...props }) {
+export default function Login({ className, ...props }) {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
@@ -97,7 +98,10 @@ export function Login({ className, ...props }) {
   };
 
   return (
-    <div className={cn("flex flex-col gap-6", className)} {...props}>
+    <div
+      className={cn("flex flex-col gap-6 max-w-sm mx-auto", className)}
+      {...props}
+    >
       <Card>
         <CardHeader>
           <CardTitle className="text-2xl">Iniciar Sesión</CardTitle>
