@@ -3,8 +3,7 @@ import { LogIn, Eye, EyeOff } from "lucide-react";
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { toast } from "sonner";
-import { API_ROUTES, GOOGLE_CLIENT_ID } from "@/api/api";
-//import AddItemDialog from "@/components/add-item-dialog";
+import DialogOneInput from "@/components/DialogOneInput";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -15,8 +14,10 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import useAuth from "@/hooks/use-auth";
-import { useFetchWithAuth } from "@/hooks/use-fetch-with-auth";
+import { API_ROUTES, GOOGLE_CLIENT_ID } from "@/config/api";
+import { ROUTES } from "@/config/routes";
+import { useAuth } from "@/hooks/useAuth";
+import { useAuthFetch } from "@/hooks/useAuthFetch";
 import { cn } from "@/lib/utils";
 
 export default function Login({ className, ...props }) {
@@ -24,7 +25,7 @@ export default function Login({ className, ...props }) {
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const { handleLogin } = useAuth();
-  const fetchWithAuth = useFetchWithAuth();
+  const fetchWithAuth = useAuthFetch();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -43,39 +44,27 @@ export default function Login({ className, ...props }) {
     handleLogin(data.user);
   };
 
-  //   const handlePasswordResetRequest = async (email) => {
-  //     if (!email.trim()) return;
+  const handlePasswordResetRequest = async (email) => {
+    if (!email.trim()) return;
 
-  //     try {
-  //       const response = await fetch(
-  //         `${API_BASE_URL}auth/password-reset-request/`,
-  //         {
-  //           method: "POST",
-  //           headers: {
-  //             "Content-Type": "application/json",
-  //           },
-  //           body: JSON.stringify({ email }),
-  //         }
-  //       );
+    const response = await fetchWithAuth(API_ROUTES.PASSWORD_RESET_REQUEST, {
+      method: "POST",
+      body: JSON.stringify({ email }),
+    });
 
-  //       const jsonRes = await response.json();
+    const jsonRes = await response.json();
 
-  //       if (!response.ok) {
-  //         showErrorToast({
-  //           title: "Correo inválido",
-  //           description: jsonRes.error,
-  //         });
-  //         return;
-  //       }
+    if (!response.ok) {
+      toast.error("Correo inválido", {
+        description: jsonRes.error,
+      });
+      return;
+    }
 
-  //       showSuccessToast({
-  //         title: "Solicitud enviada",
-  //         description: jsonRes.message,
-  //       });
-  //     } catch (error) {
-  //       showServerErrorToast();
-  //     }
-  //   };
+    toast.success("Correo enviado", {
+      description: jsonRes.message,
+    });
+  };
 
   const handleGoogleLoginSuccess = async (credentialResponse) => {
     const response = await fetchWithAuth(API_ROUTES.GOOGLE_LOGIN, {
@@ -123,9 +112,9 @@ export default function Login({ className, ...props }) {
               </section>
 
               <section className="grid gap-2">
-                {/* <article className="flex justify-between space-x-10">
+                <article className="flex justify-between space-x-10">
                   <Label htmlFor="password">Contraseña</Label>
-                  <AddItemDialog
+                  <DialogOneInput
                     dialogTitle="Email de recuperación"
                     inputPlaceholder="Escribe tu dirección de correo"
                     onSave={(email) => handlePasswordResetRequest(email)}
@@ -133,8 +122,8 @@ export default function Login({ className, ...props }) {
                     <Label className="hover:underline cursor-pointer">
                       ¿Has olvidado la contraseña?
                     </Label>
-                  </AddItemDialog>
-                </article> */}
+                  </DialogOneInput>
+                </article>
 
                 <article className="relative flex items-center">
                   <Input
@@ -177,7 +166,10 @@ export default function Login({ className, ...props }) {
 
             <div className="mt-4 text-center text-sm">
               ¿Aún no tienes cuenta?{" "}
-              <Link href="/register" className="text-blue-500 hover:underline">
+              <Link
+                to={ROUTES.REGISTER}
+                className="text-blue-500 hover:underline"
+              >
                 Registrarse
               </Link>
             </div>

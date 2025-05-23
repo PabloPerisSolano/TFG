@@ -1,0 +1,81 @@
+import {
+  LogIn,
+  UserPlus,
+  Menu,
+  House,
+  ClipboardList,
+  ClipboardPlus,
+  Sparkles,
+} from "lucide-react";
+import { Link } from "react-router-dom";
+import DropdownAvatar from "./profile/DropdownAvatar";
+import DropdownNavigationMobile from "@/components/DropdownNavigationMobile";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Button } from "@/components/ui/button";
+import { ROUTES } from "@/config/routes";
+import { privateRoutes } from "@/config/routes";
+import { useAuth } from "@/hooks/useAuth";
+
+export default function Header() {
+  const { user } = useAuth();
+
+  return (
+    <div
+      style={{ backgroundColor: "var(--rich-black)" }}
+      className="p-2 flex justify-between items-center"
+    >
+      <Link to={ROUTES.HOME}>
+        <img
+          src="/LogoQuizGenerate.png"
+          alt="QuizGenerate Logo"
+          width={100}
+          className="rounded-md transition-transform duration-200 hover:scale-105 active:scale-95"
+        />
+      </Link>
+
+      <section className="hidden md:flex gap-20">
+        {user
+          ? privateRoutes.map((route) => (
+              <Link key={route.path} to={route.path}>
+                <Button variant="link">
+                  <route.icon />
+                  {route.name}
+                </Button>
+              </Link>
+            ))
+          : null}
+      </section>
+
+      <section className="flex gap-4 items-center">
+        {user ? (
+          <DropdownAvatar>
+            <Avatar className="cursor-pointer">
+              <AvatarImage src={user.profile_picture || null} />
+              <AvatarFallback>
+                {user.username.slice(0, 2).toUpperCase()}
+              </AvatarFallback>
+            </Avatar>
+          </DropdownAvatar>
+        ) : (
+          <div className="hidden md:flex gap-3 items-center">
+            <Link to="/login">
+              <Button variant="secondary">
+                <LogIn />
+                Iniciar sesión
+              </Button>
+            </Link>
+            <Link to="/register">
+              <Button variant="link">
+                <UserPlus />
+                Registrarse
+              </Button>
+            </Link>
+          </div>
+        )}
+        <DropdownNavigationMobile>
+          <Menu className="md:hidden text-white size-10" />
+        </DropdownNavigationMobile>
+      </section>
+    </div>
+  );
+}

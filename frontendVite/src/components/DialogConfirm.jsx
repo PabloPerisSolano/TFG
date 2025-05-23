@@ -11,7 +11,7 @@ import {
   AlertDialogAction,
 } from "@/components/ui/alert-dialog";
 
-export default function ConfirmDialog({
+export default function DialogConfirm({
   title,
   description,
   onConfirm,

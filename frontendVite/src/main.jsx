@@ -4,7 +4,7 @@ import "./index.css";
 import { BrowserRouter } from "react-router-dom";
 import App from "./App.jsx";
 import { Toaster } from "@/components/ui/sonner";
-import AuthProvider from "@/context/auth-provider";
+import AuthProvider from "@/context/AuthProvider";
 
 createRoot(document.getElementById("root")).render(
   <StrictMode>

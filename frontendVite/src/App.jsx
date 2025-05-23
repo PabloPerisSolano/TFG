@@ -1,19 +1,20 @@
 import { Routes, Route } from "react-router-dom";
-import MisQuizzes from "./pages/mis-quizzes";
-import Layout from "@/components/layout";
-import PrivateRoute from "@/components/private-route";
-import Home from "@/pages/home";
-import Login from "@/pages/login";
-import Register from "@/pages/register";
+import MisQuizzes from "./pages/MisQuizzes";
+import Layout from "@/components/Layout";
+import PrivateRoute from "@/components/PrivateRoute";
+import { ROUTES } from "@/config/routes";
+import Home from "@/pages/Home";
+import Login from "@/pages/Login";
+import Register from "@/pages/Register";
 
 function App() {
   return (
     <Routes>
       <Route element={<Layout />}>
-        <Route path="/" element={<Home />} />
-        <Route path="/login" element={<Login />} />
-        <Route path="/register" element={<Register />} />
-        <Route path="/my-quizzes" element={<MisQuizzes />} />
+        <Route path={ROUTES.HOME} element={<Home />} />
+        <Route path={ROUTES.LOGIN} element={<Login />} />
+        <Route path={ROUTES.REGISTER} element={<Register />} />
+        <Route path={ROUTES.MY_QUIZZES} element={<MisQuizzes />} />
 
         {/* <Route
           path="/privado"

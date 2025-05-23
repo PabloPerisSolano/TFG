@@ -1,12 +1,13 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
-import { API_ROUTES } from "@/api/api";
-import { AuthContext } from "@/context/auth-context";
-import { useFetchWithAuth } from "@/hooks/use-fetch-with-auth";
+import { API_ROUTES } from "@/config/api";
+import { ROUTES } from "@/config/routes";
+import { AuthContext } from "@/context/AuthContext";
+import { useAuthFetch } from "@/hooks/useAuthFetch";
 
 export default function AuthProvider({ children }) {
-  const fetchWithAuth = useFetchWithAuth();
+  const fetchWithAuth = useAuthFetch();
   const [user, setUser] = useState(null);
   const navigate = useNavigate();
 
@@ -34,7 +35,7 @@ export default function AuthProvider({ children }) {
 
   const closeSession = () => {
     setUser(null);
-    navigate("/login");
+    navigate(ROUTES.LOGIN);
   };
 
   const updateUser = (updatedUser) => {
@@ -43,7 +44,7 @@ export default function AuthProvider({ children }) {
 
   const handleLogin = (user) => {
     setUser(user);
-    navigate("/my-quizzes");
+    navigate(ROUTES.MY_QUIZZES);
   };
 
   return (

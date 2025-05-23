@@ -2,7 +2,6 @@ import { UserPlus, Eye, EyeOff } from "lucide-react";
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { toast } from "sonner";
-import { API_ROUTES } from "@/api/api";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -13,7 +12,9 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { useFetchWithAuth } from "@/hooks/use-fetch-with-auth";
+import { API_ROUTES } from "@/config/api";
+import { ROUTES } from "@/config/routes";
+import { useAuthFetch } from "@/hooks/useAuthFetch";
 import { cn } from "@/lib/utils";
 
 export default function Register({ className, ...props }) {
@@ -24,7 +25,7 @@ export default function Register({ className, ...props }) {
   const [first_name, setFirstName] = useState("");
   const [last_name, setLastName] = useState("");
   const navigate = useNavigate();
-  const fetchWithAuth = useFetchWithAuth();
+  const fetchWithAuth = useAuthFetch();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -50,7 +51,7 @@ export default function Register({ className, ...props }) {
 
     toast.success("Registro exitoso");
 
-    navigate("/login");
+    navigate(ROUTES.LOGIN);
   };
 
   return (
@@ -144,7 +145,7 @@ export default function Register({ className, ...props }) {
             </div>
             <div className="mt-4 text-center text-sm">
               ¿Ya tienes una cuenta?{" "}
-              <Link to="/login" className="text-blue-500 hover:underline">
+              <Link to={ROUTES.LOGIN} className="text-blue-500 hover:underline">
                 Iniciar sesión
               </Link>
             </div>

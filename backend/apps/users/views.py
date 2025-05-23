@@ -115,7 +115,31 @@ class GoogleLoginView(CreateAPIView):
         serializer.is_valid(raise_exception=True)
         tokens = serializer.save()
 
-        return Response(tokens, status=status.HTTP_200_OK)
+        response = Response(tokens, status=status.HTTP_200_OK)
+        access = tokens.get("access")
+        refresh = tokens.get("refresh")
+
+        if access:
+            response.set_cookie(
+                key="access_token",
+                value=access,
+                httponly=True,
+                secure=not settings.DEBUG,
+                samesite="Lax",
+                path="/",
+                max_age=60 * 30,  # 30 minutos
+            )
+        if refresh:
+            response.set_cookie(
+                key="refresh_token",
+                value=refresh,
+                httponly=True,
+                secure=not settings.DEBUG,
+                samesite="Lax",
+                path="/",
+                max_age=60 * 60 * 24,  # 1 día
+            )
+        return response
 
 
 class LogoutView(APIView):

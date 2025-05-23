@@ -1,7 +1,8 @@
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
+import { ROUTES } from "@/config/routes";
 
-export const useFetchWithAuth = () => {
+export const useAuthFetch = () => {
   const navigate = useNavigate();
 
   return async (url, options = {}) => {
@@ -9,7 +10,7 @@ export const useFetchWithAuth = () => {
       ...(options.headers || {}),
     };
 
-    if (!headers["Content-Type"]) {
+    if (!headers["Content-Type"] && !(options.body instanceof FormData)) {
       headers["Content-Type"] = "application/json";
     }
 
@@ -22,8 +23,7 @@ export const useFetchWithAuth = () => {
 
       if (response.status === 401) {
         toast.error("Debes estar autenticado para acceder.");
-        navigate("/login");
-        return null;
+        navigate(ROUTES.LOGIN);
       }
 
       return response;

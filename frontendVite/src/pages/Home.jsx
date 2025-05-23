@@ -13,6 +13,7 @@ import {
   CarouselContent,
   CarouselItem,
 } from "@/components/ui/carousel";
+import { ROUTES } from "@/config/routes";
 
 export default function Home() {
   return (
@@ -30,7 +31,7 @@ export default function Home() {
         <p className="text-xl">
           Crea y gestiona tus cuestionarios de manera fácil y rápida
         </p>
-        <Link to="/login">
+        <Link to={ROUTES.LOGIN}>
           <Button className="mt-6">
             <Play />
             Comenzar ahora
@@ -112,7 +113,7 @@ export default function Home() {
         <p className="mt-4 text-xl">
           Regístrate ahora y empieza a crear tus cuestionarios.
         </p>
-        <Link to="/register">
+        <Link to={ROUTES.REGISTER}>
           <Button className="mt-6">
             <UserPlus />
             Registrarse

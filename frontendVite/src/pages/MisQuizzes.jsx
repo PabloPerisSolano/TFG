@@ -9,8 +9,7 @@ import {
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { toast } from "sonner";
-import { API_ROUTES } from "@/api/api";
-import ConfirmDialog from "@/components/confirm-dialog";
+import DialogConfirm from "@/components/DialogConfirm";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -22,10 +21,12 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Switch } from "@/components/ui/switch";
-import { useFetchWithAuth } from "@/hooks/use-fetch-with-auth";
+import { API_ROUTES } from "@/config/api";
+import { ROUTES } from "@/config/routes";
+import { useAuthFetch } from "@/hooks/useAuthFetch";
 
 export default function MisQuizzes() {
-  const fetchWithAuth = useFetchWithAuth();
+  const fetchWithAuth = useAuthFetch();
   const [quizzes, setQuizzes] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
@@ -108,7 +109,7 @@ export default function MisQuizzes() {
           <p className="mb-4 font-bold text-gray-800">
             Todavía no tienes ningún cuestionario creado.
           </p>
-          <Link to="/creator">
+          <Link to={ROUTES.CREATE_QUIZZ}>
             <Button>
               <CirclePlus />
               Crear cuestionario
@@ -183,7 +184,7 @@ export default function MisQuizzes() {
                   </ul>
                 </CardContent>
                 <CardFooter className="justify-end space-x-2">
-                  <ConfirmDialog
+                  <DialogConfirm
                     title="¿Seguro que quieres eliminar este cuestionario?"
                     description="Se eliminará permanentemente el cuestionario."
                     onConfirm={() => handleDelete(quiz.id)}
