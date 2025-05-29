@@ -14,8 +14,11 @@ import {
   CarouselItem,
 } from "@/components/ui/carousel";
 import { ROUTES } from "@/config/routes";
+import { useAuth } from "@/hooks/useAuth";
 
 export default function Home() {
+  const { user } = useAuth();
+
   return (
     <div className="min-h-screen space-y-10 mt-6">
       <section className="text-center space-y-6 bg-white  p-6 max-w-3xl mx-auto rounded-3xl shadow-2xl">
@@ -31,7 +34,7 @@ export default function Home() {
         <p className="text-xl">
           Crea y gestiona tus cuestionarios de manera fácil y rápida
         </p>
-        <Link to={ROUTES.LOGIN}>
+        <Link to={user ? ROUTES.MY_QUIZZES : ROUTES.LOGIN}>
           <Button className="mt-6">
             <Play />
             Comenzar ahora

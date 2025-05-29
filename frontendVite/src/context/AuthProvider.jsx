@@ -4,38 +4,45 @@ import { toast } from "sonner";
 import { API_ROUTES } from "@/config/api";
 import { ROUTES } from "@/config/routes";
 import { AuthContext } from "@/context/AuthContext";
-import { useAuthFetch } from "@/hooks/useAuthFetch";
 
 export const AuthProvider = ({ children }) => {
-  const fetchWithAuth = useAuthFetch();
   const [user, setUser] = useState(null);
   const navigate = useNavigate();
 
   useEffect(() => {
     const fetchUserData = async () => {
-      const response = await fetchWithAuth(API_ROUTES.USER_DETAIL);
+      try {
+        const response = await fetch(API_ROUTES.USER_DETAIL, {
+          credentials: "include",
+        });
 
-      if (!response.ok) {
-        closeSession();
-        toast.error("Error al cargar usuario");
-        return;
+        if (!response.ok) {
+          setUser(null);
+          return;
+        }
+
+        const userData = await response.json();
+        setUser(userData);
+      } catch (error) {
+        toast.error(error.message);
+        setUser(null);
       }
-
-      const userData = await response.json();
-      setUser(userData);
     };
 
     fetchUserData();
   }, []);
 
   const handleLogout = async () => {
-    await fetchWithAuth(API_ROUTES.LOGOUT);
-    closeSession();
-  };
-
-  const closeSession = () => {
-    setUser(null);
-    navigate(ROUTES.LOGIN);
+    try {
+      await fetch(API_ROUTES.LOGOUT, {
+        credentials: "include",
+        method: "POST",
+      });
+    } catch (error) {
+      toast.error(error.message);
+    } finally {
+      closeSession();
+    }
   };
 
   const updateUser = (updatedUser) => {
@@ -47,6 +54,11 @@ export const AuthProvider = ({ children }) => {
     navigate(ROUTES.MY_QUIZZES);
   };
 
+  const closeSession = () => {
+    setUser(null);
+    navigate(ROUTES.HOME);
+  };
+
   return (
     <AuthContext.Provider
       value={{
@@ -54,6 +66,7 @@ export const AuthProvider = ({ children }) => {
         updateUser,
         handleLogin,
         handleLogout,
+        closeSession,
       }}
     >
       {children}

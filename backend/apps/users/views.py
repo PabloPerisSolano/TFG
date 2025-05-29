@@ -14,6 +14,13 @@ from rest_framework.views import APIView
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework_simplejwt.views import TokenObtainPairView
 
+from .cookie_settings import (
+    ACCESS_TOKEN_COOKIE_NAME,
+    ACCESS_TOKEN_LIFETIME,
+    COOKIE_SETTINGS,
+    REFRESH_TOKEN_COOKIE_NAME,
+    REFRESH_TOKEN_LIFETIME,
+)
 from .models import CustomUser
 from .serializers import (
     CustomTokenObtainPairSerializer,
@@ -56,23 +63,17 @@ class CustomTokenObtainPairView(TokenObtainPairView):
         # Añadir los tokens como cookies
         if access:
             response.set_cookie(
-                key="access_token",
+                key=ACCESS_TOKEN_COOKIE_NAME,
                 value=access,
-                httponly=True,
-                secure=not settings.DEBUG,
-                samesite="Lax",
-                path="/",
-                max_age=60 * 30,  # 30 minutos
+                max_age=ACCESS_TOKEN_LIFETIME,
+                **COOKIE_SETTINGS,
             )
         if refresh:
             response.set_cookie(
-                key="refresh_token",
+                key=REFRESH_TOKEN_COOKIE_NAME,
                 value=refresh,
-                httponly=True,
-                secure=not settings.DEBUG,
-                samesite="Lax",
-                path="/",
-                max_age=60 * 60 * 24,  # 1 día
+                max_age=REFRESH_TOKEN_LIFETIME,
+                **COOKIE_SETTINGS,
             )
         return response
 
@@ -91,13 +92,10 @@ class CookieTokenRefreshView(APIView):
             access = str(refresh.access_token)
             response = Response({"access": access, "detail": "Token refreshed"})
             response.set_cookie(
-                key="access_token",
+                key=ACCESS_TOKEN_COOKIE_NAME,
                 value=access,
-                httponly=True,
-                secure=not settings.DEBUG,
-                samesite="Lax",
-                path="/",
-                max_age=60 * 30,
+                max_age=ACCESS_TOKEN_LIFETIME,
+                **COOKIE_SETTINGS,
             )
             return response
         except Exception:
@@ -121,23 +119,17 @@ class GoogleLoginView(CreateAPIView):
 
         if access:
             response.set_cookie(
-                key="access_token",
+                key=ACCESS_TOKEN_COOKIE_NAME,
                 value=access,
-                httponly=True,
-                secure=not settings.DEBUG,
-                samesite="Lax",
-                path="/",
-                max_age=60 * 30,  # 30 minutos
+                max_age=ACCESS_TOKEN_LIFETIME,
+                **COOKIE_SETTINGS,
             )
         if refresh:
             response.set_cookie(
-                key="refresh_token",
+                key=REFRESH_TOKEN_COOKIE_NAME,
                 value=refresh,
-                httponly=True,
-                secure=not settings.DEBUG,
-                samesite="Lax",
-                path="/",
-                max_age=60 * 60 * 24,  # 1 día
+                max_age=REFRESH_TOKEN_LIFETIME,
+                **COOKIE_SETTINGS,
             )
         return response
 
@@ -151,8 +143,8 @@ class LogoutView(APIView):
             {"detail": "Sesión cerrada exitosamente."},
             status=status.HTTP_205_RESET_CONTENT,
         )
-        response.delete_cookie("access_token")
-        response.delete_cookie("refresh_token")
+        response.delete_cookie(ACCESS_TOKEN_COOKIE_NAME)
+        response.delete_cookie(REFRESH_TOKEN_COOKIE_NAME)
         # Blacklist refresh token si lo envías en el body
         refresh_token = request.data.get("refresh") or request.COOKIES.get(
             "refresh_token"

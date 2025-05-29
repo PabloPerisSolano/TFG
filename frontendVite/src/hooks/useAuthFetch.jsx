@@ -1,9 +1,8 @@
-import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
-import { ROUTES } from "@/config/routes";
+import { useAuth } from "@/hooks/useAuth";
 
 export const useAuthFetch = () => {
-  const navigate = useNavigate();
+  const { closeSession } = useAuth();
 
   return async (url, options = {}) => {
     const headers = {
@@ -22,8 +21,8 @@ export const useAuthFetch = () => {
       });
 
       if (response.status === 401) {
-        toast.error("Debes estar autenticado para acceder.");
-        navigate(ROUTES.LOGIN);
+        toast.warning("Debes estar autenticado para acceder.");
+        closeSession();
       }
 
       return response;
