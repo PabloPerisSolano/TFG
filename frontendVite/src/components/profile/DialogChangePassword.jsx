@@ -22,7 +22,9 @@ export const DialogChangePassword = ({ open, onOpenChange }) => {
   const [new_password, setNewPassword] = useState("");
   const [showNewPassword, setShowNewPassword] = useState(false);
 
-  const handleChangePassword = async () => {
+  const handleChangePassword = async (e) => {
+    e.preventDefault();
+
     const res = await fetchWithAuth(API_ROUTES.CHANGE_PASSWORD, {
       method: "POST",
       body: JSON.stringify({
@@ -56,7 +58,7 @@ export const DialogChangePassword = ({ open, onOpenChange }) => {
             Modifica tu contraseña y guarda los cambios.
           </DialogDescription>
         </DialogHeader>
-        <div className="space-y-4">
+        <form onSubmit={handleChangePassword} className="space-y-4">
           <section>
             <Label htmlFor="current_password">Contraseña Actual</Label>
             <article className="relative flex items-center">
@@ -79,6 +81,7 @@ export const DialogChangePassword = ({ open, onOpenChange }) => {
               </Button>
             </article>
           </section>
+
           <section>
             <Label htmlFor="new_password">Nueva Contraseña</Label>
             <article className="relative flex items-center">
@@ -101,13 +104,14 @@ export const DialogChangePassword = ({ open, onOpenChange }) => {
               </Button>
             </article>
           </section>
-        </div>
-        <DialogFooter>
-          <Button onClick={handleChangePassword}>
-            <Save />
-            Cambiar Contraseña
-          </Button>
-        </DialogFooter>
+
+          <DialogFooter>
+            <Button type="submit">
+              <Save />
+              Cambiar Contraseña
+            </Button>
+          </DialogFooter>
+        </form>
       </DialogContent>
     </Dialog>
   );

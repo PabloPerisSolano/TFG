@@ -24,7 +24,9 @@ export const DialogEditProfile = ({ open, onOpenChange }) => {
   const [first_name, setFirstName] = useState(user.first_name || "");
   const [last_name, setLastName] = useState(user.last_name || "");
 
-  const handleSaveChanges = async () => {
+  const handleSaveChanges = async (e) => {
+    e.preventDefault();
+
     const res = await fetchWithAuth(API_ROUTES.USER_DETAIL, {
       method: "PATCH",
       body: JSON.stringify({
@@ -73,12 +75,13 @@ export const DialogEditProfile = ({ open, onOpenChange }) => {
             Modifica tus datos personales y guarda los cambios.
           </DialogDescription>
         </DialogHeader>
-        <div className="space-y-4">
+        <form onSubmit={handleSaveChanges} className="space-y-4">
           <div>
             <Label htmlFor="username">Nombre de usuario</Label>
             <Input
               id="username"
               value={username}
+              required
               onChange={(e) => setUsername(e.target.value)}
             />
           </div>
@@ -87,6 +90,7 @@ export const DialogEditProfile = ({ open, onOpenChange }) => {
             <Input
               id="email"
               value={email}
+              required
               onChange={(e) => setEmail(e.target.value)}
             />
           </div>
@@ -108,13 +112,14 @@ export const DialogEditProfile = ({ open, onOpenChange }) => {
               placeholder="Escribe tus apellidos..."
             />
           </div>
-        </div>
-        <DialogFooter>
-          <Button onClick={handleSaveChanges}>
-            <Save />
-            Guardar cambios
-          </Button>
-        </DialogFooter>
+
+          <DialogFooter>
+            <Button type="submit">
+              <Save />
+              Guardar cambios
+            </Button>
+          </DialogFooter>
+        </form>
       </DialogContent>
     </Dialog>
   );

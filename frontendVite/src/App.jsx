@@ -14,16 +14,15 @@ function App() {
         <Route path={ROUTES.HOME} element={<Home />} />
         <Route path={ROUTES.LOGIN} element={<Login />} />
         <Route path={ROUTES.REGISTER} element={<Register />} />
-        <Route path={ROUTES.MY_QUIZZES} element={<MisQuizzes />} />
 
-        {/* <Route
-          path="/privado"
+        <Route
+          path={ROUTES.MY_QUIZZES}
           element={
             <PrivateRoute>
-              <div>Contenido privado</div>
+              <MisQuizzes />
             </PrivateRoute>
           }
-        ></Route> */}
+        />
       </Route>
     </Routes>
   );

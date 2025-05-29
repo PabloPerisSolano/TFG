@@ -52,7 +52,7 @@ export const DialogDeleteAccount = ({ open, onOpenChange }) => {
           <DialogTitle>Eliminar Cuenta</DialogTitle>
           <DialogDescription>Esta acción es irreversible.</DialogDescription>
         </DialogHeader>
-        <div className="space-y-4">
+        <form onSubmit={handleDeleteAccount} className="space-y-4">
           <p>
             ¿Estás seguro de eliminar tu cuenta? Escribe{" "}
             <strong>CONFIRMAR</strong>
@@ -61,19 +61,16 @@ export const DialogDeleteAccount = ({ open, onOpenChange }) => {
             value={confirmText}
             onChange={(e) => setConfirmText(e.target.value)}
             placeholder="CONFIRMAR"
-            onKeyDown={(e) => {
-              if (e.key === "Enter") {
-                handleDeleteAccount();
-              }
-            }}
+            required
           />
-        </div>
-        <DialogFooter>
-          <Button onClick={handleDeleteAccount} variant="destructive">
-            <Trash2 />
-            Eliminar Cuenta
-          </Button>
-        </DialogFooter>
+
+          <DialogFooter>
+            <Button type="submit" variant="destructive">
+              <Trash2 />
+              Eliminar Cuenta
+            </Button>
+          </DialogFooter>
+        </form>
       </DialogContent>
     </Dialog>
   );

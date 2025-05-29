@@ -103,7 +103,9 @@ export default function MisQuizzes() {
       <h1 className="text-3xl font-bold mb-6">Mis Cuestionarios</h1>
 
       {loading ? (
-        <LoaderCircle className="animate-spin" />
+        <div className="flex justify-center">
+          <LoaderCircle className="animate-spin" />
+        </div>
       ) : quizzes.length === 0 ? (
         <div className="text-center bg-white rounded-3xl p-3">
           <p className="mb-4 font-bold text-gray-800">
