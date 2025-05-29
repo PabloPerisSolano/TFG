@@ -1,10 +1,10 @@
 import { Routes, Route } from "react-router-dom";
-import MisQuizzes from "./pages/MisQuizzes";
-import Layout from "@/components/Layout";
-import PrivateRoute from "@/components/PrivateRoute";
+import { Layout } from "@/components/Layout";
+import { PrivateRoute } from "@/components/PrivateRoute";
 import { ROUTES } from "@/config/routes";
 import Home from "@/pages/Home";
 import Login from "@/pages/Login";
+import MisQuizzes from "@/pages/MisQuizzes";
 import Register from "@/pages/Register";
 
 function App() {

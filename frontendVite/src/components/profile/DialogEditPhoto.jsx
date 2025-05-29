@@ -16,7 +16,7 @@ import { API_ROUTES } from "@/config/api";
 import { useAuth } from "@/hooks/useAuth";
 import { useAuthFetch } from "@/hooks/useAuthFetch";
 
-export default function DialogEditPhoto({ open, onOpenChange }) {
+export const DialogEditPhoto = ({ open, onOpenChange }) => {
   const fetchWithAuth = useAuthFetch();
   const { user, updateUser } = useAuth();
   const [profile_picture, setProfilePicture] = useState(
@@ -101,4 +101,4 @@ export default function DialogEditPhoto({ open, onOpenChange }) {
       </DialogContent>
     </Dialog>
   );
-}
+};

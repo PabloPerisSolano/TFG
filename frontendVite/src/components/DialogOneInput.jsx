@@ -12,12 +12,12 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 
-export default function DialogOneInput({
+export const DialogOneInput = ({
   children,
   dialogTitle,
   inputPlaceholder,
   onSave,
-}) {
+}) => {
   const [inputValue, setInputValue] = useState("");
   const closeButtonRef = useRef(null);
 
@@ -56,4 +56,4 @@ export default function DialogOneInput({
       </DialogContent>
     </Dialog>
   );
-}
+};

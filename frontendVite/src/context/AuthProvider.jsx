@@ -6,7 +6,7 @@ import { ROUTES } from "@/config/routes";
 import { AuthContext } from "@/context/AuthContext";
 import { useAuthFetch } from "@/hooks/useAuthFetch";
 
-export default function AuthProvider({ children }) {
+export const AuthProvider = ({ children }) => {
   const fetchWithAuth = useAuthFetch();
   const [user, setUser] = useState(null);
   const navigate = useNavigate();
@@ -59,4 +59,4 @@ export default function AuthProvider({ children }) {
       {children}
     </AuthContext.Provider>
   );
-}
+};

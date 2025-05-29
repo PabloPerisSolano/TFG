@@ -8,7 +8,7 @@ import {
 import { publicRoutes, privateRoutes } from "@/config/routes";
 import { useAuth } from "@/hooks/useAuth";
 
-export default function DropdownNavigationMobile({ children }) {
+export const DropdownNavigationMobile = ({ children }) => {
   const { user } = useAuth();
   const routes = user ? privateRoutes : publicRoutes;
 
@@ -27,4 +27,4 @@ export default function DropdownNavigationMobile({ children }) {
       </DropdownMenuContent>
     </DropdownMenu>
   );
-}
+};

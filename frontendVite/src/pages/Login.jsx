@@ -3,7 +3,7 @@ import { LogIn, Eye, EyeOff } from "lucide-react";
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { toast } from "sonner";
-import DialogOneInput from "@/components/DialogOneInput";
+import { DialogOneInput } from "@/components/DialogOneInput";
 import { Button } from "@/components/ui/button";
 import {
   Card,

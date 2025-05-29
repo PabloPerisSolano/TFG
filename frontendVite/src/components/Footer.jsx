@@ -1,7 +1,7 @@
 import { Instagram, Mail } from "lucide-react";
 import React from "react";
 
-export default function Footer() {
+export const Footer = () => {
   return (
     <div
       style={{ backgroundColor: "var(--rich-black)" }}
@@ -56,4 +56,4 @@ export default function Footer() {
       </section>
     </div>
   );
-}
+};

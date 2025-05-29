@@ -9,7 +9,7 @@ import {
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { toast } from "sonner";
-import DialogConfirm from "@/components/DialogConfirm";
+import { DialogConfirm } from "@/components/DialogConfirm";
 import { Button } from "@/components/ui/button";
 import {
   Card,

@@ -1,7 +1,6 @@
 import { Trash2 } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
-import { API_ROUTES } from "@/config/api";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -12,10 +11,11 @@ import {
   DialogFooter,
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
+import { API_ROUTES } from "@/config/api";
 import { useAuth } from "@/hooks/useAuth";
 import { useAuthFetch } from "@/hooks/useAuthFetch";
 
-export default function DialogDeleteAccount({ open, onOpenChange }) {
+export const DialogDeleteAccount = ({ open, onOpenChange }) => {
   const fetchWithAuth = useAuthFetch();
   const { handleLogout } = useAuth();
   const [confirmText, setConfirmText] = useState("");
@@ -77,4 +77,4 @@ export default function DialogDeleteAccount({ open, onOpenChange }) {
       </DialogContent>
     </Dialog>
   );
-}
+};

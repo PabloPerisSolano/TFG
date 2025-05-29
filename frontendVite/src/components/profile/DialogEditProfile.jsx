@@ -1,7 +1,6 @@
 import { Save } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
-import { API_ROUTES } from "@/config/api";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -13,10 +12,11 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { API_ROUTES } from "@/config/api";
 import { useAuth } from "@/hooks/useAuth";
 import { useAuthFetch } from "@/hooks/useAuthFetch";
 
-export default function DialogEditProfile({ open, onOpenChange }) {
+export const DialogEditProfile = ({ open, onOpenChange }) => {
   const fetchWithAuth = useAuthFetch();
   const { user, updateUser } = useAuth();
   const [username, setUsername] = useState(user.username || "");
@@ -118,4 +118,4 @@ export default function DialogEditProfile({ open, onOpenChange }) {
       </DialogContent>
     </Dialog>
   );
-}
+};

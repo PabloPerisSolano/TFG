@@ -8,15 +8,15 @@ import {
   Sparkles,
 } from "lucide-react";
 import { Link } from "react-router-dom";
-import DropdownAvatar from "./profile/DropdownAvatar";
-import DropdownNavigationMobile from "@/components/DropdownNavigationMobile";
+import { DropdownNavigationMobile } from "@/components/DropdownNavigationMobile";
+import { DropdownAvatar } from "@/components/profile/DropdownAvatar";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { ROUTES } from "@/config/routes";
 import { privateRoutes } from "@/config/routes";
 import { useAuth } from "@/hooks/useAuth";
 
-export default function Header() {
+export const Header = () => {
   const { user } = useAuth();
 
   return (
@@ -78,4 +78,4 @@ export default function Header() {
       </section>
     </div>
   );
-}
+};

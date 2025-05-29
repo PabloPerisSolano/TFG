@@ -11,14 +11,14 @@ import {
   AlertDialogAction,
 } from "@/components/ui/alert-dialog";
 
-export default function DialogConfirm({
+export const DialogConfirm = ({
   title,
   description,
   onConfirm,
   confirmText = "Confirmar",
   cancelText = "Cancelar",
   triggerButton,
-}) {
+}) => {
   return (
     <AlertDialog>
       <AlertDialogTrigger asChild>{triggerButton}</AlertDialogTrigger>
@@ -40,4 +40,4 @@ export default function DialogConfirm({
       </AlertDialogContent>
     </AlertDialog>
   );
-}
+};
