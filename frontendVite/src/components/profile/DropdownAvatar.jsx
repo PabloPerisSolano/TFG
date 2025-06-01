@@ -1,12 +1,16 @@
 import { UserPen, UserLock, LogOut, Trash2, Pencil } from "lucide-react";
 import { useState } from "react";
-import { DialogChangePassword } from "@/components/profile/DialogChangePassword";
-import { DialogDeleteAccount } from "@/components/profile/DialogDeleteAccount";
-import { DialogEditPhoto } from "@/components/profile/DialogEditPhoto";
-import { DialogEditProfile } from "@/components/profile/DialogEditProfile";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Button } from "@/components/ui/button";
 import {
+  DialogChangePassword,
+  DialogDeleteAccount,
+  DialogEditPhoto,
+  DialogEditProfile,
+} from "@/components/profile";
+import {
+  Avatar,
+  AvatarFallback,
+  AvatarImage,
+  Button,
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuGroup,
@@ -14,8 +18,8 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import { useAuth } from "@/hooks/useAuth";
+} from "@/components/ui";
+import { useAuth } from "@/hooks";
 
 export const DropdownAvatar = ({ children }) => {
   const { user, handleLogout } = useAuth();

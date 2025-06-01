@@ -2,19 +2,18 @@ import { UserPlus, Eye, EyeOff } from "lucide-react";
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { toast } from "sonner";
-import { Button } from "@/components/ui/button";
 import {
+  Button,
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { API_ROUTES } from "@/config/api";
-import { ROUTES } from "@/config/routes";
-import { useAuthFetch } from "@/hooks/useAuthFetch";
+  Input,
+  Label,
+} from "@/components/ui";
+import { API_ROUTES, ROUTES } from "@/config";
+import { useAuthFetch } from "@/hooks";
 import { cn } from "@/lib/utils";
 
 export default function Register({ className, ...props }) {
@@ -55,10 +54,7 @@ export default function Register({ className, ...props }) {
   };
 
   return (
-    <div
-      className={cn("flex flex-col gap-6 max-w-sm mx-auto", className)}
-      {...props}
-    >
+    <div className={cn("max-w-md mx-auto", className)} {...props}>
       <Card>
         <CardHeader>
           <CardTitle className="text-2xl">Crear Cuenta</CardTitle>

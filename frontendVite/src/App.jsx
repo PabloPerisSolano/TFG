@@ -1,7 +1,6 @@
 import { Routes, Route } from "react-router-dom";
-import { Layout } from "@/components/Layout";
-import { PrivateRoute } from "@/components/PrivateRoute";
-import { ROUTES } from "@/config/routes";
+import { Layout, PrivateRoute } from "@/components";
+import { ROUTES } from "@/config";
 import Home from "@/pages/Home";
 import Login from "@/pages/Login";
 import MisQuizzes from "@/pages/MisQuizzes";

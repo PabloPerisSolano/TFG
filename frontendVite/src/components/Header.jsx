@@ -1,20 +1,10 @@
-import {
-  LogIn,
-  UserPlus,
-  Menu,
-  House,
-  ClipboardList,
-  ClipboardPlus,
-  Sparkles,
-} from "lucide-react";
+import { LogIn, UserPlus, Menu } from "lucide-react";
 import { Link } from "react-router-dom";
-import { DropdownNavigationMobile } from "@/components/DropdownNavigationMobile";
-import { DropdownAvatar } from "@/components/profile/DropdownAvatar";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Button } from "@/components/ui/button";
-import { ROUTES } from "@/config/routes";
-import { privateRoutes } from "@/config/routes";
-import { useAuth } from "@/hooks/useAuth";
+import { DropdownNavigationMobile } from "@/components";
+import { DropdownAvatar } from "@/components/profile";
+import { Avatar, AvatarFallback, AvatarImage, Button } from "@/components/ui";
+import { ROUTES, privateRoutes } from "@/config";
+import { useAuth } from "@/hooks";
 
 export const Header = () => {
   const { user } = useAuth();

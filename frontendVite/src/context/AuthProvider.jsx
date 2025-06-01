@@ -1,9 +1,8 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
-import { API_ROUTES } from "@/config/api";
-import { ROUTES } from "@/config/routes";
-import { AuthContext } from "@/context/AuthContext";
+import { API_ROUTES, ROUTES } from "@/config";
+import { AuthContext } from "@/context";
 
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);

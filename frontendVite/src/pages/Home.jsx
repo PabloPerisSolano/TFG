@@ -1,20 +1,18 @@
 import Autoplay from "embla-carousel-autoplay";
 import { Play, ArrowBigRightDash, UserPlus } from "lucide-react";
 import { Link } from "react-router-dom";
-import { Button } from "@/components/ui/button";
 import {
+  Button,
   Card,
   CardHeader,
   CardTitle,
   CardDescription,
-} from "@/components/ui/card";
-import {
   Carousel,
   CarouselContent,
   CarouselItem,
-} from "@/components/ui/carousel";
-import { ROUTES } from "@/config/routes";
-import { useAuth } from "@/hooks/useAuth";
+} from "@/components/ui";
+import { ROUTES } from "@/config";
+import { useAuth } from "@/hooks";
 
 export default function Home() {
   const { user } = useAuth();

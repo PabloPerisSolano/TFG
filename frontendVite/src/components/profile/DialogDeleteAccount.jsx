@@ -1,23 +1,22 @@
 import { Trash2 } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
-import { Button } from "@/components/ui/button";
 import {
+  Button,
   Dialog,
   DialogContent,
   DialogHeader,
   DialogDescription,
   DialogTitle,
   DialogFooter,
-} from "@/components/ui/dialog";
-import { Input } from "@/components/ui/input";
-import { API_ROUTES } from "@/config/api";
-import { useAuth } from "@/hooks/useAuth";
-import { useAuthFetch } from "@/hooks/useAuthFetch";
+  Input,
+} from "@/components/ui";
+import { API_ROUTES } from "@/config";
+import { useAuth, useAuthFetch } from "@/hooks";
 
 export const DialogDeleteAccount = ({ open, onOpenChange }) => {
   const fetchWithAuth = useAuthFetch();
-  const { handleLogout } = useAuth();
+  const { closeSession } = useAuth();
   const [confirmText, setConfirmText] = useState("");
 
   const handleDeleteAccount = async () => {
@@ -42,7 +41,7 @@ export const DialogDeleteAccount = ({ open, onOpenChange }) => {
 
     toast.success("Cuenta eliminada correctamente");
 
-    handleLogout();
+    closeSession();
   };
 
   return (

@@ -1,13 +1,12 @@
 import { Outlet } from "react-router-dom";
-import { Footer } from "@/components/Footer";
-import { Header } from "@/components/Header";
+import { Header, Footer } from "@/components";
 
 export const Layout = () => {
   return (
     <div>
-      <div className="min-h-screen">
+      <div className="min-h-screen flex flex-col">
         <Header />
-        <main className="p-4">
+        <main className="flex-1 container mx-auto p-4 max-w-6xl">
           <Outlet />
         </main>
       </div>

@@ -1,5 +1,5 @@
 import { toast } from "sonner";
-import { useAuth } from "@/hooks/useAuth";
+import { useAuth } from "@/hooks";
 
 export const useAuthFetch = () => {
   const { closeSession } = useAuth();

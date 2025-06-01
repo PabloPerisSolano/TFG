@@ -1,20 +1,19 @@
 import { Save } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
-import { Button } from "@/components/ui/button";
 import {
+  Button,
   Dialog,
   DialogHeader,
   DialogDescription,
   DialogContent,
   DialogTitle,
   DialogFooter,
-} from "@/components/ui/dialog";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { API_ROUTES } from "@/config/api";
-import { useAuth } from "@/hooks/useAuth";
-import { useAuthFetch } from "@/hooks/useAuthFetch";
+  Input,
+  Label,
+} from "@/components/ui";
+import { API_ROUTES } from "@/config";
+import { useAuth, useAuthFetch } from "@/hooks";
 
 export const DialogEditProfile = ({ open, onOpenChange }) => {
   const fetchWithAuth = useAuthFetch();

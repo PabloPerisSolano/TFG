@@ -1,7 +1,7 @@
 import { Save } from "lucide-react";
 import { useState, useRef } from "react";
-import { Button } from "@/components/ui/button";
 import {
+  Button,
   Dialog,
   DialogContent,
   DialogHeader,
@@ -9,8 +9,8 @@ import {
   DialogTrigger,
   DialogFooter,
   DialogClose,
-} from "@/components/ui/dialog";
-import { Input } from "@/components/ui/input";
+  Input,
+} from "@/components/ui";
 
 export const DialogOneInput = ({
   children,

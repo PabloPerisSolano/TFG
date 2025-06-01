@@ -3,21 +3,19 @@ import { LogIn, Eye, EyeOff } from "lucide-react";
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { toast } from "sonner";
-import { DialogOneInput } from "@/components/DialogOneInput";
-import { Button } from "@/components/ui/button";
+import { DialogOneInput } from "@/components";
 import {
+  Button,
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { API_ROUTES, GOOGLE_CLIENT_ID } from "@/config/api";
-import { ROUTES } from "@/config/routes";
-import { useAuth } from "@/hooks/useAuth";
-import { useAuthFetch } from "@/hooks/useAuthFetch";
+  Input,
+  Label,
+} from "@/components/ui";
+import { API_ROUTES, GOOGLE_CLIENT_ID, ROUTES } from "@/config";
+import { useAuth, useAuthFetch } from "@/hooks";
 import { cn } from "@/lib/utils";
 
 export default function Login({ className, ...props }) {
@@ -87,10 +85,7 @@ export default function Login({ className, ...props }) {
   };
 
   return (
-    <div
-      className={cn("flex flex-col gap-6 max-w-sm mx-auto", className)}
-      {...props}
-    >
+    <div className={cn("max-w-sm mx-auto", className)} {...props}>
       <Card>
         <CardHeader>
           <CardTitle className="text-2xl">Iniciar Sesión</CardTitle>
