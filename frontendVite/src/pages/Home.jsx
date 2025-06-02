@@ -18,7 +18,7 @@ export default function Home() {
   const { user } = useAuth();
 
   return (
-    <div className="min-h-screen space-y-10 mt-6">
+    <div className="space-y-10">
       <section className="text-center space-y-6 bg-white  p-6 max-w-3xl mx-auto rounded-3xl shadow-2xl">
         <article className="flex items-center space-x-2 justify-center">
           <img

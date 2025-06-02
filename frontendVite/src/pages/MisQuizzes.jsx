@@ -20,6 +20,7 @@ export default function MisQuizzes() {
       const res = await fetchWithAuth(API_ROUTES.USER_QUIZ_LIST_CREATE);
       if (!res.ok) {
         toast.error("Error al obtener cuestionarios");
+        setLoading(false);
         return;
       }
       const data = await res.json();

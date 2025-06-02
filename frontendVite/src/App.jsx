@@ -4,6 +4,7 @@ import { ROUTES } from "@/config";
 import Home from "@/pages/Home";
 import Login from "@/pages/Login";
 import MisQuizzes from "@/pages/MisQuizzes";
+import QuizzDetail from "@/pages/QuizzDetail";
 import Register from "@/pages/Register";
 
 function App() {
@@ -19,6 +20,15 @@ function App() {
           element={
             <PrivateRoute>
               <MisQuizzes />
+            </PrivateRoute>
+          }
+        />
+
+        <Route
+          path={ROUTES.MY_QUIZZ_DETAIL_PATH}
+          element={
+            <PrivateRoute>
+              <QuizzDetail />
             </PrivateRoute>
           }
         />

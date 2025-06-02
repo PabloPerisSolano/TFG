@@ -25,7 +25,7 @@ import {
   TableRow,
   TableFooter,
 } from "@/components/ui";
-import { API_ROUTES } from "@/config";
+import { API_ROUTES, ROUTES } from "@/config";
 import { useAuthFetch } from "@/hooks";
 
 export const CardQuizz = ({ quiz, onDelete, onTogglePublic }) => {
@@ -140,7 +140,7 @@ export const CardQuizz = ({ quiz, onDelete, onTogglePublic }) => {
             </Button>
           }
         />
-        <Link to={`/quizzes/${quiz.id}`}>
+        <Link to={ROUTES.MY_QUIZZ_DETAIL(quiz.id)}>
           <Button>
             <Pencil /> <span className="hidden sm:inline">Editar</span>
           </Button>

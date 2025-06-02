@@ -54,7 +54,7 @@ export default function Register({ className, ...props }) {
   };
 
   return (
-    <div className={cn("max-w-md mx-auto", className)} {...props}>
+    <div className={cn("max-w-lg mx-auto", className)} {...props}>
       <Card>
         <CardHeader>
           <CardTitle className="text-2xl">Crear Cuenta</CardTitle>

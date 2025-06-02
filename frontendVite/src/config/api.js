@@ -6,9 +6,6 @@ const API_BASE_QUIZZES = `${API_BASE}quizzes/`;
 const API_BASE_QUIZZES_PUBLIC = `${API_BASE_QUIZZES}public/`;
 const API_BASE_QUIZZES_ME = `${API_BASE_QUIZZES}me/`;
 
-export const GOOGLE_CLIENT_ID =
-  "853763452683-54jmk80pnmrfqgqhhh1p2218th7q83ge.apps.googleusercontent.com";
-
 export const API_ROUTES = {
   // Auth
   REGISTER: `${API_BASE_AUTH}register/`,
@@ -43,3 +40,9 @@ export const API_ROUTES = {
 
   QUIZ_GENERATOR: `${API_BASE_QUIZZES_ME}generator/`,
 };
+
+export const GOOGLE_CLIENT_ID =
+  "853763452683-54jmk80pnmrfqgqhhh1p2218th7q83ge.apps.googleusercontent.com";
+
+export const MIN_QUIZ_TIME = 1; // Minutos
+export const MAX_QUIZ_TIME = 120; // Minutos

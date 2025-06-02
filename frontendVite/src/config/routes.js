@@ -12,6 +12,8 @@ export const ROUTES = {
   LOGIN: "/login",
   REGISTER: "/register",
   MY_QUIZZES: "/my-quizzes",
+  MY_QUIZZ_DETAIL_PATH: "/my-quizzes/:quizId",
+  MY_QUIZZ_DETAIL: (quizId) => `/my-quizzes/${quizId}`,
   CREATE_QUIZZ: "/create-quizz",
   GENERATE_QUIZZ: "/generate-quizz",
 };
