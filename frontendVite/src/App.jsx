@@ -4,7 +4,9 @@ import { ROUTES } from "@/config";
 import Home from "@/pages/Home";
 import Login from "@/pages/Login";
 import MisQuizzes from "@/pages/MisQuizzes";
+import QuizzCreator from "@/pages/QuizzCreator";
 import QuizzDetail from "@/pages/QuizzDetail";
+import QuizzGenerator from "@/pages/QuizzGenerator";
 import Register from "@/pages/Register";
 
 function App() {
@@ -29,6 +31,24 @@ function App() {
           element={
             <PrivateRoute>
               <QuizzDetail />
+            </PrivateRoute>
+          }
+        />
+
+        <Route
+          path={ROUTES.CREATE_QUIZZ}
+          element={
+            <PrivateRoute>
+              <QuizzCreator />
+            </PrivateRoute>
+          }
+        />
+
+        <Route
+          path={ROUTES.GENERATE_QUIZZ}
+          element={
+            <PrivateRoute>
+              <QuizzGenerator />
             </PrivateRoute>
           }
         />
