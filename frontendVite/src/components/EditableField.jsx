@@ -13,7 +13,7 @@ export const EditableField = ({
   const [tempValue, setTempValue] = useState(value);
 
   const handleSave = async () => {
-    if (!tempValue.toString().trim() || tempValue === value) {
+    if (tempValue === value) {
       setEditing(false);
       return;
     }
@@ -23,7 +23,7 @@ export const EditableField = ({
   };
 
   return (
-    <div className="group flex items-center space-x-2">
+    <div className="group flex gap-1 items-center">
       {editing ? (
         isTextarea ? (
           <Textarea

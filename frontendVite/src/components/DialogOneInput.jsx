@@ -6,6 +6,7 @@ import {
   DialogContent,
   DialogHeader,
   DialogTitle,
+  DialogDescription,
   DialogTrigger,
   DialogFooter,
   DialogClose,
@@ -39,6 +40,9 @@ export const DialogOneInput = ({
       <DialogContent>
         <DialogHeader>
           <DialogTitle>{dialogTitle}</DialogTitle>
+          <DialogDescription>
+            Introduce un valor y pulsa Guardar.
+          </DialogDescription>
         </DialogHeader>
         <Input
           placeholder={inputPlaceholder}

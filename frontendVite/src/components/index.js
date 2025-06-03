@@ -1,5 +1,3 @@
-export * from "./CardQuizz";
-export * from "./CardQuizzDetail";
 export * from "./DialogConfirm";
 export * from "./DialogOneInput";
 export * from "./DropdownNavigationMobile";

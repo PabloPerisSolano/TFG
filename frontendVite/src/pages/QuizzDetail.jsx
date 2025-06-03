@@ -2,7 +2,7 @@ import { TriangleAlert, Reply, LoaderCircle } from "lucide-react";
 import { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import { toast } from "sonner";
-import { CardQuizzDetail } from "@/components";
+import { CardQuizzDetail } from "@/components/cards";
 import { Button } from "@/components/ui";
 import { API_ROUTES, ROUTES } from "@/config";
 import { useAuthFetch } from "@/hooks";

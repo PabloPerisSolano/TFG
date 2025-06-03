@@ -67,6 +67,7 @@ class QuizListSerializer(serializers.ModelSerializer):
 class QuizDetailSerializer(serializers.ModelSerializer):
     author = serializers.StringRelatedField()
     questions = QuestionDetailSerializer(many=True, read_only=True)
+    description = serializers.CharField(required=False, allow_blank=True)
 
     class Meta:
         model = Quiz
