@@ -109,18 +109,20 @@ export default function Home() {
         </div>
       </section>
 
-      <section className="text-center">
-        <h2 className="text-4xl font-bold">¿Listo para comenzar?</h2>
-        <p className="mt-4 text-xl">
-          Regístrate ahora y empieza a crear tus cuestionarios.
-        </p>
-        <Link to={ROUTES.REGISTER}>
-          <Button className="mt-6">
-            <UserPlus />
-            Registrarse
-          </Button>
-        </Link>
-      </section>
+      {!user && (
+        <section className="text-center">
+          <h2 className="text-4xl font-bold">¿Listo para comenzar?</h2>
+          <p className="mt-4 text-xl">
+            Regístrate ahora y empieza a crear tus cuestionarios.
+          </p>
+          <Link to={ROUTES.REGISTER}>
+            <Button className="mt-6">
+              <UserPlus />
+              Registrarse
+            </Button>
+          </Link>
+        </section>
+      )}
     </div>
   );
 }

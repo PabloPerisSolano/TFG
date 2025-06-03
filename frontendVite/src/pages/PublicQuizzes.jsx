@@ -18,14 +18,14 @@ export default function MisQuizzes() {
   useEffect(() => {
     const fetchQuizzes = async () => {
       setLoading(true);
-      const res = await fetchWithAuth(API_ROUTES.USER_QUIZ_LIST_CREATE);
+      const res = await fetchWithAuth(API_ROUTES.PUBLIC_QUIZ_LIST);
       if (!res.ok) {
         toast.error("Error al obtener cuestionarios");
         setLoading(false);
         return;
       }
       const data = await res.json();
-      setQuizzes(data.results || []);
+      setQuizzes(data);
       setLoading(false);
     };
     fetchQuizzes();

@@ -1,5 +1,6 @@
 # apps/quizzes/serializers.py
 from rest_framework import serializers
+from rest_framework.exceptions import ValidationError
 
 from .models import Answer, Question, Quiz
 
@@ -49,6 +50,9 @@ class QuestionCreateSerializer(serializers.ModelSerializer):
 
 class QuizListSerializer(serializers.ModelSerializer):
     author = serializers.StringRelatedField()
+    category_display = serializers.CharField(
+        source="get_category_display", read_only=True
+    )
 
     class Meta:
         model = Quiz
@@ -60,6 +64,7 @@ class QuizListSerializer(serializers.ModelSerializer):
             "public",
             "time_limit",
             "created_at",
+            "category_display",
             "num_questions",
         ]
 
@@ -68,6 +73,9 @@ class QuizDetailSerializer(serializers.ModelSerializer):
     author = serializers.StringRelatedField()
     questions = QuestionDetailSerializer(many=True, read_only=True)
     description = serializers.CharField(required=False, allow_blank=True)
+    category_display = serializers.CharField(
+        source="get_category_display", read_only=True
+    )
 
     class Meta:
         model = Quiz
@@ -79,6 +87,8 @@ class QuizDetailSerializer(serializers.ModelSerializer):
             "public",
             "time_limit",
             "created_at",
+            "category",
+            "category_display",
             "num_questions",
             "questions",
         ]
@@ -88,6 +98,9 @@ class QuizDetailSerializer(serializers.ModelSerializer):
 class QuizCreateSerializer(serializers.ModelSerializer):
     questions = QuestionCreateSerializer(many=True, required=False)
     description = serializers.CharField(required=False, allow_blank=True)
+    category_display = serializers.CharField(
+        source="get_category_display", read_only=True
+    )
 
     class Meta:
         model = Quiz
@@ -100,6 +113,8 @@ class QuizCreateSerializer(serializers.ModelSerializer):
             "public",
             "time_limit",
             "created_at",
+            "category",
+            "category_display",
             "num_questions",
             "questions",
         ]

@@ -20,6 +20,7 @@ from .serializers import (
     QuizDetailSerializer,
     QuizListSerializer,
 )
+from .utils import filter_and_order_quizzes
 
 
 class IsAuthorOrReadOnly(permissions.BasePermission):
@@ -43,12 +44,18 @@ class IsAuthorOrReadOnly(permissions.BasePermission):
         return False
 
 
+class CustomPageNumberPagination(PageNumberPagination):
+    page_size = 20  # Tamaño de página por defecto
+    page_size_query_param = "page_size"
+
+
 class PublicQuizListView(generics.ListAPIView):
     serializer_class = QuizListSerializer
-    pagination_class = PageNumberPagination
+    pagination_class = CustomPageNumberPagination
 
     def get_queryset(self):
-        return Quiz.objects.filter(public=True).order_by("-created_at")
+        queryset = Quiz.objects.filter(public=True)
+        return filter_and_order_quizzes(queryset, self.request.query_params)
 
 
 class PublicQuizDetailView(generics.RetrieveAPIView):
@@ -61,15 +68,17 @@ class PublicQuizDetailView(generics.RetrieveAPIView):
 
 class UserQuizListCreateView(generics.ListCreateAPIView):
     permission_classes = [IsAuthenticated]
-    pagination_class = PageNumberPagination
+    pagination_class = CustomPageNumberPagination
+    serializer_class = QuizListSerializer
 
     def get_queryset(self):
-        return Quiz.objects.filter(author=self.request.user).order_by("-created_at")
+        queryset = Quiz.objects.filter(author=self.request.user)
+        return filter_and_order_quizzes(queryset, self.request.query_params)
 
     def get_serializer_class(self):
         if self.request.method == "POST":
             return QuizCreateSerializer
-        return QuizListSerializer
+        return self.serializer_class
 
     def perform_create(self, serializer):
         serializer.save(author=self.request.user)
