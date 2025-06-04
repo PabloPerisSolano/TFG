@@ -5,12 +5,18 @@ import {
   ClipboardList,
   ClipboardPlus,
   Sparkles,
+  BookOpenCheck,
 } from "lucide-react";
 
 export const ROUTES = {
   HOME: "/",
   LOGIN: "/login",
   REGISTER: "/register",
+
+  PUBLIC_QUIZZES: "/public-quizzes",
+  PUBLIC_QUIZZ_DETAIL_PATH: "/public-quizzes/:quizId",
+  PUBLIC_QUIZZ_DETAIL: (quizId) => `/public-quizzes/${quizId}`,
+
   MY_QUIZZES: "/my-quizzes",
   MY_QUIZZ_DETAIL_PATH: "/my-quizzes/:quizId",
   MY_QUIZZ_DETAIL: (quizId) => `/my-quizzes/${quizId}`,
@@ -34,6 +40,11 @@ export const publicRoutes = [
     name: "Registrarse",
     icon: UserPlus,
   },
+  {
+    path: ROUTES.PUBLIC_QUIZZES,
+    name: "Cuestionarios Públicos",
+    icon: BookOpenCheck,
+  },
 ];
 
 export const privateRoutes = [
@@ -51,5 +62,10 @@ export const privateRoutes = [
     path: ROUTES.GENERATE_QUIZZ,
     name: "Generar Quizz",
     icon: Sparkles,
+  },
+  {
+    path: ROUTES.PUBLIC_QUIZZES,
+    name: "Cuestionarios Públicos",
+    icon: BookOpenCheck,
   },
 ];

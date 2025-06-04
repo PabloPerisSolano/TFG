@@ -1,4 +1,6 @@
 import { LoaderCircle, CircleAlert } from "lucide-react";
+import { useState, useEffect } from "react";
+import { toast } from "sonner";
 import { CardQuizz } from "@/components/cards";
 import {
   Card,
@@ -22,31 +24,55 @@ import {
   PaginationNext,
   PaginationPrevious,
 } from "@/components/ui";
+import { useAuthFetch } from "@/hooks";
 
-export const CardPagedQuizzes = ({
-  cardTitle,
-  cardDescription,
-  quizzes,
-  loading,
-  totalItems,
-  currentPage,
-  itemsPerPage,
-  onPageChange,
-  onItemsPerPageChange,
-}) => {
+export const CardPagedQuizzes = ({ cardTitle, cardDescription, link }) => {
+  const fetchWithAuth = useAuthFetch();
+  const [items, setItems] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  const [totalItems, setTotalItems] = useState(0);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage, setItemsPerPage] = useState(12);
+
+  useEffect(() => {
+    const fetchItems = async () => {
+      setLoading(true);
+
+      const res = await fetchWithAuth(
+        `${link}?page=${currentPage}&page_size=${itemsPerPage}`
+      );
+
+      if (!res.ok) {
+        toast.error("Error al obtener los cuestionarios");
+        setLoading(false);
+        return;
+      }
+
+      const data = await res.json();
+
+      setItems(data.results || []);
+      setTotalItems(data.count || 0);
+
+      setLoading(false);
+    };
+
+    fetchItems();
+  }, [currentPage, itemsPerPage]);
+
   const totalPages = Math.ceil(totalItems / itemsPerPage);
 
   // Cambiar de página
   const handlePageChange = (newPage) => {
     if (newPage >= 1 && newPage <= totalPages) {
-      onPageChange(newPage);
+      setCurrentPage(newPage);
     }
   };
 
   // Cambiar tamaño de página
   const handleItemsPerPageChange = (value) => {
-    onItemsPerPageChange(Number(value));
-    onPageChange(1);
+    setItemsPerPage(Number(value));
+    setCurrentPage(1);
   };
 
   // Generar números de página para mostrar
@@ -105,14 +131,14 @@ export const CardPagedQuizzes = ({
           <div className="flex justify-center">
             <LoaderCircle className="animate-spin" />
           </div>
-        ) : quizzes.length === 0 ? (
+        ) : items.length === 0 ? (
           <div className="flex justify-center gap-2 items-center">
             <CircleAlert />
             <p className="font-bold">No se han encontrado resultados.</p>
           </div>
         ) : (
           <section className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            {quizzes.map((quiz) => (
+            {items.map((quiz) => (
               <CardQuizz key={quiz.id} quiz={quiz} />
             ))}
           </section>

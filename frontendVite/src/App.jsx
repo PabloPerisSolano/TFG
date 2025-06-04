@@ -4,6 +4,7 @@ import { ROUTES } from "@/constants";
 import Home from "@/pages/Home";
 import Login from "@/pages/Login";
 import MisQuizzes from "@/pages/MisQuizzes";
+import PublicQuizzes from "@/pages/PublicQuizzes";
 import QuizzCreator from "@/pages/QuizzCreator";
 import QuizzDetail from "@/pages/QuizzDetail";
 import QuizzGenerator from "@/pages/QuizzGenerator";
@@ -16,6 +17,7 @@ function App() {
         <Route path={ROUTES.HOME} element={<Home />} />
         <Route path={ROUTES.LOGIN} element={<Login />} />
         <Route path={ROUTES.REGISTER} element={<Register />} />
+        <Route path={ROUTES.PUBLIC_QUIZZES} element={<PublicQuizzes />} />
 
         <Route
           path={ROUTES.MY_QUIZZES}
