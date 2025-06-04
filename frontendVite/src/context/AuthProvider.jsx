@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
-import { API_ROUTES, ROUTES } from "@/config";
+import { API_ROUTES, ROUTES } from "@/constants";
 import { AuthContext } from "@/context";
 
 export const AuthProvider = ({ children }) => {

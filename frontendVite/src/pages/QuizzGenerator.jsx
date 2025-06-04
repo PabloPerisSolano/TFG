@@ -2,6 +2,7 @@ import { Loader2, Sparkles } from "lucide-react";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
+import { BaseQuizzCreate } from "@/components";
 import {
   Button,
   Card,
@@ -10,12 +11,11 @@ import {
   CardDescription,
   CardContent,
   CardFooter,
-  Checkbox,
   Input,
   Label,
   Textarea,
 } from "@/components/ui";
-import { ROUTES, API_ROUTES, MIN_QUIZ_TIME, MAX_QUIZ_TIME } from "@/config";
+import { ROUTES, API_ROUTES, MIN_QUIZ_TIME, MAX_QUIZ_TIME } from "@/constants";
 import { useAuthFetch } from "@/hooks";
 
 export default function QuizzGenerator() {
@@ -30,6 +30,7 @@ export default function QuizzGenerator() {
   const [description, setDescription] = useState("");
   const [publicar, setPublicar] = useState(false);
   const [tiempo, setTiempo] = useState(60);
+  const [category, setCategory] = useState("");
   const [num_preguntas, setNumPreguntas] = useState(1);
   const [num_opciones, setNumOpciones] = useState(2);
   const [prompt, setPrompt] = useState("");
@@ -40,6 +41,11 @@ export default function QuizzGenerator() {
 
     if (!title || !prompt) {
       toast.error("Por favor, completa todos los campos obligatorios.");
+      return;
+    }
+
+    if (!category) {
+      toast.error("Debe seleccionar una categoría.");
       return;
     }
 
@@ -87,6 +93,7 @@ export default function QuizzGenerator() {
       description,
       time_limit: tiempo * 60,
       public: publicar,
+      category,
       prompt,
       num_preguntas,
       num_opciones,
@@ -124,25 +131,19 @@ export default function QuizzGenerator() {
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-5">
-          <article>
-            <Label className="font-semibold">Título</Label>
-            <Input
-              placeholder="Escribe el título del cuestionario..."
-              value={title}
-              onChange={(e) => setTitle(e.target.value)}
-              required
-            />
-          </article>
-          <article>
-            <Label className="font-semibold">Descripción</Label>
-            <Textarea
-              placeholder="Escibe una descripción del cuestionario..."
-              value={description}
-              onChange={(e) => setDescription(e.target.value)}
-            />
-          </article>
+          <BaseQuizzCreate
+            title={title}
+            onTitleChange={(e) => setTitle(e.target.value)}
+            description={description}
+            onDescriptionChange={(e) => setDescription(e.target.value)}
+            tiempo={tiempo}
+            onTiempoChange={(e) => setTiempo(Number(e.target.value))}
+            publicar={publicar}
+            onPublicarChange={(checked) => setPublicar(checked)}
+            onCategoryChange={(value) => setCategory(value)}
+          />
 
-          <section className="flex flex-col gap-5 sm:flex-row justify-between">
+          <section className="flex flex-row gap-5">
             <article>
               <Label className="font-semibold">Nº Preguntas</Label>
               <Input
@@ -167,29 +168,6 @@ export default function QuizzGenerator() {
                   setNumOpciones(Number(e.target.value));
                 }}
               />
-            </article>
-
-            <article>
-              <Label className="font-semibold">
-                Límite de Tiempo (minutos)
-              </Label>
-              <Input
-                type="number"
-                min={MIN_QUIZ_TIME}
-                max={MAX_QUIZ_TIME}
-                value={tiempo}
-                onChange={(e) => {
-                  setTiempo(Number(e.target.value));
-                }}
-              />
-            </article>
-
-            <article className="flex items-center gap-2 ">
-              <Checkbox
-                checked={publicar}
-                onCheckedChange={(set) => setPublicar(set)}
-              />
-              <Label className="font-semibold">Publicar</Label>
             </article>
           </section>
 

@@ -4,7 +4,7 @@ import { Link, useParams } from "react-router-dom";
 import { toast } from "sonner";
 import { CardQuizzDetail } from "@/components/cards";
 import { Button } from "@/components/ui";
-import { API_ROUTES, ROUTES } from "@/config";
+import { API_ROUTES, ROUTES } from "@/constants";
 import { useAuthFetch } from "@/hooks";
 
 export default function QuizzDetail() {

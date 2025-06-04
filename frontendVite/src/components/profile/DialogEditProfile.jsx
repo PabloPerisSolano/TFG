@@ -12,7 +12,7 @@ import {
   Input,
   Label,
 } from "@/components/ui";
-import { API_ROUTES } from "@/config";
+import { API_ROUTES } from "@/constants";
 import { useAuth, useAuthFetch } from "@/hooks";
 
 export const DialogEditProfile = ({ open, onOpenChange }) => {

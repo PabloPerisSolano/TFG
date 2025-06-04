@@ -14,7 +14,7 @@ import {
   Input,
   Label,
 } from "@/components/ui";
-import { API_ROUTES, GOOGLE_CLIENT_ID, ROUTES } from "@/config";
+import { API_ROUTES, GOOGLE_CLIENT_ID, ROUTES } from "@/constants";
 import { useAuth, useAuthFetch } from "@/hooks";
 import { cn } from "@/lib/utils";
 

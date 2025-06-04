@@ -1,6 +1,6 @@
 import { LoaderCircle } from "lucide-react";
 import { Navigate } from "react-router-dom";
-import { ROUTES } from "@/config";
+import { ROUTES } from "@/constants";
 import { useAuth } from "@/hooks";
 
 export const PrivateRoute = ({ children }) => {

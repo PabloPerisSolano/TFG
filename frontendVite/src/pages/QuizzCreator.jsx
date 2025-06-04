@@ -2,6 +2,7 @@ import { Trash2, Plus, CirclePlus, Save } from "lucide-react";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
+import { BaseQuizzCreate } from "@/components";
 import {
   Button,
   Card,
@@ -10,14 +11,12 @@ import {
   CardDescription,
   CardContent,
   CardFooter,
-  Checkbox,
   Input,
   Label,
   RadioGroup,
   RadioGroupItem,
-  Textarea,
 } from "@/components/ui";
-import { API_ROUTES, ROUTES, MIN_QUIZ_TIME, MAX_QUIZ_TIME } from "@/config";
+import { API_ROUTES, ROUTES, MIN_QUIZ_TIME, MAX_QUIZ_TIME } from "@/constants";
 import { useAuthFetch } from "@/hooks";
 
 export default function QuizzCreator() {
@@ -27,6 +26,7 @@ export default function QuizzCreator() {
   const [description, setDescription] = useState("");
   const [tiempo, setTiempo] = useState(60);
   const [publicar, setPublicar] = useState(false);
+  const [category, setCategory] = useState("");
   const [questions, setQuestions] = useState([
     { question: "", answers: ["", ""], correctIndex: 0 },
   ]);
@@ -43,6 +43,11 @@ export default function QuizzCreator() {
       toast.error(
         `El tiempo debe ser un número entre ${MIN_QUIZ_TIME} y ${MAX_QUIZ_TIME} minutos.`
       );
+      return;
+    }
+
+    if (!category) {
+      toast.error("Debe seleccionar una categoría.");
       return;
     }
 
@@ -66,6 +71,7 @@ export default function QuizzCreator() {
       description,
       time_limit: tiempo * 60,
       public: publicar,
+      category,
       questions: questions.map((q) => ({
         text: q.question,
         answers: q.answers.map((ans, index) => ({
@@ -133,50 +139,18 @@ export default function QuizzCreator() {
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-5">
-          <header className=" border p-4 rounded-lg space-y-4">
-            <article>
-              <Label className="font-semibold">Título</Label>
-              <Input
-                value={title}
-                onChange={(e) => setTitle(e.target.value)}
-                placeholder="Escribe el título del cuestionario..."
-                required
-              />
-            </article>
+          <BaseQuizzCreate
+            title={title}
+            onTitleChange={(e) => setTitle(e.target.value)}
+            description={description}
+            onDescriptionChange={(e) => setDescription(e.target.value)}
+            tiempo={tiempo}
+            onTiempoChange={(e) => setTiempo(Number(e.target.value))}
+            publicar={publicar}
+            onPublicarChange={(checked) => setPublicar(checked)}
+            onCategoryChange={(value) => setCategory(value)}
+          />
 
-            <article>
-              <Label className="font-semibold">Descripción</Label>
-              <Textarea
-                value={description}
-                onChange={(e) => setDescription(e.target.value)}
-                placeholder="Escibe una descripción del cuestionario..."
-              />
-            </article>
-
-            <section className="flex justify-between items-center">
-              <article>
-                <Label className="font-semibold">
-                  Límite de tiempo en minutos
-                </Label>
-                <Input
-                  type="number"
-                  min={MIN_QUIZ_TIME}
-                  max={MAX_QUIZ_TIME}
-                  value={tiempo}
-                  onChange={(e) => {
-                    setTiempo(Number(e.target.value));
-                  }}
-                />
-              </article>
-              <article className="flex items-center space-x-2 ">
-                <Checkbox
-                  checked={publicar}
-                  onCheckedChange={(set) => setPublicar(set)}
-                />
-                <Label className="font-semibold">Publicar</Label>
-              </article>
-            </section>
-          </header>
           <section className="space-y-5">
             {questions.map((q, index) => (
               <div key={index} className="space-y-5 p-4 border rounded-md">

@@ -11,7 +11,7 @@ import {
   CarouselContent,
   CarouselItem,
 } from "@/components/ui";
-import { ROUTES } from "@/config";
+import { ROUTES } from "@/constants";
 import { useAuth } from "@/hooks";
 
 export default function Home() {

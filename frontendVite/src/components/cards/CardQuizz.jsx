@@ -25,7 +25,7 @@ import {
   TableRow,
   TableFooter,
 } from "@/components/ui";
-import { API_ROUTES, ROUTES } from "@/config";
+import { API_ROUTES, ROUTES } from "@/constants";
 import { useAuthFetch } from "@/hooks";
 
 export const CardQuizz = ({ quiz, onDelete, onTogglePublic }) => {
@@ -86,6 +86,10 @@ export const CardQuizz = ({ quiz, onDelete, onTogglePublic }) => {
             <TableRow>
               <TableCell className="font-semibold">Autor</TableCell>
               <TableCell>{quiz.author}</TableCell>
+            </TableRow>
+            <TableRow>
+              <TableCell className="font-semibold">Categoría</TableCell>
+              <TableCell>{quiz.category_display}</TableCell>
             </TableRow>
             <TableRow>
               <TableCell className="font-semibold">Tiempo</TableCell>

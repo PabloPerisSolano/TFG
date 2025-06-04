@@ -8,8 +8,8 @@ import {
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { toast } from "sonner";
-import { DialogOneInput, EditableField } from "@/components";
-import { CardQuestionDetail } from "@/components/cards/CardQuestionDetail";
+import { DialogOneInput, EditableField, SelectorCategoria } from "@/components";
+import { CardQuestionDetail } from "@/components/cards";
 import {
   Button,
   Badge,
@@ -22,7 +22,7 @@ import {
   CardFooter,
   Switch,
 } from "@/components/ui";
-import { API_ROUTES, MAX_QUIZ_TIME, MIN_QUIZ_TIME } from "@/config";
+import { API_ROUTES, MAX_QUIZ_TIME, MIN_QUIZ_TIME } from "@/constants";
 import { useAuthFetch } from "@/hooks";
 
 export const CardQuizzDetail = ({ quiz, onQuizUpdate }) => {
@@ -65,8 +65,12 @@ export const CardQuizzDetail = ({ quiz, onQuizUpdate }) => {
     if (field === "public") {
       toast.success("Cuestionario actualizado", {
         description: `El cuestionario ahora es ${
-          updatedValue ? "público" : "privado"
+          data.public ? "público" : "privado"
         }.`,
+      });
+    } else if (field === "category") {
+      toast.success("Categoría actualizada", {
+        description: `Categoría actualizada a ${data.category_display}.`,
       });
     } else {
       toast.success("Cuestionario actualizado");
@@ -177,7 +181,7 @@ export const CardQuizzDetail = ({ quiz, onQuizUpdate }) => {
             </Button>
           </Link>
         </CardAction>
-        <div className="flex flex-col gap-2">
+        <div className="flex flex-col gap-3 ">
           <section className="flex items-center gap-2">
             <label className="font-semibold">Duración en minutos: </label>
             <EditableField
@@ -188,7 +192,7 @@ export const CardQuizzDetail = ({ quiz, onQuizUpdate }) => {
               }
             />
           </section>
-          <section className="flex items-center gap-2">
+          <section className="flex items-center gap-2 mb-3">
             {quiz.public ? (
               <Badge className="bg-green-700 font-bold">
                 <BadgeCheck />
@@ -205,6 +209,10 @@ export const CardQuizzDetail = ({ quiz, onQuizUpdate }) => {
               onCheckedChange={(checked) => handleUpdateQuiz("public", checked)}
             />
           </section>
+          <SelectorCategoria
+            onValueChange={(value) => handleUpdateQuiz("category", value)}
+            defaultValue={quiz.category}
+          />
         </div>
       </CardHeader>
       <CardContent>

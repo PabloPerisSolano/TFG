@@ -5,7 +5,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui";
-import { publicRoutes, privateRoutes } from "@/config";
+import { publicRoutes, privateRoutes } from "@/constants";
 import { useAuth } from "@/hooks";
 
 export const DropdownNavigationMobile = ({ children }) => {

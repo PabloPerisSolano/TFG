@@ -187,6 +187,7 @@ class GeneratorView(APIView):
         description = request.data.get("description", "")
         public = request.data.get("public", False)
         time_limit = request.data.get("time_limit", 3600)
+        category = request.data.get("category")
 
         num_preguntas = request.data.get("num_preguntas")
         num_opciones = request.data.get("num_opciones")
@@ -197,10 +198,16 @@ class GeneratorView(APIView):
         MIN_OPTIONS = 2
         MAX_OPTIONS = 4
 
-        if not title or not num_preguntas or not num_opciones or not prompt:
+        if (
+            not title
+            or not category
+            or not num_preguntas
+            or not num_opciones
+            or not prompt
+        ):
             return Response(
                 {
-                    "error": "title, num_preguntas, num_opciones y prompt son obligatorios"
+                    "error": "title, category, num_preguntas, num_opciones y prompt son obligatorios"
                 },
                 status=status.HTTP_400_BAD_REQUEST,
             )
@@ -304,6 +311,7 @@ class GeneratorView(APIView):
                 "description": description,
                 "public": public,
                 "time_limit": time_limit,
+                "category": category,
                 "questions": questions_data,
             }
 

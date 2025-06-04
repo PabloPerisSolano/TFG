@@ -1,3 +1,4 @@
+export * from "./BaseQuizzCreate";
 export * from "./DialogConfirm";
 export * from "./DialogOneInput";
 export * from "./DropdownNavigationMobile";
@@ -7,3 +8,4 @@ export * from "./Footer";
 export * from "./Header";
 export * from "./Layout";
 export * from "./PrivateRoute";
+export * from "./SelectorCategoria";

@@ -12,7 +12,7 @@ import {
   Input,
   Label,
 } from "@/components/ui";
-import { API_ROUTES, ROUTES } from "@/config";
+import { API_ROUTES, ROUTES } from "@/constants";
 import { useAuthFetch } from "@/hooks";
 import { cn } from "@/lib/utils";
 

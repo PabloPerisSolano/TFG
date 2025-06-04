@@ -13,7 +13,7 @@ import {
   RadioGroup,
   RadioGroupItem,
 } from "@/components/ui";
-import { API_ROUTES } from "@/config";
+import { API_ROUTES } from "@/constants";
 import { useAuthFetch } from "@/hooks";
 
 export const CardQuestionDetail = ({

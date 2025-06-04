@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import { DropdownNavigationMobile } from "@/components";
 import { DropdownAvatar } from "@/components/profile";
 import { Avatar, AvatarFallback, AvatarImage, Button } from "@/components/ui";
-import { ROUTES, privateRoutes } from "@/config";
+import { ROUTES, privateRoutes } from "@/constants";
 import { useAuth } from "@/hooks";
 
 export const Header = () => {
