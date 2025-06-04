@@ -24,9 +24,10 @@ import {
   PaginationNext,
   PaginationPrevious,
 } from "@/components/ui";
+import { API_ROUTES } from "@/constants";
 import { useAuthFetch } from "@/hooks";
 
-export const CardPagedQuizzes = ({ cardTitle, cardDescription, link }) => {
+export const CardPagedQuizzes = ({ isPublicVariant }) => {
   const fetchWithAuth = useAuthFetch();
   const [items, setItems] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -40,7 +41,11 @@ export const CardPagedQuizzes = ({ cardTitle, cardDescription, link }) => {
       setLoading(true);
 
       const res = await fetchWithAuth(
-        `${link}?page=${currentPage}&page_size=${itemsPerPage}`
+        `${
+          isPublicVariant
+            ? API_ROUTES.PUBLIC_QUIZ_LIST
+            : API_ROUTES.USER_QUIZ_LIST_CREATE
+        }?page=${currentPage}&page_size=${itemsPerPage}`
       );
 
       if (!res.ok) {
@@ -59,6 +64,47 @@ export const CardPagedQuizzes = ({ cardTitle, cardDescription, link }) => {
 
     fetchItems();
   }, [currentPage, itemsPerPage]);
+
+  const handleDelete = async (quizId) => {
+    const res = await fetchWithAuth(API_ROUTES.USER_QUIZ_DETAIL(quizId), {
+      method: "DELETE",
+    });
+
+    if (!res.ok) {
+      toast.error("Error al eliminar el cuestionario");
+      return;
+    }
+
+    setCurrentPage(1);
+    setItems((prevItems) => prevItems.filter((quiz) => quiz.id !== quizId));
+    setTotalItems((prevCount) => prevCount - 1);
+
+    toast.success("Cuestionario eliminado");
+  };
+
+  const handleTogglePublic = async (quizId, isPublic) => {
+    const res = await fetchWithAuth(API_ROUTES.USER_QUIZ_DETAIL(quizId), {
+      method: "PATCH",
+      body: JSON.stringify({ public: isPublic }),
+    });
+
+    if (!res.ok) {
+      toast.error("Error al actualizar el estado");
+      return;
+    }
+
+    setItems((prevItems) =>
+      prevItems.map((quiz) =>
+        quiz.id === quizId ? { ...quiz, public: isPublic } : quiz
+      )
+    );
+
+    toast.success("Estado actualizado", {
+      description: `El cuestionario ahora es ${
+        isPublic ? "público" : "privado"
+      }.`,
+    });
+  };
 
   const totalPages = Math.ceil(totalItems / itemsPerPage);
 
@@ -106,9 +152,13 @@ export const CardPagedQuizzes = ({ cardTitle, cardDescription, link }) => {
     <Card>
       <CardHeader>
         <CardTitle className="font-bold text-lg sm:text-3xl">
-          {cardTitle}
+          {isPublicVariant ? "Quizzes Públicos" : "Mis Quizzes"}
         </CardTitle>
-        <CardDescription>{cardDescription}</CardDescription>
+        <CardDescription>
+          {isPublicVariant
+            ? "Explora los cuestionarios públicos disponibles."
+            : "Gestiona tus cuestionarios."}
+        </CardDescription>
         <CardAction>
           <Select value={itemsPerPage} onValueChange={handleItemsPerPageChange}>
             <SelectTrigger className="w-[140px]">
@@ -139,7 +189,15 @@ export const CardPagedQuizzes = ({ cardTitle, cardDescription, link }) => {
         ) : (
           <section className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             {items.map((quiz) => (
-              <CardQuizz key={quiz.id} quiz={quiz} />
+              <CardQuizz
+                key={quiz.id}
+                quiz={quiz}
+                isPublicVariant={isPublicVariant}
+                onDelete={() => handleDelete(quiz.id)}
+                onTogglePublic={(isPublic) =>
+                  handleTogglePublic(quiz.id, isPublic)
+                }
+              />
             ))}
           </section>
         )}

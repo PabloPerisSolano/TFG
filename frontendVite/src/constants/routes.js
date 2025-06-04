@@ -5,7 +5,7 @@ import {
   ClipboardList,
   ClipboardPlus,
   Sparkles,
-  BookOpenCheck,
+  LockOpen,
 } from "lucide-react";
 
 export const ROUTES = {
@@ -26,6 +26,11 @@ export const ROUTES = {
 
 export const publicRoutes = [
   {
+    path: ROUTES.PUBLIC_QUIZZES,
+    name: "Quizzes Públicos",
+    icon: LockOpen,
+  },
+  {
     path: ROUTES.HOME,
     name: "Inicio",
     icon: House,
@@ -40,14 +45,14 @@ export const publicRoutes = [
     name: "Registrarse",
     icon: UserPlus,
   },
-  {
-    path: ROUTES.PUBLIC_QUIZZES,
-    name: "Cuestionarios Públicos",
-    icon: BookOpenCheck,
-  },
 ];
 
 export const privateRoutes = [
+  {
+    path: ROUTES.PUBLIC_QUIZZES,
+    name: "Quizzes Públicos",
+    icon: LockOpen,
+  },
   {
     path: ROUTES.MY_QUIZZES,
     name: "Mis Quizzes",
@@ -62,10 +67,5 @@ export const privateRoutes = [
     path: ROUTES.GENERATE_QUIZZ,
     name: "Generar Quizz",
     icon: Sparkles,
-  },
-  {
-    path: ROUTES.PUBLIC_QUIZZES,
-    name: "Cuestionarios Públicos",
-    icon: BookOpenCheck,
   },
 ];

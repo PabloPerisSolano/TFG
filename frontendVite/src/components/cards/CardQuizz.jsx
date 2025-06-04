@@ -6,7 +6,6 @@ import {
   BadgeMinus,
 } from "lucide-react";
 import { Link } from "react-router-dom";
-import { toast } from "sonner";
 import { DialogConfirm } from "@/components";
 import {
   Badge,
@@ -25,47 +24,14 @@ import {
   TableRow,
   TableFooter,
 } from "@/components/ui";
-import { API_ROUTES, ROUTES } from "@/constants";
-import { useAuthFetch } from "@/hooks";
+import { ROUTES } from "@/constants";
 
-export const CardQuizz = ({ quiz, onDelete, onTogglePublic }) => {
-  const fetchWithAuth = useAuthFetch();
-
-  const handleDelete = async (quizId) => {
-    const res = await fetchWithAuth(API_ROUTES.USER_QUIZ_DETAIL(quizId), {
-      method: "DELETE",
-    });
-
-    if (!res.ok) {
-      toast.error("Error al eliminar el cuestionario");
-      return;
-    }
-
-    onDelete(quizId);
-
-    toast.success("Cuestionario eliminado");
-  };
-
-  const handleTogglePublic = async (quizId, isPublic) => {
-    const res = await fetchWithAuth(API_ROUTES.USER_QUIZ_DETAIL(quizId), {
-      method: "PATCH",
-      body: JSON.stringify({ public: isPublic }),
-    });
-
-    if (!res.ok) {
-      toast.error("Error al actualizar el estado");
-      return;
-    }
-
-    onTogglePublic(quizId, isPublic);
-
-    toast.success("Estado actualizado", {
-      description: `El cuestionario ahora es ${
-        isPublic ? "público" : "privado"
-      }.`,
-    });
-  };
-
+export const CardQuizz = ({
+  quiz,
+  isPublicVariant,
+  onDelete,
+  onTogglePublic,
+}) => {
   return (
     <Card>
       <CardHeader>
@@ -73,7 +39,10 @@ export const CardQuizz = ({ quiz, onDelete, onTogglePublic }) => {
         <CardDescription>{quiz.description}</CardDescription>
         <CardAction>
           <Link to={`/quizzes/${quiz.id}/take`}>
-            <Button variant="outline">
+            <Button
+              variant={isPublicVariant ? "default" : "outline"}
+              className="flex items-center"
+            >
               <ClipboardCheck />{" "}
               <span className="hidden sm:inline">Evaluar</span>
             </Button>
@@ -106,50 +75,52 @@ export const CardQuizz = ({ quiz, onDelete, onTogglePublic }) => {
               </TableCell>
             </TableRow>
           </TableBody>
-          <TableFooter>
-            <TableRow>
-              <TableCell className="font-semibold">Estado</TableCell>
-              <TableCell className="flex items-center gap-2">
-                {quiz.public ? (
-                  <Badge className="bg-green-700 font-bold">
-                    <BadgeCheck />
-                    Público
-                  </Badge>
-                ) : (
-                  <Badge variant="destructive">
-                    <BadgeMinus />
-                    Privado
-                  </Badge>
-                )}
-                <Switch
-                  checked={quiz.public}
-                  onCheckedChange={(checked) =>
-                    handleTogglePublic(quiz.id, checked)
-                  }
-                />
-              </TableCell>
-            </TableRow>
-          </TableFooter>
+          {!isPublicVariant && (
+            <TableFooter>
+              <TableRow>
+                <TableCell className="font-semibold">Estado</TableCell>
+                <TableCell className="flex items-center gap-2">
+                  {quiz.public ? (
+                    <Badge className="bg-green-700 font-bold">
+                      <BadgeCheck />
+                      Público
+                    </Badge>
+                  ) : (
+                    <Badge variant="destructive">
+                      <BadgeMinus />
+                      Privado
+                    </Badge>
+                  )}
+                  <Switch
+                    checked={quiz.public}
+                    onCheckedChange={onTogglePublic}
+                  />
+                </TableCell>
+              </TableRow>
+            </TableFooter>
+          )}
         </Table>
       </CardContent>
-      <CardFooter className="justify-end gap-2">
-        <DialogConfirm
-          title="¿Seguro que quieres eliminar este cuestionario?"
-          description="Se eliminará permanentemente el cuestionario."
-          onConfirm={() => handleDelete(quiz.id)}
-          triggerButton={
-            <Button variant="destructive" className="flex items-center">
-              <Trash2 />
-              <span className="hidden sm:inline">Eliminar</span>
+      {!isPublicVariant && (
+        <CardFooter className="justify-end gap-2">
+          <DialogConfirm
+            title="¿Seguro que quieres eliminar este cuestionario?"
+            description="Se eliminará permanentemente el cuestionario."
+            onConfirm={onDelete}
+            triggerButton={
+              <Button variant="destructive" className="flex items-center">
+                <Trash2 />
+                <span className="hidden sm:inline">Eliminar</span>
+              </Button>
+            }
+          />
+          <Link to={ROUTES.MY_QUIZZ_DETAIL(quiz.id)}>
+            <Button>
+              <Pencil /> <span className="hidden sm:inline">Editar</span>
             </Button>
-          }
-        />
-        <Link to={ROUTES.MY_QUIZZ_DETAIL(quiz.id)}>
-          <Button>
-            <Pencil /> <span className="hidden sm:inline">Editar</span>
-          </Button>
-        </Link>
-      </CardFooter>
+          </Link>
+        </CardFooter>
+      )}
     </Card>
   );
 };

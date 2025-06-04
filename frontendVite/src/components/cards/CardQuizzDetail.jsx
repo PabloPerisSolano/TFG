@@ -100,26 +100,6 @@ export const CardQuizzDetail = ({ quiz, onQuizUpdate }) => {
     toast.success("Pregunta añadida");
   };
 
-  const handleDeleteQuestion = async (questionId) => {
-    const res = await fetchWithAuth(
-      API_ROUTES.USER_QUIZ_QUESTION_DETAIL(quiz.id, questionId),
-      {
-        method: "DELETE",
-      }
-    );
-
-    if (!res.ok) {
-      toast.error("Error al eliminar la pregunta");
-      return;
-    }
-
-    setQuestions((prevQuestions) =>
-      prevQuestions.filter((q) => q.id !== questionId)
-    );
-
-    toast.success("Pregunta eliminada");
-  };
-
   const handleUpdateQuestion = async (questionId, updatedText) => {
     if (!updatedText.trim()) {
       toast.error("La pregunta no puede estar vacía.");
@@ -148,6 +128,26 @@ export const CardQuizzDetail = ({ quiz, onQuizUpdate }) => {
     );
 
     toast.success("Pregunta actualizada");
+  };
+
+  const handleDeleteQuestion = async (questionId) => {
+    const res = await fetchWithAuth(
+      API_ROUTES.USER_QUIZ_QUESTION_DETAIL(quiz.id, questionId),
+      {
+        method: "DELETE",
+      }
+    );
+
+    if (!res.ok) {
+      toast.error("Error al eliminar la pregunta");
+      return;
+    }
+
+    setQuestions((prevQuestions) =>
+      prevQuestions.filter((q) => q.id !== questionId)
+    );
+
+    toast.success("Pregunta eliminada");
   };
 
   return (
