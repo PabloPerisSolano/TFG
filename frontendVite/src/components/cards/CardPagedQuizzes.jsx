@@ -1,6 +1,7 @@
 import { LoaderCircle, CircleAlert } from "lucide-react";
 import { useState, useEffect } from "react";
 import { toast } from "sonner";
+import { FiltroQuizzes } from "@/components";
 import { CardQuizz } from "@/components/cards";
 import {
   Card,
@@ -187,19 +188,23 @@ export const CardPagedQuizzes = ({ isPublicVariant }) => {
             <p className="font-bold">No se han encontrado resultados.</p>
           </div>
         ) : (
-          <section className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            {items.map((quiz) => (
-              <CardQuizz
-                key={quiz.id}
-                quiz={quiz}
-                isPublicVariant={isPublicVariant}
-                onDelete={() => handleDelete(quiz.id)}
-                onTogglePublic={(isPublic) =>
-                  handleTogglePublic(quiz.id, isPublic)
-                }
-              />
-            ))}
-          </section>
+          <div className="flex flex-col gap-4">
+            <FiltroQuizzes isPublicVariant={isPublicVariant} />
+
+            <section className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              {items.map((quiz) => (
+                <CardQuizz
+                  key={quiz.id}
+                  quiz={quiz}
+                  isPublicVariant={isPublicVariant}
+                  onDelete={() => handleDelete(quiz.id)}
+                  onTogglePublic={(isPublic) =>
+                    handleTogglePublic(quiz.id, isPublic)
+                  }
+                />
+              ))}
+            </section>
+          </div>
         )}
       </CardContent>
       {totalPages > 1 && (

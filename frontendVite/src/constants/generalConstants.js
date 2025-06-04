@@ -4,6 +4,8 @@ export const GOOGLE_CLIENT_ID =
 export const MIN_QUIZ_TIME = 1; // Minutos
 export const MAX_QUIZ_TIME = 120; // Minutos
 
+export const ALL_CATEGORIES = "ALL";
+
 export const CATEGORY_CHOICES = [
   { value: "SCIENCE", label: "Ciencia" },
   { value: "GEOGRAPHY", label: "Geografía" },
