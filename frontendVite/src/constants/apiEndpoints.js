@@ -38,5 +38,6 @@ export const API_ROUTES = {
   USER_QUIZ_QUESTION_ANSWER_DETAIL: (quiz_id, question_id, answer_id) =>
     `${API_BASE_QUIZZES_ME}${quiz_id}/questions/${question_id}/answers/${answer_id}/`,
 
+  QUIZZ_TAKE: (quiz_id) => `${API_BASE_QUIZZES}take/${quiz_id}/`,
   QUIZ_GENERATOR: `${API_BASE_QUIZZES_ME}generator/`,
 };

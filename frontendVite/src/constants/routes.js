@@ -22,6 +22,9 @@ export const ROUTES = {
   MY_QUIZZ_DETAIL: (quizId) => `/my-quizzes/${quizId}`,
   CREATE_QUIZZ: "/create-quizz",
   GENERATE_QUIZZ: "/generate-quizz",
+
+  QUIZZ_TAKE: "/quizz-take/:quizId",
+  QUIZZ_TAKE_PARAM: (quizId) => `/quizz-take/${quizId}`,
 };
 
 export const publicRoutes = [

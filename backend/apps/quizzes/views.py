@@ -5,6 +5,7 @@ from django.db.models import Prefetch
 from django.shortcuts import get_object_or_404
 from openai import APIConnectionError, APIError, OpenAI
 from rest_framework import generics, permissions, status
+from rest_framework.exceptions import PermissionDenied
 from rest_framework.pagination import PageNumberPagination
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
@@ -177,6 +178,23 @@ class AnswerDetailView(generics.RetrieveUpdateDestroyAPIView):
         )
 
         return answer
+
+
+class QuizTakeView(generics.RetrieveAPIView):
+    serializer_class = QuizDetailSerializer
+
+    def get_object(self):
+        quiz_id = self.kwargs["quiz_id"]
+        quiz = get_object_or_404(Quiz, id=quiz_id)
+        # Si es público, cualquiera puede verlo
+        if quiz.public:
+            return quiz
+        # Si es privado, solo el autor puede verlo
+        if not self.request.user.is_authenticated or quiz.author != self.request.user:
+            raise PermissionDenied(
+                "No tienes permiso para acceder a este quizz privado."
+            )
+        return quiz
 
 
 class GeneratorView(APIView):

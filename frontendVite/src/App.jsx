@@ -8,6 +8,7 @@ import PublicQuizzes from "@/pages/PublicQuizzes";
 import QuizzCreator from "@/pages/QuizzCreator";
 import QuizzDetail from "@/pages/QuizzDetail";
 import QuizzGenerator from "@/pages/QuizzGenerator";
+import QuizzTake from "@/pages/QuizzTake";
 import Register from "@/pages/Register";
 
 function App() {
@@ -18,6 +19,7 @@ function App() {
         <Route path={ROUTES.LOGIN} element={<Login />} />
         <Route path={ROUTES.REGISTER} element={<Register />} />
         <Route path={ROUTES.PUBLIC_QUIZZES} element={<PublicQuizzes />} />
+        <Route path={ROUTES.QUIZZ_TAKE} element={<QuizzTake />} />
 
         <Route
           path={ROUTES.MY_QUIZZES}

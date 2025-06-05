@@ -8,11 +8,17 @@ from .views import (
     PublicQuizListView,
     QuestionDetailView,
     QuestionListCreateView,
+    QuizTakeView,
     UserQuizDetailView,
     UserQuizListCreateView,
 )
 
 urlpatterns = [
+    path(
+        "take/<int:quiz_id>/",
+        QuizTakeView.as_view(),
+        name="quiz-take",
+    ),
     path(
         "public/",
         include(

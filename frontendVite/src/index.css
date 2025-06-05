@@ -24,6 +24,12 @@ body {
   color: var(--rich-black);
 }
 
+@keyframes timer-flash {
+  50% {
+    transform: scale(1.07);
+  }
+}
+
 @custom-variant dark (&:is(.dark *));
 
 @theme inline {

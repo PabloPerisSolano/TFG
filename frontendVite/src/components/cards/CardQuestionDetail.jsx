@@ -115,9 +115,28 @@ export const CardQuestionDetail = ({
     toast.success("Respuesta eliminada");
   };
 
+  const handleChangeCorrectAnswer = (selectedAnswerId) => {
+    const selectedId = Number(selectedAnswerId);
+    const prevCorrectAnswer = answers.find((a) => a.is_correct);
+
+    // Solo actúa si cambió la selección
+    if (prevCorrectAnswer?.id !== selectedId) {
+      // Paso 1: Desmarcar la anterior respuesta correcta (si existía)
+      if (prevCorrectAnswer) {
+        handleUpdateAnswer(prevCorrectAnswer.id, prevCorrectAnswer.text, false);
+      }
+
+      // Paso 2: Marcar la nueva respuesta como correcta
+      const newCorrectAnswer = answers.find((a) => a.id === selectedId);
+      if (newCorrectAnswer) {
+        handleUpdateAnswer(newCorrectAnswer.id, newCorrectAnswer.text, true);
+      }
+    }
+  };
+
   return (
     <Card className="mt-4">
-      <CardHeader className="text-sm sm:text-base">
+      <CardHeader className="text-sm sm:text-lg">
         <CardTitle className="flex items-center">
           <span className="mr-2">{questionNumber}.</span>
           <EditableField
@@ -145,34 +164,7 @@ export const CardQuestionDetail = ({
             defaultValue={
               answers.find((a) => a.is_correct)?.id.toString() || ""
             }
-            onValueChange={(selectedAnswerId) => {
-              const selectedId = Number(selectedAnswerId);
-              const prevCorrectAnswer = answers.find((a) => a.is_correct);
-
-              // Solo actúa si cambió la selección
-              if (prevCorrectAnswer?.id !== selectedId) {
-                // Paso 1: Desmarcar la anterior respuesta correcta (si existía)
-                if (prevCorrectAnswer) {
-                  handleUpdateAnswer(
-                    prevCorrectAnswer.id,
-                    prevCorrectAnswer.text,
-                    false
-                  );
-                }
-
-                // Paso 2: Marcar la nueva respuesta como correcta
-                const newCorrectAnswer = answers.find(
-                  (a) => a.id === selectedId
-                );
-                if (newCorrectAnswer) {
-                  handleUpdateAnswer(
-                    newCorrectAnswer.id,
-                    newCorrectAnswer.text,
-                    true
-                  );
-                }
-              }
-            }}
+            onValueChange={handleChangeCorrectAnswer}
           >
             {answers.map((answer, answerIndex) => (
               <li key={answer.id} className="flex items-center gap-1">
@@ -187,12 +179,12 @@ export const CardQuestionDetail = ({
                   }
                 />
                 <RadioGroupItem value={answer.id.toString()} />
-                <span className="text-xs sm:text-base">
+                <span className="text-sm sm:text-lg">
                   {String.fromCharCode(97 + answerIndex)})
                 </span>
                 <EditableField
                   value={answer.text}
-                  className="text-xs sm:text-base"
+                  className="text-sm sm:text-lg"
                   onUpdate={(updatedText) =>
                     handleUpdateAnswer(
                       answer.id,

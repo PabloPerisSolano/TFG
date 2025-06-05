@@ -22,7 +22,7 @@ import {
   CardFooter,
   Switch,
 } from "@/components/ui";
-import { API_ROUTES, MAX_QUIZ_TIME, MIN_QUIZ_TIME } from "@/constants";
+import { API_ROUTES, MAX_QUIZ_TIME, MIN_QUIZ_TIME, ROUTES } from "@/constants";
 import { useAuthFetch } from "@/hooks";
 
 export const CardQuizzDetail = ({ quiz, onQuizUpdate }) => {
@@ -174,8 +174,10 @@ export const CardQuizzDetail = ({ quiz, onQuizUpdate }) => {
           />
         </CardDescription>
         <CardAction>
-          <Link to={`/quizzes/${quiz.id}/take`}>
-            <Button variant="outline">
+          <Link
+            to={questions.length > 0 ? ROUTES.QUIZZ_TAKE_PARAM(quiz.id) : "#"}
+          >
+            <Button variant="outline" disabled={questions.length === 0}>
               <ClipboardCheck />
               <span className="hidden sm:inline">Evaluar</span>
             </Button>

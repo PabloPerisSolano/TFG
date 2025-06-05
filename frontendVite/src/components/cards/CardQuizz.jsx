@@ -38,12 +38,14 @@ export const CardQuizz = ({
         <CardTitle>{quiz.title}</CardTitle>
         <CardDescription>{quiz.description}</CardDescription>
         <CardAction>
-          <Link to={`/quizzes/${quiz.id}/take`}>
+          <Link
+            to={quiz.num_questions > 0 ? ROUTES.QUIZZ_TAKE_PARAM(quiz.id) : "#"}
+          >
             <Button
               variant={isPublicVariant ? "default" : "outline"}
-              className="flex items-center"
+              disabled={quiz.num_questions === 0}
             >
-              <ClipboardCheck />{" "}
+              <ClipboardCheck />
               <span className="hidden sm:inline">Evaluar</span>
             </Button>
           </Link>
@@ -108,15 +110,15 @@ export const CardQuizz = ({
             description="Se eliminará permanentemente el cuestionario."
             onConfirm={onDelete}
             triggerButton={
-              <Button variant="destructive" className="flex items-center">
+              <Button variant="destructive">
                 <Trash2 />
-                <span className="hidden sm:inline">Eliminar</span>
+                Eliminar
               </Button>
             }
           />
           <Link to={ROUTES.MY_QUIZZ_DETAIL(quiz.id)}>
             <Button>
-              <Pencil /> <span className="hidden sm:inline">Editar</span>
+              <Pencil /> Editar
             </Button>
           </Link>
         </CardFooter>
