@@ -26,6 +26,7 @@ import {
   PaginationPrevious,
 } from "@/components/ui";
 import { API_ROUTES } from "@/constants";
+import { ANY } from "@/constants";
 import { useAuthFetch } from "@/hooks";
 
 export const CardPagedQuizzes = ({ isPublicVariant }) => {
@@ -35,7 +36,15 @@ export const CardPagedQuizzes = ({ isPublicVariant }) => {
 
   const [totalItems, setTotalItems] = useState(0);
   const [currentPage, setCurrentPage] = useState(1);
-  const [itemsPerPage, setItemsPerPage] = useState(12);
+  const [itemsPerPage, setItemsPerPage] = useState(6);
+
+  const [filters, setFilters] = useState({
+    title: "",
+    category: ANY,
+    public: ANY,
+    sort_by: "created",
+    sort_order: "desc",
+  });
 
   useEffect(() => {
     const fetchItems = async () => {
@@ -46,7 +55,13 @@ export const CardPagedQuizzes = ({ isPublicVariant }) => {
           isPublicVariant
             ? API_ROUTES.PUBLIC_QUIZ_LIST
             : API_ROUTES.USER_QUIZ_LIST_CREATE
-        }?page=${currentPage}&page_size=${itemsPerPage}`
+        }?page=${currentPage}&page_size=${itemsPerPage}&sort_by=${
+          filters.sort_by
+        }&sort_order=${filters.sort_order}${
+          filters.title ? `&title=${encodeURIComponent(filters.title)}` : ""
+        }${filters.category !== ANY ? `&category=${filters.category}` : ""}${
+          filters.public !== ANY ? `&public=${filters.public}` : ""
+        }`
       );
 
       if (!res.ok) {
@@ -64,7 +79,7 @@ export const CardPagedQuizzes = ({ isPublicVariant }) => {
     };
 
     fetchItems();
-  }, [currentPage, itemsPerPage]);
+  }, [currentPage, itemsPerPage, filters]);
 
   const handleDelete = async (quizId) => {
     const res = await fetchWithAuth(API_ROUTES.USER_QUIZ_DETAIL(quizId), {
@@ -149,6 +164,11 @@ export const CardPagedQuizzes = ({ isPublicVariant }) => {
     return pages;
   };
 
+  const handleFilterChange = (newFilters) => {
+    setFilters((prev) => ({ ...prev, ...newFilters }));
+    setCurrentPage(1);
+  };
+
   return (
     <Card>
       <CardHeader>
@@ -168,7 +188,7 @@ export const CardPagedQuizzes = ({ isPublicVariant }) => {
             <SelectContent>
               <SelectGroup>
                 <SelectLabel>Mostrar Resultados</SelectLabel>
-                <SelectItem value={4}>4 Resultados</SelectItem>
+                <SelectItem value={6}>6 Resultados</SelectItem>
                 <SelectItem value={12}>12 Resultados</SelectItem>
                 <SelectItem value={24}>24 Resultados</SelectItem>
                 <SelectItem value={36}>36 Resultados</SelectItem>
@@ -177,7 +197,13 @@ export const CardPagedQuizzes = ({ isPublicVariant }) => {
           </Select>
         </CardAction>
       </CardHeader>
-      <CardContent>
+      <CardContent className="flex flex-col gap-4">
+        <FiltroQuizzes
+          isPublicVariant={isPublicVariant}
+          filters={filters}
+          onFilterChange={handleFilterChange}
+        />
+
         {loading ? (
           <div className="flex justify-center">
             <LoaderCircle className="animate-spin" />
@@ -188,23 +214,19 @@ export const CardPagedQuizzes = ({ isPublicVariant }) => {
             <p className="font-bold">No se han encontrado resultados.</p>
           </div>
         ) : (
-          <div className="flex flex-col gap-4">
-            <FiltroQuizzes isPublicVariant={isPublicVariant} />
-
-            <section className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              {items.map((quiz) => (
-                <CardQuizz
-                  key={quiz.id}
-                  quiz={quiz}
-                  isPublicVariant={isPublicVariant}
-                  onDelete={() => handleDelete(quiz.id)}
-                  onTogglePublic={(isPublic) =>
-                    handleTogglePublic(quiz.id, isPublic)
-                  }
-                />
-              ))}
-            </section>
-          </div>
+          <section className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            {items.map((quiz) => (
+              <CardQuizz
+                key={quiz.id}
+                quiz={quiz}
+                isPublicVariant={isPublicVariant}
+                onDelete={() => handleDelete(quiz.id)}
+                onTogglePublic={(isPublic) =>
+                  handleTogglePublic(quiz.id, isPublic)
+                }
+              />
+            ))}
+          </section>
         )}
       </CardContent>
       {totalPages > 1 && (

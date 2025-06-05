@@ -7,7 +7,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui";
-import { CATEGORY_CHOICES, ALL_CATEGORIES } from "@/constants";
+import { CATEGORY_CHOICES } from "@/constants";
+import { ANY } from "@/constants";
 
 export const SelectorCategoria = ({
   onValueChange,
@@ -16,14 +17,14 @@ export const SelectorCategoria = ({
 }) => {
   return (
     <Select defaultValue={defaultValue} onValueChange={onValueChange}>
-      <SelectTrigger className={isFilter ? "w-[270px]" : "w-[181px]"}>
+      <SelectTrigger className={isFilter ? "w-[260px]" : "w-[181px]"}>
         <SelectValue placeholder="Seleccione Categoría" />
       </SelectTrigger>
       <SelectContent>
         <SelectGroup>
           <SelectLabel>Categorías</SelectLabel>
           {isFilter && (
-            <SelectItem value={ALL_CATEGORIES}>Todas las categorías</SelectItem>
+            <SelectItem value={ANY}>Todas las categorías</SelectItem>
           )}
           {CATEGORY_CHOICES.map((cat) => (
             <SelectItem key={cat.value} value={cat.value}>

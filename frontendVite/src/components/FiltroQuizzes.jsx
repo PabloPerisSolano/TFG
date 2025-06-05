@@ -1,4 +1,5 @@
 import { Search } from "lucide-react";
+import { useState } from "react";
 import { SelectorCategoria } from "@/components";
 import {
   Button,
@@ -10,75 +11,96 @@ import {
   SelectValue,
   Label,
 } from "@/components/ui";
-import { ALL_CATEGORIES } from "@/constants";
+import { ANY } from "@/constants";
 
-export const FiltroQuizzes = ({ isPublicVariant }) => (
-  <div className="flex flex-col gap-4 p-4 border rounded-lg shadow-lg">
-    <h2 className="text-lg font-bold">Filtrar Quizzes</h2>
+export const FiltroQuizzes = ({ isPublicVariant, filters, onFilterChange }) => {
+  const [localFilters, setLocalFilters] = useState(filters);
 
-    <section className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-      <Input
-        type="text"
-        placeholder="Buscar por título..."
-        // value={searchTerm}
-        // onChange={(e) => setSearchTerm(e.target.value)}
-      />
+  const handleChange = (field, value) => {
+    setLocalFilters((prev) => ({ ...prev, [field]: value }));
+  };
 
-      <SelectorCategoria
-        onValueChange={() => {}}
-        defaultValue={ALL_CATEGORIES}
-        isFilter={true}
-      />
+  const handleBuscar = () => {
+    onFilterChange(localFilters);
+  };
 
-      {!isPublicVariant && (
-        <Select defaultValue="public/private" onValueChange={() => {}}>
-          <SelectTrigger className="w-[270px]">
-            <SelectValue />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="public/private">Públicos y Privados</SelectItem>
-            <SelectItem value="public">Públicos</SelectItem>
-            <SelectItem value="private">Privados</SelectItem>
-          </SelectContent>
-        </Select>
-      )}
-    </section>
+  return (
+    <div className="flex flex-col gap-5 p-4 border rounded-lg shadow-lg">
+      <h2 className="text-lg font-bold">Filtrar Quizzes</h2>
 
-    <section className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-      <section>
-        <Label className="mb-0.5">Ordenar por:</Label>
+      <section className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+        <Input
+          type="text"
+          placeholder="Buscar por título..."
+          value={localFilters.title}
+          onChange={(e) => handleChange("title", e.target.value)}
+        />
 
-        <Select defaultValue="noOrder" onValueChange={() => {}}>
-          <SelectTrigger className="w-[270px]">
-            <SelectValue placeholder="Ordenar por..." />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="noOrder">No ordenar</SelectItem>
-            <SelectItem value="title">Título</SelectItem>
-            <SelectItem value="created">Fecha de Creación</SelectItem>
-            <SelectItem value="questions">Número de Preguntas</SelectItem>
-            <SelectItem value="category">Categoría</SelectItem>
-          </SelectContent>
-        </Select>
+        <SelectorCategoria
+          onValueChange={(value) => handleChange("category", value)}
+          defaultValue={ANY}
+          isFilter={true}
+        />
+
+        {!isPublicVariant && (
+          <Select
+            defaultValue={ANY}
+            onValueChange={(value) => handleChange("public", value)}
+          >
+            <SelectTrigger className="w-[260px]">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value={ANY}>Públicos y Privados</SelectItem>
+              <SelectItem value={true}>Públicos</SelectItem>
+              <SelectItem value={false}>Privados</SelectItem>
+            </SelectContent>
+          </Select>
+        )}
       </section>
 
-      <section>
-        <Label className="mb-0.5">Orden:</Label>
+      <section className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+        <article>
+          <Label className="mb-0.5">Ordenar por:</Label>
 
-        <Select defaultValue="asc" onValueChange={() => {}}>
-          <SelectTrigger className="w-[270px]">
-            <SelectValue />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="asc">Ascendente</SelectItem>
-            <SelectItem value="desc">Descendente</SelectItem>
-          </SelectContent>
-        </Select>
+          <Select
+            defaultValue="created"
+            onValueChange={(value) => handleChange("sort_by", value)}
+          >
+            <SelectTrigger className="w-[200px]">
+              <SelectValue placeholder="Ordenar por..." />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="created">Fecha de Creación</SelectItem>
+              <SelectItem value="questions">Número de Preguntas</SelectItem>
+              <SelectItem value="title">Título</SelectItem>
+              <SelectItem value="category">Categoría</SelectItem>
+            </SelectContent>
+          </Select>
+        </article>
+
+        <article>
+          <Label className="mb-0.5">Orden:</Label>
+
+          <Select
+            defaultValue="desc"
+            onValueChange={(value) => handleChange("sort_order", value)}
+          >
+            <SelectTrigger className="w-[170px]">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="desc">Descendente</SelectItem>
+              <SelectItem value="asc">Ascendente</SelectItem>
+            </SelectContent>
+          </Select>
+        </article>
+
+        <Button className="mt-4 w-40" onClick={handleBuscar}>
+          <Search />
+          Buscar
+        </Button>
       </section>
-      <Button>
-        <Search />
-        Buscar
-      </Button>
-    </section>
-  </div>
-);
+    </div>
+  );
+};
