@@ -1,4 +1,4 @@
-import { Search } from "lucide-react";
+import { Search, BrushCleaning } from "lucide-react";
 import { useState } from "react";
 import { SelectorCategoria } from "@/components";
 import {
@@ -11,13 +11,18 @@ import {
   SelectValue,
   Label,
 } from "@/components/ui";
-import { ANY } from "@/constants";
+import { ANY, INITIAL_QUIZ_FILTERS } from "@/constants";
 
-export const FiltroQuizzes = ({ isPublicVariant, filters, onFilterChange }) => {
-  const [localFilters, setLocalFilters] = useState(filters);
+export const FiltroQuizzes = ({ isPublicVariant, onFilterChange }) => {
+  const [localFilters, setLocalFilters] = useState(INITIAL_QUIZ_FILTERS);
 
   const handleChange = (field, value) => {
     setLocalFilters((prev) => ({ ...prev, [field]: value }));
+  };
+
+  const handleLimpiarFiltros = () => {
+    setLocalFilters(INITIAL_QUIZ_FILTERS);
+    onFilterChange(INITIAL_QUIZ_FILTERS);
   };
 
   const handleBuscar = () => {
@@ -38,13 +43,13 @@ export const FiltroQuizzes = ({ isPublicVariant, filters, onFilterChange }) => {
 
         <SelectorCategoria
           onValueChange={(value) => handleChange("category", value)}
-          defaultValue={ANY}
           isFilter={true}
+          valueFilter={localFilters.category}
         />
 
         {!isPublicVariant && (
           <Select
-            defaultValue={ANY}
+            value={localFilters.public}
             onValueChange={(value) => handleChange("public", value)}
           >
             <SelectTrigger className="w-[260px]">
@@ -64,7 +69,7 @@ export const FiltroQuizzes = ({ isPublicVariant, filters, onFilterChange }) => {
           <Label className="mb-0.5">Ordenar por:</Label>
 
           <Select
-            defaultValue="created"
+            value={localFilters.sort_by}
             onValueChange={(value) => handleChange("sort_by", value)}
           >
             <SelectTrigger className="w-[200px]">
@@ -83,7 +88,7 @@ export const FiltroQuizzes = ({ isPublicVariant, filters, onFilterChange }) => {
           <Label className="mb-0.5">Orden:</Label>
 
           <Select
-            defaultValue="desc"
+            value={localFilters.sort_order}
             onValueChange={(value) => handleChange("sort_order", value)}
           >
             <SelectTrigger className="w-[170px]">
@@ -96,10 +101,17 @@ export const FiltroQuizzes = ({ isPublicVariant, filters, onFilterChange }) => {
           </Select>
         </article>
 
-        <Button className="mt-4 w-40" onClick={handleBuscar}>
-          <Search />
-          Buscar
-        </Button>
+        <article className="mt-4 flex flex-col sm:flex-row gap-3">
+          <Button variant="destructive" onClick={handleLimpiarFiltros}>
+            <BrushCleaning />
+            Limpiar Filtros
+          </Button>
+
+          <Button onClick={handleBuscar}>
+            <Search />
+            Buscar
+          </Button>
+        </article>
       </section>
     </div>
   );

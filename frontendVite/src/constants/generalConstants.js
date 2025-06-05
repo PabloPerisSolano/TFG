@@ -21,3 +21,11 @@ export const CATEGORY_CHOICES = [
   { value: "HEALTH", label: "Salud/Bienestar" },
   { value: "OTHER", label: "Otros" },
 ];
+
+export const INITIAL_QUIZ_FILTERS = {
+  title: "",
+  category: ANY,
+  public: ANY,
+  sort_by: "created",
+  sort_order: "desc",
+};

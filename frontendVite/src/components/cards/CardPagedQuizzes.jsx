@@ -25,7 +25,7 @@ import {
   PaginationNext,
   PaginationPrevious,
 } from "@/components/ui";
-import { API_ROUTES } from "@/constants";
+import { API_ROUTES, INITIAL_QUIZ_FILTERS } from "@/constants";
 import { ANY } from "@/constants";
 import { useAuthFetch } from "@/hooks";
 
@@ -38,13 +38,7 @@ export const CardPagedQuizzes = ({ isPublicVariant }) => {
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(6);
 
-  const [filters, setFilters] = useState({
-    title: "",
-    category: ANY,
-    public: ANY,
-    sort_by: "created",
-    sort_order: "desc",
-  });
+  const [filters, setFilters] = useState(INITIAL_QUIZ_FILTERS);
 
   useEffect(() => {
     const fetchItems = async () => {
@@ -200,7 +194,6 @@ export const CardPagedQuizzes = ({ isPublicVariant }) => {
       <CardContent className="flex flex-col gap-4">
         <FiltroQuizzes
           isPublicVariant={isPublicVariant}
-          filters={filters}
           onFilterChange={handleFilterChange}
         />
 

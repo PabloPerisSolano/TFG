@@ -14,9 +14,12 @@ export const SelectorCategoria = ({
   onValueChange,
   defaultValue,
   isFilter = false,
+  valueFilter,
 }) => {
+  const selectProps = isFilter ? { value: valueFilter } : { defaultValue };
+
   return (
-    <Select defaultValue={defaultValue} onValueChange={onValueChange}>
+    <Select onValueChange={onValueChange} {...selectProps}>
       <SelectTrigger className={isFilter ? "w-[260px]" : "w-[181px]"}>
         <SelectValue placeholder="Seleccione Categoría" />
       </SelectTrigger>
