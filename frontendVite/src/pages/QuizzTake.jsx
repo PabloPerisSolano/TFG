@@ -22,29 +22,22 @@ import {
   CardFooter,
   CardHeader,
   CardTitle,
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogDescription,
   RadioGroup,
   RadioGroupItem,
-  ScrollArea,
 } from "@/components/ui";
 import { API_ROUTES } from "@/constants";
 import { useAuthFetch } from "@/hooks";
 
 export default function TakeQuizPage() {
-  const { quizId } = useParams();
   const fetchWithAuth = useAuthFetch();
+  const { quizId } = useParams();
   const [quiz, setQuiz] = useState(null);
   const [loading, setLoading] = useState(true);
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
-  const [answers, setAnswers] = useState({});
+  const [myAnswers, setMyAnswers] = useState({});
   const [results, setResults] = useState({});
   const [displayTime, setDisplayTime] = useState("0:00");
   const timerRef = useRef({ id: null, remaining: 0 });
-  const quizRef = useRef();
 
   useEffect(() => {
     if (!quizId) return;
@@ -54,6 +47,7 @@ export default function TakeQuizPage() {
 
       if (!res.ok) {
         setLoading(false);
+        clearTimeout(timerRef.current.id);
 
         if (res.status === 404) {
           toast.error("Cuestionario no encontrado");
@@ -72,25 +66,26 @@ export default function TakeQuizPage() {
       const data = await res.json();
       setQuiz(data);
 
-      quizRef.current = data;
-      startTimer(data.time_limit);
-
       setLoading(false);
     };
 
     fetchQuiz();
 
+    const timerId = timerRef.current.id;
+
     return () => {
-      if (timerRef.current.id) {
-        clearTimeout(timerRef.current.id);
-      }
+      clearTimeout(timerId);
     };
   }, [quizId]);
 
-  const startTimer = (time) => {
-    if (timerRef.current.id) {
-      clearTimeout(timerRef.current.id);
+  useEffect(() => {
+    if (quiz && quiz.time_limit) {
+      startTimer(quiz.time_limit);
     }
+  }, [quiz]);
+
+  const startTimer = (time) => {
+    clearTimeout(timerRef.current.id);
 
     timerRef.current.remaining = time;
     updateDisplayTime(time);
@@ -116,8 +111,7 @@ export default function TakeQuizPage() {
   };
 
   const handleAnswerChange = (questionId, answerId) => {
-    const newAnswers = { ...answers, [questionId]: answerId };
-    setAnswers(newAnswers);
+    setMyAnswers((prev) => ({ ...prev, [questionId]: answerId }));
 
     // Verificar respuesta inmediatamente
     const question = quiz.questions.find((q) => q.id === questionId);
@@ -134,25 +128,41 @@ export default function TakeQuizPage() {
     }));
   };
 
-  const handleNextQuestion = () => {
-    if (currentQuestionIndex < quiz.questions.length - 1) {
-      setCurrentQuestionIndex((prev) => prev + 1);
-    }
-  };
-
   const handlePrevQuestion = () => {
     if (currentQuestionIndex > 0) {
       setCurrentQuestionIndex((prev) => prev - 1);
     }
   };
 
+  const handleNextQuestion = () => {
+    if (currentQuestionIndex < quiz.questions.length - 1) {
+      setCurrentQuestionIndex((prev) => prev + 1);
+    }
+  };
+
   const handleSubmit = () => {
-    if (!quizRef.current?.questions) {
+    if (!quiz) {
       toast.error("El cuestionario no está disponible");
       return;
     }
 
-    const score = Object.values(results).filter((r) => r.isCorrect).length;
+    let score = 0;
+    console.log("Mis respuestas:", myAnswers);
+    quiz.questions.forEach((question) => {
+      const questionId = question.id;
+      const userAnswer = myAnswers[questionId];
+      console.log(questionId, userAnswer);
+
+      if (userAnswer) {
+        const correctAnswer = question.answers
+          .find((a) => a.is_correct)
+          ?.id.toString();
+        if (userAnswer === correctAnswer) {
+          score++;
+        }
+      }
+    });
+
     toast.success(
       `Quiz completado! Puntuación: ${score}/${quiz.questions.length}`
     );
@@ -186,30 +196,27 @@ export default function TakeQuizPage() {
 
   const currentQuestion = quiz.questions[currentQuestionIndex];
   const questionResult = results[currentQuestion.id];
-  const isLastQuestion = currentQuestionIndex === quiz.questions.length - 1;
 
   return (
     <Card>
       <CardHeader>
         <CardTitle className="text-3xl font-bold">{quiz.title}</CardTitle>
-        <CardDescription>{quiz.description}</CardDescription>
+        <CardDescription>
+          Autor: {quiz.author}
+          {". "}
+          {quiz.description}
+        </CardDescription>
         <CardAction
-          className={`flex gap-1 font-bold text-lg rounded-lg p-1.5 text-secondary transition-all duration-300 ${
-            timerRef.current.remaining <= 10 ? "bg-red-600" : "bg-primary"
+          className={`flex font-bold ${
+            timerRef.current.remaining > 60
+              ? "animate-pulse"
+              : timerRef.current.remaining <= 60 &&
+                timerRef.current.remaining > 0
+              ? "animate-bounce text-red-600"
+              : "animate-none"
           }`}
-          style={{
-            animation: `timer-flash linear infinite ${
-              timerRef.current.remaining > 10
-                ? "2s"
-                : timerRef.current.remaining <= 10 &&
-                  timerRef.current.remaining > 0
-                ? "1s"
-                : "none"
-            }`,
-          }}
         >
-          {" "}
-          <Timer />
+          <Timer className="-mt-0.5" />
           {displayTime}
         </CardAction>
       </CardHeader>
@@ -233,14 +240,14 @@ export default function TakeQuizPage() {
               </CardHeader>
               <CardContent>
                 <RadioGroup
-                  value={answers[currentQuestion.id] || ""}
+                  value={myAnswers[currentQuestion.id] || ""}
                   onValueChange={(value) =>
                     handleAnswerChange(currentQuestion.id, value)
                   }
                 >
                   {currentQuestion.answers.map((answer, answerIndex) => {
                     const isSelected =
-                      answers[currentQuestion.id] === answer.id.toString();
+                      myAnswers[currentQuestion.id] === answer.id.toString();
                     const isCorrect = answer.is_correct;
                     const showFeedback =
                       questionResult && (isSelected || isCorrect);
@@ -248,12 +255,12 @@ export default function TakeQuizPage() {
                     return (
                       <article
                         key={answer.id}
-                        className={`flex items-center space-x-2 p-2 rounded ${
+                        className={`flex items-center gap-1 p-2 rounded ${
                           showFeedback
                             ? isCorrect
-                              ? "bg-green-50"
+                              ? "bg-green-100"
                               : isSelected
-                              ? "bg-red-50"
+                              ? "bg-red-100"
                               : ""
                             : ""
                         }`}
@@ -278,42 +285,48 @@ export default function TakeQuizPage() {
                   })}
                 </RadioGroup>
               </CardContent>
-              <CardFooter className="flex flex-col">
-                {questionResult && (
+              {questionResult && (
+                <CardFooter className="flex justify-center">
                   <motion.div
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
-                    className={`p-4 rounded-md ${
+                    className={`flex justify-center p-3 rounded-md w-full sm:w-sm ${
                       questionResult.isCorrect
-                        ? "bg-green-50 text-green-800"
-                        : "bg-red-50 text-red-800"
+                        ? "bg-green-100 text-green-800"
+                        : "bg-red-100 text-red-800"
                     }`}
                   >
                     {questionResult.isCorrect ? (
-                      <div className="flex items-center">
-                        <Check className="mr-2" />
+                      <div className="flex gap-2">
+                        <Check />
                         <span>¡Respuesta correcta!</span>
                       </div>
                     ) : (
-                      <div>
-                        <div className="flex items-center">
-                          <X className="mr-2" />
+                      <div className="flex flex-col gap-2 items-center">
+                        <div className="flex gap-2">
+                          <X />
                           <span>Respuesta incorrecta</span>
                         </div>
-                        <p className="mt-2">
-                          La respuesta correcta es:{" "}
+
+                        <p>
+                          La opción correcta es{" "}
                           <strong>
-                            {
-                              currentQuestion.answers.find((a) => a.is_correct)
-                                ?.text
-                            }
+                            {(() => {
+                              const correctIndex =
+                                currentQuestion.answers.findIndex(
+                                  (a) => a.is_correct
+                                );
+                              return correctIndex !== -1
+                                ? String.fromCharCode(97 + correctIndex) + ")"
+                                : "";
+                            })()}
                           </strong>
                         </p>
                       </div>
                     )}
                   </motion.div>
-                )}
-              </CardFooter>
+                </CardFooter>
+              )}
             </Card>
           </motion.div>
         </AnimatePresence>
@@ -327,7 +340,7 @@ export default function TakeQuizPage() {
           <ChevronLeft /> Anterior
         </Button>
 
-        {isLastQuestion ? (
+        {currentQuestionIndex === quiz.questions.length - 1 ? (
           <Button onClick={handleSubmit}>
             <MonitorUp /> Enviar respuestas
           </Button>
