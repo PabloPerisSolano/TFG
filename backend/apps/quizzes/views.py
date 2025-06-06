@@ -204,15 +204,18 @@ class GeneratorView(APIView):
     def post(self, request, *args, **kwargs):
         try:
             data = request.data
+            pdf_file = request.FILES.get("pdf")
             required_fields = [
                 "title",
                 "category",
                 "num_preguntas",
                 "num_opciones",
-                "prompt",
             ]
 
-            if not all(field in data for field in required_fields):
+            # prompt solo es obligatorio si no hay pdf
+            if not all(field in data for field in required_fields) or (
+                not pdf_file and "prompt" not in data
+            ):
                 return Response(
                     {
                         "error": "Faltan campos obligatorios: "
@@ -221,6 +224,7 @@ class GeneratorView(APIView):
                     status=status.HTTP_400_BAD_REQUEST,
                 )
 
+            # Validar categoría
             category = data["category"]
             valid_categories = [choice[0] for choice in Quiz.CATEGORY_CHOICES]
             if category not in valid_categories:
@@ -231,12 +235,25 @@ class GeneratorView(APIView):
                     status=status.HTTP_400_BAD_REQUEST,
                 )
 
+            num_preguntas = int(data["num_preguntas"])
+            num_opciones = int(data["num_opciones"])
+
+            # Obtener el texto a procesar
+            if pdf_file:
+                prompt = QuizGenerator.extract_text_from_pdf(pdf_file)
+            else:
+                prompt = data["prompt"]
+
+            # Comprobar que se lee correctamente el PDF
+            # with open("/tmp/prompt_debug.txt", "w", encoding="utf-8") as f:
+            #     f.write(prompt)
+
             QuizGenerator.validate_generation_params(
-                data["num_preguntas"], data["num_opciones"], data["prompt"]
+                num_preguntas, num_opciones, prompt
             )
 
             openai_response = QuizGenerator.call_openai_api(
-                data["num_preguntas"], data["num_opciones"], data["prompt"]
+                num_preguntas, num_opciones, prompt
             )
 
             questions_data = QuizGenerator.parse_openai_response(openai_response)

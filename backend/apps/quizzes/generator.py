@@ -1,6 +1,7 @@
 # generator.py
 import json
 
+import fitz
 from decouple import config
 from openai import APIConnectionError, APIError, OpenAI
 from rest_framework import status
@@ -10,7 +11,7 @@ MAX_QUESTIONS = 20
 MIN_OPTIONS = 2
 MAX_OPTIONS = 4
 MIN_PROMPT_LENGTH = 20
-MAX_PROMPT_LENGTH = 1000
+MAX_PROMPT_LENGTH = 2000
 
 
 class QuizGenerator:
@@ -44,6 +45,19 @@ class QuizGenerator:
             raise ValueError(
                 f"El prompt no puede exceder los {MAX_PROMPT_LENGTH} caracteres"
             )
+
+    @staticmethod
+    def extract_text_from_pdf(pdf_file):
+        if hasattr(pdf_file, "read"):
+            doc = fitz.open(stream=pdf_file.read(), filetype="pdf")
+        else:
+            doc = fitz.open(pdf_file)
+
+        extracted_text = ""
+        for i, page in enumerate(doc):
+            page_text = page.get_text()
+            extracted_text += f"\n--- Página {i + 1} ---\n{page_text.strip()}\n"
+        return extracted_text
 
     @staticmethod
     def call_openai_api(
