@@ -11,6 +11,7 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
+from .generator import QuizGenerator
 from .models import Answer, Question, Quiz
 from .serializers import (
     AnswerSerializer,
@@ -201,135 +202,51 @@ class GeneratorView(APIView):
     permission_classes = [IsAuthenticated]
 
     def post(self, request, *args, **kwargs):
-        title = request.data.get("title")
-        description = request.data.get("description", "")
-        public = request.data.get("public", False)
-        time_limit = request.data.get("time_limit", 3600)
-        category = request.data.get("category")
-
-        num_preguntas = request.data.get("num_preguntas")
-        num_opciones = request.data.get("num_opciones")
-        prompt = request.data.get("prompt")
-
-        MIN_QUESTIONS = 1
-        MAX_QUESTIONS = 20
-        MIN_OPTIONS = 2
-        MAX_OPTIONS = 4
-
-        if (
-            not title
-            or not category
-            or not num_preguntas
-            or not num_opciones
-            or not prompt
-        ):
-            return Response(
-                {
-                    "error": "title, category, num_preguntas, num_opciones y prompt son obligatorios"
-                },
-                status=status.HTTP_400_BAD_REQUEST,
-            )
-
-        if (
-            not isinstance(num_preguntas, int)
-            or num_preguntas < MIN_QUESTIONS
-            or num_preguntas > MAX_QUESTIONS
-        ):
-            return Response(
-                {
-                    "error": f"num_preguntas debe ser un entero entre {MIN_QUESTIONS} y {MAX_QUESTIONS}"
-                },
-                status=status.HTTP_400_BAD_REQUEST,
-            )
-
-        if (
-            not isinstance(num_opciones, int)
-            or num_opciones < MIN_OPTIONS
-            or num_opciones > MAX_OPTIONS
-        ):
-            return Response(
-                {
-                    "error": f"num_opciones debe ser un entero entre {MIN_OPTIONS} y {MAX_OPTIONS}"
-                },
-                status=status.HTTP_400_BAD_REQUEST,
-            )
-
         try:
-            openai_api_key = config("OPENROUTER_API_KEY")
+            data = request.data
+            required_fields = [
+                "title",
+                "category",
+                "num_preguntas",
+                "num_opciones",
+                "prompt",
+            ]
 
-            if not openai_api_key:
+            if not all(field in data for field in required_fields):
                 return Response(
-                    {"error": "API key no encontrada en las variables de entorno"},
-                    status=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                    {
+                        "error": "Faltan campos obligatorios: "
+                        + ", ".join(required_fields)
+                    },
+                    status=status.HTTP_400_BAD_REQUEST,
                 )
 
-            client = OpenAI(
-                api_key=openai_api_key, base_url="https://openrouter.ai/api/v1"
-            )
-
-            response = client.chat.completions.create(
-                model="deepseek/deepseek-chat:free",
-                messages=[
-                    {
-                        "role": "system",
-                        "content": "Eres un generador de cuestionarios tipo test. A partir de un texto dado, generas un número dado de preguntas y un número dado de respuestas en JSON.",
-                    },
-                    {
-                        "role": "user",
-                        "content": f"""Genera {num_preguntas} preguntas con {num_opciones} respuestas en JSON a partir de este texto. La respuesta correcta is_correct no debe ser siempre la primera. Formato:
-                        [
-                            {{
-                                "text": "Pregunta",
-                                "answers": [
-                                    {{"text": "Respuesta correcta", "is_correct": true}},
-                                    {{"text": "Respuesta incorrecta", "is_correct": false}}
-                                ]
-                            }}, 
-                            {{...}}
-                        ]
-                        Texto: {prompt}""",
-                    },
-                ],
-                stream=False,
-            )
-            questions_json = response.choices[0].message.content.strip()
-
-            if questions_json.startswith("```json"):
-                questions_json = questions_json[7:-3].strip()
-            elif questions_json.startswith("```"):
-                questions_json = questions_json[3:-3].strip()
-
-            try:
-                questions_data = json.loads(questions_json)
-
-                if not isinstance(questions_data, list):
-                    return Response(
-                        {
-                            "error": "Formato inválido: Se esperaba una lista de questions"
-                        },
-                        status=status.HTTP_500_INTERNAL_SERVER_ERROR,
-                    )
-                for question in questions_data:
-                    if "text" not in question or "answers" not in question:
-                        return Response(
-                            {
-                                "error": "Formato inválido: Cada question debe tener 'text' y 'answers'"
-                            },
-                            status=status.HTTP_500_INTERNAL_SERVER_ERROR,
-                        )
-            except json.JSONDecodeError:
+            category = data["category"]
+            valid_categories = [choice[0] for choice in Quiz.CATEGORY_CHOICES]
+            if category not in valid_categories:
                 return Response(
-                    {"error": "Error al parsear la respuesta de OpenAI"},
-                    status=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                    {
+                        "error": f"Categoría inválida. Debe ser una de: {', '.join(valid_categories)}"
+                    },
+                    status=status.HTTP_400_BAD_REQUEST,
                 )
 
-            # Creamos el quiz utilizando el QuizCreateSerializer
+            QuizGenerator.validate_generation_params(
+                data["num_preguntas"], data["num_opciones"], data["prompt"]
+            )
+
+            openai_response = QuizGenerator.call_openai_api(
+                data["num_preguntas"], data["num_opciones"], data["prompt"]
+            )
+
+            questions_data = QuizGenerator.parse_openai_response(openai_response)
+
             quiz_data = {
-                "title": title,
-                "description": description,
-                "public": public,
-                "time_limit": time_limit,
-                "category": category,
+                "title": data["title"],
+                "description": data.get("description", ""),
+                "public": data.get("public", False),
+                "time_limit": data.get("time_limit", 3600),
+                "category": data["category"],
                 "questions": questions_data,
             }
 
@@ -337,27 +254,19 @@ class GeneratorView(APIView):
 
             if quiz_serializer.is_valid():
                 quiz = quiz_serializer.save(author=self.request.user)
-                quiz_detail_serializer = QuizDetailSerializer(quiz)
                 return Response(
-                    quiz_detail_serializer.data, status=status.HTTP_201_CREATED
+                    QuizDetailSerializer(quiz).data, status=status.HTTP_201_CREATED
                 )
             else:
                 return Response(
-                    {"error": quiz_serializer.errors},
+                    quiz_serializer.errors,
                     status=status.HTTP_400_BAD_REQUEST,
                 )
 
-        except APIConnectionError as e:
-            return Response(
-                {"error": f"Fallo al conectarse con OpenAI API: {str(e)}"},
-                status=status.HTTP_503_SERVICE_UNAVAILABLE,
-            )
-        except APIError as e:
-            return Response(
-                {"error": f"OpenAI API error: {str(e)}"},
-                status=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            )
+        except ValueError as e:
+            return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
         except Exception as e:
             return Response(
-                {"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR
+                {"error": f"Error en la generación: {str(e)}"},
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR,
             )
