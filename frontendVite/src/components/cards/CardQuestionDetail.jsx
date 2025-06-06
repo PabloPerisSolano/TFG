@@ -1,7 +1,8 @@
 import { Trash2, CirclePlus } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
-import { DialogOneInput, DialogConfirm, EditableField } from "@/components";
+import { EditableField } from "@/components";
+import { DialogConfirm, DialogOneInput } from "@/components/dialogs";
 import {
   Button,
   Card,

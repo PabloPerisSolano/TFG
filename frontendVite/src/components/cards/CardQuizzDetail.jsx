@@ -8,8 +8,9 @@ import {
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { toast } from "sonner";
-import { DialogOneInput, EditableField, SelectorCategoria } from "@/components";
+import { EditableField, SelectorCategoria } from "@/components";
 import { CardQuestionDetail } from "@/components/cards";
+import { DialogOneInput } from "@/components/dialogs";
 import {
   Button,
   Badge,

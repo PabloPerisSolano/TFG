@@ -1,6 +1,4 @@
 export * from "./BaseQuizzCreate";
-export * from "./DialogConfirm";
-export * from "./DialogOneInput";
 export * from "./DropdownNavigationMobile";
 export * from "./EditableField";
 export * from "./FiltroQuizzes";

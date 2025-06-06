@@ -6,7 +6,7 @@ import {
   BadgeMinus,
 } from "lucide-react";
 import { Link } from "react-router-dom";
-import { DialogConfirm } from "@/components";
+import { DialogConfirm } from "@/components/dialogs";
 import {
   Badge,
   Button,
