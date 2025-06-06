@@ -1,4 +1,4 @@
-import { Loader2, Sparkles } from "lucide-react";
+import { Loader2, Sparkles, LetterText, FileText } from "lucide-react";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
@@ -14,6 +14,10 @@ import {
   Input,
   Label,
   Textarea,
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger,
 } from "@/components/ui";
 import { ROUTES, API_ROUTES, MIN_QUIZ_TIME, MAX_QUIZ_TIME } from "@/constants";
 import { useAuthFetch } from "@/hooks";
@@ -34,13 +38,14 @@ export default function QuizzGenerator() {
   const [num_preguntas, setNumPreguntas] = useState(1);
   const [num_opciones, setNumOpciones] = useState(2);
   const [prompt, setPrompt] = useState("");
+  const [pdfFile, setPdfFile] = useState(null);
   const [loading, setLoading] = useState(false);
 
   const handleCreateQuiz = async (e) => {
     e.preventDefault();
 
-    if (!title || !prompt) {
-      toast.error("Por favor, completa todos los campos obligatorios.");
+    if (!title) {
+      toast.error("Por favor, completa el título.");
       return;
     }
 
@@ -81,27 +86,54 @@ export default function QuizzGenerator() {
       return;
     }
 
-    if (prompt.length < 20) {
-      toast.error("El texto debe tener al menos 20 caracteres.");
+    let isPdf = !!pdfFile;
+
+    if (!isPdf) {
+      if (!prompt) {
+        toast.error("Por favor, completa el texto del prompt.");
+        return;
+      }
+      if (prompt.length < 20) {
+        toast.error("El texto del prompt debe tener al menos 20 caracteres.");
+        return;
+      }
+    }
+
+    if (isPdf && !pdfFile) {
+      toast.error("Debes seleccionar un archivo PDF.");
       return;
+    }
+
+    let body;
+
+    if (isPdf) {
+      body = new FormData();
+      body.append("title", title);
+      body.append("description", description);
+      body.append("time_limit", tiempo * 60);
+      body.append("public", publicar);
+      body.append("category", category);
+      body.append("num_preguntas", num_preguntas);
+      body.append("num_opciones", num_opciones);
+      body.append("pdf", pdfFile);
+    } else {
+      body = JSON.stringify({
+        title,
+        description,
+        time_limit: tiempo * 60,
+        public: publicar,
+        category,
+        num_preguntas,
+        num_opciones,
+        prompt,
+      });
     }
 
     setLoading(true);
 
-    const quizData = {
-      title,
-      description,
-      time_limit: tiempo * 60,
-      public: publicar,
-      category,
-      prompt,
-      num_preguntas,
-      num_opciones,
-    };
-
     const res = await fetchWithAuth(API_ROUTES.QUIZ_GENERATOR, {
       method: "POST",
-      body: JSON.stringify(quizData),
+      body,
     });
 
     if (!res.ok) {
@@ -171,16 +203,56 @@ export default function QuizzGenerator() {
             </article>
           </section>
 
-          <section>
-            <Label className="font-semibold">Texto</Label>
-            <Textarea
-              placeholder="Escribe el texto del cual se generarán las preguntas..."
-              value={prompt}
-              onChange={(e) => setPrompt(e.target.value)}
-              className="h-28"
-              required
-            />
-          </section>
+          <Tabs defaultValue="pdf">
+            <TabsList>
+              <TabsTrigger value="pdf">
+                <FileText /> PDF
+              </TabsTrigger>
+              <TabsTrigger value="text">
+                <LetterText /> Texto
+              </TabsTrigger>
+            </TabsList>
+
+            <TabsContent value="pdf">
+              <Card>
+                <CardHeader>
+                  <CardTitle>Generar a partir de PDF</CardTitle>
+                  <CardDescription>
+                    Genera preguntas a partir del contenido de un archivo PDF.
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <Label>Selecciona un archivo PDF</Label>
+                  <Input
+                    type="file"
+                    accept=".pdf"
+                    onChange={(e) => setPdfFile(e.target.files[0])}
+                  />
+                </CardContent>
+              </Card>
+            </TabsContent>
+
+            <TabsContent value="text">
+              <Card>
+                <CardHeader>
+                  <CardTitle>Generar a partir de texto</CardTitle>
+                  <CardDescription>
+                    Genera preguntas a partir del texto proporcionado.
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <Label className="font-semibold">Texto</Label>
+                  <Textarea
+                    placeholder="Escribe el texto del cual se generarán las preguntas..."
+                    value={prompt}
+                    onChange={(e) => setPrompt(e.target.value)}
+                    className="h-28"
+                    required
+                  />
+                </CardContent>
+              </Card>
+            </TabsContent>
+          </Tabs>
         </CardContent>
         <CardFooter>
           <Button type="submit" disabled={loading} className="w-full">
