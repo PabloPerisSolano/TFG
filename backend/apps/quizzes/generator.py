@@ -4,14 +4,13 @@ import textwrap
 
 import fitz
 from decouple import config
-from openai import APIConnectionError, APIError, OpenAI
-from rest_framework import status
+from openai import OpenAI
 
 MIN_QUESTIONS = 1
 MAX_QUESTIONS = 20
 MIN_OPTIONS = 2
 MAX_OPTIONS = 4
-MIN_PROMPT_LENGTH = 20
+MIN_PROMPT_LENGTH = 50
 MAX_PROMPT_LENGTH = 500000
 
 

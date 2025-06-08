@@ -1,4 +1,4 @@
-# TFG - Generador de Quizzes
+# TFG - QuizzGenerate
 
 ### Trabajo Fin de Grado 2024-25
 
@@ -25,18 +25,18 @@
 
 ## 📖 Descripción
 
-Este proyecto es una aplicación diseñada para **crear, generar, gestionar y realizar quizzes** de manera eficiente. El objetivo principal es proporcionar una herramienta intuitiva y flexible que permita a los usuarios generar cuestionarios personalizados para diferentes propósitos, como educación, entretenimiento o evaluación.
+Este proyecto es una aplicación diseñada para **crear, generar, gestionar y realizar quizzes** de forma online. El objetivo principal es proporcionar una herramienta intuitiva y flexible que permita a los usuarios generar cuestionarios personalizados para diferentes propósitos, como educación, entretenimiento o evaluación.
 
 ---
 
 ## ✨ Características
 
 - 🔒 **Autenticación segura**: Registro, inicio de sesión y cierre de sesión con soporte para JWT.
-- 👤 **Gestión de usuarios**: Actualización de datos personales y subida de fotos de perfil.
+- 👤 **Gestión de usuarios**: Configuración de cuenta y datos personales.
 - 📝 **Generación de quizzes**: Creación de cuestionarios personalizados con múltiples opciones.
 - 🔑 **Restablecimiento de contraseñas**: Envío de correos electrónicos para recuperar contraseñas olvidadas.
 - 🖥️ **Interfaz amigable**: Diseño intuitivo para facilitar la experiencia del usuario.
-- 🌐 **API RESTful**: Backend desarrollado con Django y Django REST Framework.
+- 🌐 **API RESTful**: Backend desarrollado con Django REST Framework.
 
 ---
 
@@ -51,9 +51,13 @@ Este proyecto es una aplicación diseñada para **crear, generar, gestionar y re
 
 ### Frontend:
 
-- **React**: Framework para la interfaz de usuario.
-- **Next.js**: Framework para renderizado del frontend.
+- **React**: Librería principal para la interfaz de usuario.
+- **Vite**: Herramienta de build y desarrollo ultrarrápida para React.
 - **Tailwind CSS**: Para un diseño moderno y responsivo.
+- **shadcn/ui**: Componentes de interfaz accesibles y personalizables.
+- **Sonner**: Notificaciones toast modernas.
+- **Motion**: Animaciones fluidas para React.
+- **Lucide React**: Iconos SVG para React.
 
 ---
 
@@ -134,7 +138,7 @@ npm run dev
 
 ### 📚 Uso
 
-1. Accede al frontend en http://localhost:3000.
+1. Accede al frontend en http://localhost:5173.
 2. Regístrate o inicia sesión para comenzar a usar la aplicación.
 3. Crea, edita y realiza quizzes desde la interfaz de usuario.
 

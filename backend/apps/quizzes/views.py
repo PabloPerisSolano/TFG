@@ -1,9 +1,5 @@
-import json
-
-from decouple import config
 from django.db.models import Prefetch
 from django.shortcuts import get_object_or_404
-from openai import APIConnectionError, APIError, OpenAI
 from rest_framework import generics, permissions, status
 from rest_framework.exceptions import PermissionDenied
 from rest_framework.pagination import PageNumberPagination
@@ -243,10 +239,6 @@ class GeneratorView(APIView):
                 prompt = QuizGenerator.extract_text_from_pdf(pdf_file)
             else:
                 prompt = data["prompt"]
-
-            # Comprobar que se lee correctamente el PDF
-            # with open("/tmp/prompt_debug.txt", "w", encoding="utf-8") as f:
-            #     f.write(prompt)
 
             QuizGenerator.validate_generation_params(
                 num_preguntas, num_opciones, prompt
