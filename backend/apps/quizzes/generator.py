@@ -73,26 +73,52 @@ class QuizGenerator:
         client = OpenAI(api_key=openai_api_key, base_url="https://openrouter.ai/api/v1")
 
         response = client.chat.completions.create(
-            model="deepseek/deepseek-chat:free",
+            model="deepseek/deepseek-chat-v3-0324:free",
             messages=[
                 {
                     "role": "system",
-                    "content": "Eres un generador de cuestionarios tipo test. A partir de un texto dado, generas un número dado de preguntas y un número dado de respuestas en JSON.",
+                    "content": """Eres un generador de cuestionarios educativos. Genera preguntas tipo test en formato ARRAY JSON con estas reglas:
+                        1. Estructura exacta: DEBES devolver un ARRAY de objetos, incluso para una sola pregunta. No añadas ningún texto, explicación ni comentario fuera del ARRAY JSON. Solo devuelve el ARRAY JSON.
+                        2. Sigue estrictamente este formato (nombres de claves deben coincidir).
+                        [
+                            {
+                                "text": "Texto de la pregunta",
+                                "answers": [
+                                    {"text": "Opción 1", "is_correct": true/false},
+                                    {"text": "Opción 2", "is_correct": true/false},
+                                    ... (según num_opciones)
+                                ]
+                            },
+                            ... (según num_preguntas)
+                        ]
+                        3. Calidad: 
+                            - Preguntas relevantes al texto, cubriendo conceptos clave.
+                            - Respuestas incorrectas plausibles y relacionadas.
+                        4. Correctas aleatorias: La opción correcta no debe estar siempre en la misma posición.
+                        5. Una correcta por pregunta: Solo una respuesta por pregunta con `is_correct: true`.
+                        6. El valor de `is_correct` debe ser booleano (`true` o `false`), no string ni número.
+                        7. El ARRAY JSON debe ser válido para `json.loads` en Python.
+
+                        Ejemplo:
+                        [
+                            {
+                                "text": "¿Qué es Python?",
+                                "answers": [
+                                    {"text": "Un lenguaje de programación", "is_correct": true},
+                                    {"text": "Una serpiente", "is_correct": false},
+                                    {"text": "Un framework web", "is_correct": false}
+                                ]
+                            },
+                            ...
+                        ]""",
                 },
                 {
                     "role": "user",
-                    "content": f"""Genera {num_preguntas} preguntas con {num_opciones} respuestas en JSON a partir de este texto. La respuesta correcta is_correct no debe ser siempre la primera. Formato:
-                        [
-                            {{
-                                "text": "Pregunta",
-                                "answers": [
-                                    {{"text": "Respuesta correcta", "is_correct": true}},
-                                    {{"text": "Respuesta incorrecta", "is_correct": false}}
-                                ]
-                            }}, 
-                            {{...}}
-                        ]
-                        Texto: {prompt}""",
+                    "content": f"""Genera {num_preguntas} preguntas con {num_opciones} opciones cada una, basadas en este texto:
+                        ---  
+                        {prompt}
+                        ---
+                        Recuerda: 1 correcta por pregunta, posición aleatoria y ARRAY JSON válido.""",
                 },
             ],
             stream=False,
