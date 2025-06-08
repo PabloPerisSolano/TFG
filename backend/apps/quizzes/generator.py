@@ -1,5 +1,6 @@
 # generator.py
 import json
+import textwrap
 
 import fitz
 from decouple import config
@@ -77,48 +78,53 @@ class QuizGenerator:
             messages=[
                 {
                     "role": "system",
-                    "content": """Eres un generador de cuestionarios educativos. Genera preguntas tipo test en formato ARRAY JSON con estas reglas:
-                        1. Estructura exacta: DEBES devolver un ARRAY de objetos, incluso para una sola pregunta. No añadas ningún texto, explicación ni comentario fuera del ARRAY JSON. Solo devuelve el ARRAY JSON.
-                        2. Sigue estrictamente este formato (nombres de claves deben coincidir).
+                    "content": textwrap.dedent(
+                        """\
+                        Genera tests educativos como ARRAY JSON. Reglas:
+                        1. Estructura EXACTA:
                         [
                             {
-                                "text": "Texto de la pregunta",
+                                "text": "Pregunta",
                                 "answers": [
-                                    {"text": "Opción 1", "is_correct": true/false},
-                                    {"text": "Opción 2", "is_correct": true/false},
+                                    {"text": "Opción", "is_correct": boolean},
                                     ... (según num_opciones)
                                 ]
                             },
                             ... (según num_preguntas)
                         ]
-                        3. Calidad: 
-                            - Preguntas relevantes al texto, cubriendo conceptos clave.
-                            - Respuestas incorrectas plausibles y relacionadas.
-                        4. Correctas aleatorias: La opción correcta no debe estar siempre en la misma posición.
-                        5. Una correcta por pregunta: Solo una respuesta por pregunta con `is_correct: true`.
-                        6. El valor de `is_correct` debe ser booleano (`true` o `false`), no string ni número.
-                        7. El ARRAY JSON debe ser válido para `json.loads` en Python.
+                        - Prohibido usar objetos contenedores. El JSON debe ser solo un array.
+                        - Una opción correcta por pregunta, en posición aleatoria.
+                        - Opciones incorrectas deben ser plausibles y relacionadas.
+                        - Si el texto carece de sentido o no permite generar preguntas relevantes, devuelve [].
+
+                        2. Las preguntas deben ser relevantes al texto, cubriendo conceptos clave.
 
                         Ejemplo:
                         [
                             {
                                 "text": "¿Qué es Python?",
                                 "answers": [
-                                    {"text": "Un lenguaje de programación", "is_correct": true},
-                                    {"text": "Una serpiente", "is_correct": false},
-                                    {"text": "Un framework web", "is_correct": false}
+                                    {"text": "Lenguaje de programación", "is_correct": true},
+                                    {"text": "Serpiente", "is_correct": false}
                                 ]
-                            },
-                            ...
-                        ]""",
+                            }
+                        ]
+                        """
+                    ),
                 },
                 {
                     "role": "user",
-                    "content": f"""Genera {num_preguntas} preguntas con {num_opciones} opciones cada una, basadas en este texto:
+                    "content": textwrap.dedent(
+                        f"""\
+                        Genera {num_preguntas} preguntas con {num_opciones} opciones cada una, basadas en este texto:
                         ---  
                         {prompt}
                         ---
-                        Recuerda: 1 correcta por pregunta, posición aleatoria y ARRAY JSON válido.""",
+                        Recuerda:
+                        - Devuelve solo un ARRAY JSON válido (sin objetos contenedores).
+                        - Una opción correcta por pregunta (posición aleatoria).
+                        """
+                    ),
                 },
             ],
             stream=False,
