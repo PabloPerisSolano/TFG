@@ -9,12 +9,7 @@ export const Footer = () => {
     >
       <section className="md:ml-10">
         <article className="flex items-center justify-center md:justify-start space-x-2 mb-2">
-          <img
-            src="/favicon.png"
-            width={20}
-            alt="QuizGenerate Logo"
-            className="rounded-md"
-          />
+          <img src="/favicon.png" width={20} alt="QuizGenerate Logo" />
           <h2 className="text-xl font-bold">QuizGenerate</h2>
         </article>
         <p>TFG: Pablo Peris Solano. 2025</p>

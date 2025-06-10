@@ -206,6 +206,7 @@ class GeneratorView(APIView):
                 "category",
                 "num_preguntas",
                 "num_opciones",
+                "idioma",
             ]
 
             # prompt solo es obligatorio si no hay pdf
@@ -233,10 +234,15 @@ class GeneratorView(APIView):
 
             num_preguntas = int(data["num_preguntas"])
             num_opciones = int(data["num_opciones"])
+            idioma = data.get("idioma", "Español")
 
             # Obtener el texto a procesar
             if pdf_file:
-                prompt = QuizGenerator.extract_text_from_pdf(pdf_file)
+                page_range = data.get("page_range", "")
+                selected_pages = (
+                    QuizGenerator.parse_page_range(page_range) if pdf_file else None
+                )
+                prompt = QuizGenerator.extract_text_from_pdf(pdf_file, selected_pages)
             else:
                 prompt = data["prompt"]
 
@@ -245,7 +251,7 @@ class GeneratorView(APIView):
             )
 
             openai_response = QuizGenerator.call_openai_api(
-                num_preguntas, num_opciones, prompt
+                num_preguntas, num_opciones, idioma, prompt
             )
 
             questions_data = QuizGenerator.parse_openai_response(openai_response)

@@ -49,8 +49,14 @@ export const BaseQuizCreate = ({
         <SelectorCategoria onValueChange={onCategoryChange} />
 
         <article className="flex items-center space-x-2 ">
-          <Checkbox checked={publicar} onCheckedChange={onPublicarChange} />
-          <Label className="font-semibold">Publicar</Label>
+          <Checkbox
+            id="publicar"
+            checked={publicar}
+            onCheckedChange={onPublicarChange}
+          />
+          <Label htmlFor="publicar" className="font-semibold">
+            Publicar
+          </Label>
         </article>
       </section>
     </div>

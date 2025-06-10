@@ -2,7 +2,7 @@ import { Loader2, Sparkles, LetterText, FileText, Trash2 } from "lucide-react";
 import { useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
-import { BaseQuizCreate } from "@/components";
+import { BaseQuizCreate, SelectorIdioma } from "@/components";
 import {
   Button,
   Card,
@@ -43,6 +43,8 @@ export default function QuizGenerator() {
   const [prompt, setPrompt] = useState("");
   const [pdfFile, setPdfFile] = useState(null);
   const [tab, setTab] = useState("pdf");
+  const [pageRange, setPageRange] = useState("");
+  const [idioma, setIdioma] = useState("Español");
   const fileInputRef = useRef(null);
 
   const handleCreateQuiz = async (e) => {
@@ -111,6 +113,19 @@ export default function QuizGenerator() {
       return;
     }
 
+    if (isPdf && pdfFile) {
+      if (
+        pageRange.trim() &&
+        !/^(\d+\s*(-\s*\d+)?)(\s*,\s*\d+\s*(-\s*\d+)?)*$/.test(pageRange.trim())
+      ) {
+        toast.error("Formato de rango de páginas inválido", {
+          description:
+            "Usa formato como: 1-3, 5, 7-9 o vacío para todas las páginas.",
+        });
+        return;
+      }
+    }
+
     let body;
 
     if (isPdf) {
@@ -122,7 +137,11 @@ export default function QuizGenerator() {
       body.append("category", category);
       body.append("num_preguntas", num_preguntas);
       body.append("num_opciones", num_opciones);
+      body.append("idioma", idioma);
       body.append("pdf", pdfFile);
+      if (pageRange.trim()) {
+        body.append("page_range", pageRange.trim());
+      }
     } else if (isText) {
       body = JSON.stringify({
         title,
@@ -132,6 +151,7 @@ export default function QuizGenerator() {
         category,
         num_preguntas,
         num_opciones,
+        idioma,
         prompt,
       });
     }
@@ -148,6 +168,7 @@ export default function QuizGenerator() {
       toast.error("Error de creación", {
         description: errorData.error,
       });
+      setLoading(false);
       return;
     }
 
@@ -184,30 +205,40 @@ export default function QuizGenerator() {
 
           <Separator className="my-8" />
 
-          <section className="flex flex-row gap-5">
-            <article>
-              <Label className="font-semibold">Nº Preguntas</Label>
-              <Input
-                type="number"
-                min={MIN_QUESTIONS_GENERATION}
-                max={MAX_QUESTIONS_GENERATION}
-                value={num_preguntas}
-                onChange={(e) => {
-                  setNumPreguntas(Number(e.target.value));
-                }}
-              />
-            </article>
+          <section className="flex flex-col sm:flex-row sm:justify-between gap-5">
+            <div className="flex gap-10">
+              <article>
+                <Label className="font-semibold">Nº Preguntas</Label>
+                <Input
+                  type="number"
+                  min={MIN_QUESTIONS_GENERATION}
+                  max={MAX_QUESTIONS_GENERATION}
+                  value={num_preguntas}
+                  onChange={(e) => {
+                    setNumPreguntas(Number(e.target.value));
+                  }}
+                />
+              </article>
+
+              <article>
+                <Label className="font-semibold">Nº Opciones</Label>
+                <Input
+                  type="number"
+                  min={MIN_OPTIONS_GENERATION}
+                  max={MAX_OPTIONS_GENERATION}
+                  value={num_opciones}
+                  onChange={(e) => {
+                    setNumOpciones(Number(e.target.value));
+                  }}
+                />
+              </article>
+            </div>
 
             <article>
-              <Label className="font-semibold">Nº Opciones</Label>
-              <Input
-                type="number"
-                min={MIN_OPTIONS_GENERATION}
-                max={MAX_OPTIONS_GENERATION}
-                value={num_opciones}
-                onChange={(e) => {
-                  setNumOpciones(Number(e.target.value));
-                }}
+              <Label className="font-semibold">Idioma</Label>
+              <SelectorIdioma
+                value={idioma}
+                onValueChange={(value) => setIdioma(value)}
               />
             </article>
           </section>
@@ -220,6 +251,7 @@ export default function QuizGenerator() {
                 setPrompt("");
               } else if (value === "text") {
                 setPdfFile(null);
+                setPageRange("");
                 if (fileInputRef.current) fileInputRef.current.value = "";
               }
             }}
@@ -241,14 +273,29 @@ export default function QuizGenerator() {
                     Genera preguntas a partir del contenido de un archivo PDF.
                   </CardDescription>
                 </CardHeader>
-                <CardContent>
-                  <Label>Selecciona un archivo PDF</Label>
-                  <Input
-                    type="file"
-                    accept=".pdf"
-                    ref={fileInputRef}
-                    onChange={(e) => setPdfFile(e.target.files[0])}
-                  />
+                <CardContent className="space-y-5">
+                  <section>
+                    <Label>Selecciona un archivo PDF</Label>
+                    <Input
+                      type="file"
+                      accept=".pdf"
+                      ref={fileInputRef}
+                      onChange={(e) => setPdfFile(e.target.files[0])}
+                    />
+                  </section>
+
+                  <section>
+                    <Label>Rango de páginas (opcional)</Label>
+                    <Input
+                      type="text"
+                      placeholder="Ej: 1-3, 5, 7-9 (vacío para todas)"
+                      value={pageRange}
+                      onChange={(e) => setPageRange(e.target.value)}
+                    />
+                    <p className="text-sm text-muted-foreground mt-1">
+                      Especifica qué páginas procesar (ej: 1-3, 5, 7-9)
+                    </p>
+                  </section>
                 </CardContent>
                 <CardFooter className="flex justify-end">
                   <Button
@@ -256,6 +303,7 @@ export default function QuizGenerator() {
                     variant="destructive"
                     onClick={() => {
                       setPdfFile(null);
+                      setPageRange("");
                       if (fileInputRef.current) {
                         fileInputRef.current.value = "";
                       }
@@ -281,7 +329,7 @@ export default function QuizGenerator() {
                     placeholder="Escribe el texto del cual se generarán las preguntas..."
                     value={prompt}
                     onChange={(e) => setPrompt(e.target.value)}
-                    className="h-24"
+                    className="h-48"
                     required
                   />
                 </CardContent>

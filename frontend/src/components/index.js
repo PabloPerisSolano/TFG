@@ -9,3 +9,4 @@ export * from "./HomeCarrusel";
 export * from "./Layout";
 export * from "./PrivateRoute";
 export * from "./SelectorCategoria";
+export * from "./SelectorIdioma";

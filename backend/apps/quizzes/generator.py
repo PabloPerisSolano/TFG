@@ -10,8 +10,8 @@ MIN_QUESTIONS = 1
 MAX_QUESTIONS = 20
 MIN_OPTIONS = 2
 MAX_OPTIONS = 4
-MIN_PROMPT_LENGTH = 50
-MAX_PROMPT_LENGTH = 500000
+MIN_PROMPT_LENGTH = 100
+MAX_PROMPT_LENGTH = 50000000
 
 
 class QuizGenerator:
@@ -47,22 +47,64 @@ class QuizGenerator:
             )
 
     @staticmethod
-    def extract_text_from_pdf(pdf_file):
+    def parse_page_range(page_range_str):
+        """
+        Convierte un string como "1-3,5,7-9" en una lista de números de página [1,2,3,5,7,8,9]
+        Args:
+            page_range_str: String con el rango de páginas (ej: "1-3,5,7-9")
+        Returns:
+            Lista de números de página ordenados y sin duplicados, o None si el string está vacío
+        """
+
+        if not page_range_str or not page_range_str.strip():
+            return None
+
+        pages = []
+        for part in page_range_str.split(","):
+            part = part.strip()
+            if "-" in part:
+                start_end = part.split("-")
+                if len(start_end) != 2:
+                    continue
+                try:
+                    start, end = map(int, start_end)
+                    pages.extend(range(start, end + 1))
+                except ValueError:
+                    continue
+            else:
+                try:
+                    pages.append(int(part))
+                except ValueError:
+                    continue
+
+        return sorted(set(pages)) if pages else None
+
+    @staticmethod
+    def extract_text_from_pdf(pdf_file, selected_pages=None):
         if hasattr(pdf_file, "read"):
             doc = fitz.open(stream=pdf_file.read(), filetype="pdf")
         else:
             doc = fitz.open(pdf_file)
 
         extracted_text = ""
-        for i, page in enumerate(doc):
-            page_text = page.get_text()
-            extracted_text += f"\n--- Página {i + 1} ---\n{page_text.strip()}\n"
+
+        if selected_pages is None:
+            selected_pages = range(1, len(doc) + 1)
+
+        for page_num in selected_pages:
+            page_index = page_num - 1
+            if 0 <= page_index < len(doc):
+                page = doc[page_index]
+                page_text = page.get_text()
+                extracted_text += f"\n--- Página {page_num} ---\n{page_text.strip()}\n"
+
         return extracted_text
 
     @staticmethod
     def call_openai_api(
         num_preguntas,
         num_opciones,
+        idioma,
         prompt,
     ):
         openai_api_key = config("OPENROUTER_API_KEY")
@@ -115,13 +157,13 @@ class QuizGenerator:
                     "role": "user",
                     "content": textwrap.dedent(
                         f"""\
-                        Genera {num_preguntas} preguntas con {num_opciones} opciones cada una, basadas en este texto:
+                        Genera {num_preguntas} preguntas con {num_opciones} opciones cada una, escritas en idioma {idioma} y basadas en este texto:
                         ---  
                         {prompt}
                         ---
                         Recuerda:
                         - Devuelve solo un ARRAY JSON válido (sin objetos contenedores).
-                        - Una opción correcta por pregunta (posición aleatoria).
+                        - Una opción correcta por pregunta (la opción correcta no debe ser siempre la misma).
                         """
                     ),
                 },
