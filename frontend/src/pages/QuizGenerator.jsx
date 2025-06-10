@@ -1,5 +1,5 @@
-import { Loader2, Sparkles, LetterText, FileText } from "lucide-react";
-import { useState } from "react";
+import { Loader2, Sparkles, LetterText, FileText, Trash2 } from "lucide-react";
+import { useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import { BaseQuizCreate } from "@/components";
@@ -18,6 +18,7 @@ import {
   TabsContent,
   TabsList,
   TabsTrigger,
+  Separator,
 } from "@/components/ui";
 import { ROUTES, API_ROUTES, MIN_QUIZ_TIME, MAX_QUIZ_TIME } from "@/constants";
 import { useAuthFetch } from "@/hooks";
@@ -27,9 +28,11 @@ export default function QuizGenerator() {
   const MAX_QUESTIONS_GENERATION = 20;
   const MIN_OPTIONS_GENERATION = 2;
   const MAX_OPTIONS_GENERATION = 4;
+  const MIN_PROMPT_LENGTH = 100;
 
   const navigate = useNavigate();
   const fetchWithAuth = useAuthFetch();
+  const [loading, setLoading] = useState(false);
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [publicar, setPublicar] = useState(false);
@@ -39,7 +42,8 @@ export default function QuizGenerator() {
   const [num_opciones, setNumOpciones] = useState(2);
   const [prompt, setPrompt] = useState("");
   const [pdfFile, setPdfFile] = useState(null);
-  const [loading, setLoading] = useState(false);
+  const [tab, setTab] = useState("pdf");
+  const fileInputRef = useRef(null);
 
   const handleCreateQuiz = async (e) => {
     e.preventDefault();
@@ -86,15 +90,18 @@ export default function QuizGenerator() {
       return;
     }
 
-    let isPdf = !!pdfFile;
+    let isPdf = tab === "pdf";
+    let isText = tab === "text";
 
-    if (!isPdf) {
+    if (isText) {
       if (!prompt) {
         toast.error("Por favor, completa el texto del prompt.");
         return;
       }
-      if (prompt.length < 20) {
-        toast.error("El texto del prompt debe tener al menos 20 caracteres.");
+      if (prompt.length < MIN_PROMPT_LENGTH) {
+        toast.error(
+          `El texto del prompt debe tener al menos ${MIN_PROMPT_LENGTH} caracteres.`
+        );
         return;
       }
     }
@@ -116,7 +123,7 @@ export default function QuizGenerator() {
       body.append("num_preguntas", num_preguntas);
       body.append("num_opciones", num_opciones);
       body.append("pdf", pdfFile);
-    } else {
+    } else if (isText) {
       body = JSON.stringify({
         title,
         description,
@@ -175,6 +182,8 @@ export default function QuizGenerator() {
             onCategoryChange={(value) => setCategory(value)}
           />
 
+          <Separator className="my-8" />
+
           <section className="flex flex-row gap-5">
             <article>
               <Label className="font-semibold">Nº Preguntas</Label>
@@ -203,7 +212,18 @@ export default function QuizGenerator() {
             </article>
           </section>
 
-          <Tabs defaultValue="pdf">
+          <Tabs
+            value={tab}
+            onValueChange={(value) => {
+              setTab(value);
+              if (value === "pdf") {
+                setPrompt("");
+              } else if (value === "text") {
+                setPdfFile(null);
+                if (fileInputRef.current) fileInputRef.current.value = "";
+              }
+            }}
+          >
             <TabsList>
               <TabsTrigger value="pdf">
                 <FileText /> PDF
@@ -226,16 +246,31 @@ export default function QuizGenerator() {
                   <Input
                     type="file"
                     accept=".pdf"
+                    ref={fileInputRef}
                     onChange={(e) => setPdfFile(e.target.files[0])}
                   />
                 </CardContent>
+                <CardFooter className="flex justify-end">
+                  <Button
+                    type="button"
+                    variant="destructive"
+                    onClick={() => {
+                      setPdfFile(null);
+                      if (fileInputRef.current) {
+                        fileInputRef.current.value = "";
+                      }
+                    }}
+                  >
+                    <Trash2 /> Quitar archivo
+                  </Button>
+                </CardFooter>
               </Card>
             </TabsContent>
 
             <TabsContent value="text">
               <Card>
                 <CardHeader>
-                  <CardTitle>Generar a partir de texto</CardTitle>
+                  <CardTitle>Generar a partir de texto plano</CardTitle>
                   <CardDescription>
                     Genera preguntas a partir del texto proporcionado.
                   </CardDescription>
@@ -246,7 +281,7 @@ export default function QuizGenerator() {
                     placeholder="Escribe el texto del cual se generarán las preguntas..."
                     value={prompt}
                     onChange={(e) => setPrompt(e.target.value)}
-                    className="h-28"
+                    className="h-24"
                     required
                   />
                 </CardContent>
@@ -254,7 +289,7 @@ export default function QuizGenerator() {
             </TabsContent>
           </Tabs>
         </CardContent>
-        <CardFooter>
+        <CardFooter className="flex flex-col items-center">
           <Button type="submit" disabled={loading} className="w-full">
             {loading ? (
               <>
@@ -268,6 +303,12 @@ export default function QuizGenerator() {
               </>
             )}
           </Button>
+          {loading && (
+            <p className="text-sm text-muted-foreground mt-2">
+              Este proceso puede tardar unos minutos dependiendo del tamaño del
+              PDF o del texto...
+            </p>
+          )}
         </CardFooter>
       </Card>
     </form>

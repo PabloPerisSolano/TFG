@@ -25,6 +25,8 @@ import {
   CardTitle,
   RadioGroup,
   RadioGroupItem,
+  Progress,
+  Label,
 } from "@/components/ui";
 import { API_ROUTES } from "@/constants";
 import { useAuthFetch } from "@/hooks";
@@ -38,6 +40,7 @@ export default function TakeQuizPage() {
   const [myAnswers, setMyAnswers] = useState({});
   const [results, setResults] = useState({});
   const [isDialogScoreOpen, setIsDialogScoreOpen] = useState(false);
+  const [isQuizFinished, setIsQuizFinished] = useState(false);
   const [score, setScore] = useState(0);
   const [displayTime, setDisplayTime] = useState("0:00");
   const timerRef = useRef({ id: null, remaining: 0 });
@@ -167,6 +170,7 @@ export default function TakeQuizPage() {
     });
 
     setScore(score);
+    setIsQuizFinished(true);
     setIsDialogScoreOpen(true);
   };
 
@@ -211,7 +215,7 @@ export default function TakeQuizPage() {
           </CardDescription>
           <CardAction
             className={`flex font-bold ${
-              isDialogScoreOpen
+              isQuizFinished
                 ? "animate-none"
                 : timerRef.current.remaining > 60
                 ? "animate-pulse"
@@ -226,6 +230,15 @@ export default function TakeQuizPage() {
           </CardAction>
         </CardHeader>
         <CardContent>
+          <article className="flex items-center gap-2">
+            <Progress
+              value={((currentQuestionIndex + 1) / quiz.questions.length) * 100}
+            />
+            <p className="font-bold">
+              {currentQuestionIndex + 1}/{quiz.questions.length}
+            </p>
+          </article>
+
           <AnimatePresence mode="wait">
             <motion.div
               key={currentQuestion.id}
@@ -239,9 +252,6 @@ export default function TakeQuizPage() {
                   <CardTitle>
                     {currentQuestionIndex + 1}. {currentQuestion.text}
                   </CardTitle>
-                  <CardAction className="border p-1 rounded-lg">
-                    {currentQuestionIndex + 1}/{quiz.questions.length}
-                  </CardAction>
                 </CardHeader>
                 <CardContent>
                   <RadioGroup
@@ -249,6 +259,7 @@ export default function TakeQuizPage() {
                     onValueChange={(value) =>
                       handleAnswerChange(currentQuestion.id, value)
                     }
+                    disabled={isQuizFinished}
                   >
                     {currentQuestion.answers.map((answer, answerIndex) => {
                       const isSelected =
@@ -256,10 +267,12 @@ export default function TakeQuizPage() {
                       const isCorrect = answer.is_correct;
                       const showFeedback =
                         questionResult && (isSelected || isCorrect);
+                      const radioId = `answer-${currentQuestion.id}-${answer.id}`;
 
                       return (
-                        <article
+                        <Label
                           key={answer.id}
+                          htmlFor={radioId}
                           className={`flex items-center gap-1 p-2 rounded ${
                             showFeedback
                               ? isCorrect
@@ -267,10 +280,11 @@ export default function TakeQuizPage() {
                                 : isSelected
                                 ? "bg-red-100"
                                 : ""
-                              : ""
+                              : "hover:bg-secondary"
                           }`}
                         >
                           <RadioGroupItem
+                            id={radioId}
                             value={answer.id.toString()}
                             disabled={questionResult}
                           />
@@ -285,7 +299,7 @@ export default function TakeQuizPage() {
                               ) : null}
                             </span>
                           )}
-                        </article>
+                        </Label>
                       );
                     })}
                   </RadioGroup>

@@ -1,4 +1,4 @@
-import { Trophy, Check } from "lucide-react";
+import { Trophy, Check, X } from "lucide-react";
 import { Link } from "react-router-dom";
 import {
   Button,
@@ -8,6 +8,7 @@ import {
   DialogHeader,
   DialogTitle,
   DialogFooter,
+  DialogClose,
 } from "@/components/ui";
 import { ROUTES } from "@/constants";
 
@@ -29,6 +30,12 @@ export const DialogScore = ({ score, maxScore, open, onOpenChange }) => {
           </DialogDescription>
         </DialogHeader>
         <DialogFooter>
+          <DialogClose asChild>
+            <Button variant="outline">
+              <X />
+              Seguir viendo
+            </Button>
+          </DialogClose>
           <Link to={ROUTES.HOME} className="flex justify-end">
             <Button>
               <Check />
