@@ -189,7 +189,7 @@ class QuizTakeView(generics.RetrieveAPIView):
         # Si es privado, solo el autor puede verlo
         if not self.request.user.is_authenticated or quiz.author != self.request.user:
             raise PermissionDenied(
-                "No tienes permiso para acceder a este quizz privado."
+                "No tienes permiso para acceder a este quiz privado."
             )
         return quiz
 

@@ -209,7 +209,7 @@ class PasswordResetRequestView(APIView):
             user.save()
 
             # Enviar el correo electrónico con el enlace de restablecimiento
-            reset_link = f"{settings.FRONTEND_URL}/login/reset-password?token={token}"
+            reset_link = f"{settings.FRONTEND_URL}/reset-password?token={token}"
             send_mail(
                 "Restablecer contraseña",
                 f"Usa este enlace para restablecer tu contraseña: {reset_link}",

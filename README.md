@@ -1,4 +1,4 @@
-# TFG - QuizzGenerate
+# TFG - QuizGenerate
 
 ### Trabajo Fin de Grado 2024-25
 
@@ -12,31 +12,19 @@
 ## 📑 Tabla de Contenidos
 
 1. [Descripción](#-descripción)
-2. [Características](#-características)
-3. [Tecnologías utilizadas](#-tecnologías-utilizadas)
-4. [Requisitos previos](#️-requisitos-previos)
-5. [Instalación y configuración](#-instalación-y-configuración)
-6. [Uso](#-uso)
-7. [Estructura del proyecto](#-estructura-del-proyecto)
-8. [Contacto](#-contacto)
-9. [Licencia](#-licencia)
+2. [Tecnologías utilizadas](#-tecnologías-utilizadas)
+3. [Requisitos previos](#️-requisitos-previos)
+4. [Instalación y configuración](#-instalación-y-configuración)
+5. [Uso](#-uso)
+6. [Estructura del proyecto](#-estructura-del-proyecto)
+7. [Contacto](#-contacto)
+8. [Licencia](#-licencia)
 
 ---
 
 ## 📖 Descripción
 
-Este proyecto es una aplicación diseñada para **crear, generar, gestionar y realizar quizzes** de forma online. El objetivo principal es proporcionar una herramienta intuitiva y flexible que permita a los usuarios generar cuestionarios personalizados para diferentes propósitos, como educación, entretenimiento o evaluación.
-
----
-
-## ✨ Características
-
-- 🔒 **Autenticación segura**: Registro, inicio de sesión y cierre de sesión con soporte para JWT.
-- 👤 **Gestión de usuarios**: Configuración de cuenta y datos personales.
-- 📝 **Generación de quizzes**: Creación de cuestionarios personalizados con múltiples opciones.
-- 🔑 **Restablecimiento de contraseñas**: Envío de correos electrónicos para recuperar contraseñas olvidadas.
-- 🖥️ **Interfaz amigable**: Diseño intuitivo para facilitar la experiencia del usuario.
-- 🌐 **API RESTful**: Backend desarrollado con Django REST Framework.
+El proyecto consiste en una aplicación web diseñada para **crear, generar, gestionar y realizar quizzes** de forma online. El objetivo principal es proporcionar una herramienta **open source**, intuitiva y flexible que permita a los usuarios crear exámenes tipo test a su gusto, para fines educativos o simplemente por entretenimiento.
 
 ---
 
@@ -44,19 +32,37 @@ Este proyecto es una aplicación diseñada para **crear, generar, gestionar y re
 
 ### Backend:
 
+![Django](https://img.shields.io/badge/Django-092E20?style=for-the-badge&logo=django&logoColor=white)
+![DRF](https://img.shields.io/badge/DRF-ff1709?style=for-the-badge&logo=django&logoColor=white)
+![SQLite](https://img.shields.io/badge/SQLite-07405E?style=for-the-badge&logo=sqlite&logoColor=white)
+![PostgreSQL](https://img.shields.io/badge/PostgreSQL-336791?style=for-the-badge&logo=postgresql&logoColor=white)
+![Simple JWT](https://img.shields.io/badge/Simple%20JWT-007ec6?style=for-the-badge)
+![PyMuPDF](https://img.shields.io/badge/PyMuPDF-3776AB?style=for-the-badge)
+![OpenAI](https://img.shields.io/badge/OpenAI-412991?style=for-the-badge&logo=openai&logoColor=white)
+
 - **Django**: Framework principal para el desarrollo del backend.
-- **Django REST Framework**: Para la creación de APIs RESTful.
-- **Simple JWT**: Manejo de autenticación basada en tokens.
-- **SQLite**: Base de datos utilizada en desarrollo (puede cambiarse a PostgreSQL o MySQL en producción).
+- **Django REST Framework**: Creación de API RESTful en Django.
+- **SQLite y PostgreSQL**: Bases de datos utilizadas en desarrollo y producción respectivamente.
+- **Simple JWT**: Manejo de autenticación basada en tokens (gestionado por Cookies).
+- **PyMuPDF**: Procesamiento de documentos PDF.
+- **OpenAI**: Generación de cuestionarios tipo test mediante IA.
 
 ### Frontend:
+
+![React](https://img.shields.io/badge/React-20232A?style=for-the-badge&logo=react&logoColor=61DAFB)
+![Vite](https://img.shields.io/badge/Vite-646CFF?style=for-the-badge&logo=vite&logoColor=FFD62E)
+![Tailwind CSS](https://img.shields.io/badge/Tailwind%20CSS-06B6D4?style=for-the-badge&logo=tailwindcss&logoColor=white)
+![shadcn/ui](https://img.shields.io/badge/shadcn/ui-000?style=for-the-badge)
+![Sonner](https://img.shields.io/badge/Sonner-000?style=for-the-badge)
+![Framer Motion](https://img.shields.io/badge/Motion-0055FF?style=for-the-badge&logo=framer)
+![Lucide React](https://img.shields.io/badge/Lucide%20React-000?style=for-the-badge)
 
 - **React**: Librería principal para la interfaz de usuario.
 - **Vite**: Herramienta de build y desarrollo ultrarrápida para React.
 - **Tailwind CSS**: Para un diseño moderno y responsivo.
 - **shadcn/ui**: Componentes de interfaz accesibles y personalizables.
-- **Sonner**: Notificaciones toast modernas.
-- **Motion**: Animaciones fluidas para React.
+- **Sonner**: Notificaciones toast (flotantes) modernas.
+- **Motion**: Animaciones fluidas para React, utilizadas en la realización de los cuestionarios.
 - **Lucide React**: Iconos SVG para React.
 
 ---
