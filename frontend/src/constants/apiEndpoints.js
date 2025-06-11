@@ -1,4 +1,5 @@
-const API_BASE = "http://localhost:8000/api/v1/";
+//const API_BASE = "http://localhost:8000/api/v1/";
+const API_BASE = "/api/v1/";
 const API_BASE_AUTH = `${API_BASE}auth/`;
 const API_BASE_USERS = `${API_BASE}users/`;
 const API_BASE_QUIZZES = `${API_BASE}quizzes/`;

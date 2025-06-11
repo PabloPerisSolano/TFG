@@ -14,6 +14,7 @@ import os
 from datetime import timedelta
 from pathlib import Path
 
+import dj_database_url
 from decouple import config
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -85,12 +86,15 @@ WSGI_APPLICATION = "projectTFG.wsgi.application"
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
 # Usamos SQLite para desarrollo, para producción se recomienda usar otra
 
-DATABASES = {
-    "default": {
-        "ENGINE": "django.db.backends.sqlite3",
-        "NAME": BASE_DIR / "db.sqlite3",
+if config("USE_DOCKER_DB", default=False, cast=bool):
+    DATABASES = {"default": dj_database_url.config(default=config("DATABASE_URL"))}
+else:
+    DATABASES = {
+        "default": {
+            "ENGINE": "django.db.backends.sqlite3",
+            "NAME": BASE_DIR / "db.sqlite3",
+        }
     }
-}
 
 
 # Password validation
