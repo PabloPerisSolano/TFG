@@ -121,7 +121,7 @@ class GoogleLoginSerializer(serializers.Serializer):
         return id_token.verify_oauth2_token(
             token,
             requests.Request(),
-            settings.GOOGLE_CLIENT_ID,
+            settings.GOOGLE_CLIENT_OAUTH2,
         )
 
     def _generate_unique_username(self, email):

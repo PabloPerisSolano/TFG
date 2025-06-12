@@ -3,15 +3,17 @@ import json
 import textwrap
 
 import fitz
-from decouple import config
+from django.conf import settings
 from openai import OpenAI
 
 MIN_QUESTIONS = 1
 MAX_QUESTIONS = 20
+
 MIN_OPTIONS = 2
 MAX_OPTIONS = 4
+
 MIN_PROMPT_LENGTH = 100
-MAX_PROMPT_LENGTH = 50000000
+MAX_PROMPT_LENGTH = 500000
 
 
 class QuizGenerator:
@@ -107,48 +109,41 @@ class QuizGenerator:
         idioma,
         prompt,
     ):
-        openai_api_key = config("OPENROUTER_API_KEY")
+        openai_api_key = settings.AI_API_KEY
 
         if not openai_api_key:
             raise Exception("API key no configurada")
 
-        client = OpenAI(api_key=openai_api_key, base_url="https://openrouter.ai/api/v1")
+        client = OpenAI(api_key=openai_api_key, base_url=settings.AI_API_URL)
 
         response = client.chat.completions.create(
-            model="deepseek/deepseek-chat-v3-0324:free",
+            model=settings.AI_MODEL,
             messages=[
                 {
                     "role": "system",
                     "content": textwrap.dedent(
                         """\
-                        Genera tests educativos como ARRAY JSON. Reglas:
-                        1. Estructura EXACTA:
+                        # OBJETIVO:
+                        Eres un generador de tests educativos a partir de un texto.
+                        
+                        ## REQUISITOS:
+                        1. Devuelve exactamente N preguntas (según se especifique) con M opciones cada una.
+                        2. Debe haber solo una opción correcta por pregunta.
+                        3. Las opciones incorrectas deben ser plausibles y relacionadas con el tema.
+                        4. Si el texto no tiene sentido o no es posible generar preguntas, devuelve [] (array vacío).
+                        5. No agregues comentarios, explicaciones ni claves adicionales fuera del array JSON.
+
+                        ## FORMATO DE SALIDA (OBLIGATORIO)
+                        Devuelve solo un array JSON, sin ningún objeto contenedor, con la siguiente estructura:
                         [
                             {
                                 "text": "Pregunta",
                                 "answers": [
-                                    {"text": "Opción", "is_correct": boolean},
-                                    ... (según num_opciones)
+                                    {"text": "Opción", "is_correct": true/false},
+                                    ...
                                 ]
                             },
-                            ... (según num_preguntas)
-                        ]
-                        - Prohibido usar objetos contenedores. El JSON debe ser solo un array.
-                        - Una opción correcta por pregunta, en posición aleatoria.
-                        - Opciones incorrectas deben ser plausibles y relacionadas.
-                        - Si el texto carece de sentido o no permite generar preguntas relevantes, devuelve [].
-
-                        2. Las preguntas deben ser relevantes al texto, cubriendo conceptos clave.
-
-                        Ejemplo:
-                        [
-                            {
-                                "text": "¿Qué es Python?",
-                                "answers": [
-                                    {"text": "Lenguaje de programación", "is_correct": true},
-                                    {"text": "Serpiente", "is_correct": false}
-                                ]
-                            }
+                            ...
                         ]
                         """
                     ),
@@ -157,13 +152,9 @@ class QuizGenerator:
                     "role": "user",
                     "content": textwrap.dedent(
                         f"""\
-                        Genera {num_preguntas} preguntas con {num_opciones} opciones cada una, escritas en idioma {idioma} y basadas en este texto:
-                        ---  
+                        Genera {num_preguntas} preguntas tipo test, con {num_opciones} opciones cada una, en idioma "{idioma}". Basadas exclusivamente en el siguiente texto:
+                        
                         {prompt}
-                        ---
-                        Recuerda:
-                        - Devuelve solo un ARRAY JSON válido (sin objetos contenedores).
-                        - Una opción correcta por pregunta (la opción correcta no debe ser siempre la misma).
                         """
                     ),
                 },

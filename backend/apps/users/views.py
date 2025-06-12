@@ -38,11 +38,23 @@ class UserDetailView(generics.RetrieveUpdateDestroyAPIView):
     def get_object(self):
         return self.request.user
 
+    def perform_update(self, serializer):
+        if "profile_picture" in serializer.validated_data:
+            instance = self.get_object()
+            if instance.profile_picture:
+                instance.profile_picture.delete(save=False)
+
+        serializer.save()
+
     def perform_destroy(self, instance):
         if not self.request.data.get("confirm_delete", False):
             raise serializers.ValidationError(
                 {"detail": "Debe confirmar la eliminación de la cuenta."}
             )
+
+        if instance.profile_picture:
+            instance.profile_picture.delete(save=False)
+
         instance.delete()
 
 

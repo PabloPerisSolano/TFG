@@ -14,7 +14,7 @@ import {
   Input,
   Label,
 } from "@/components/ui";
-import { API_ROUTES, GOOGLE_CLIENT_ID, ROUTES } from "@/constants";
+import { API_ROUTES, GOOGLE_CLIENT_OAUTH2, ROUTES } from "@/constants";
 import { useAuth, useAuthFetch } from "@/hooks";
 import { cn } from "@/lib/utils";
 
@@ -151,7 +151,7 @@ export default function Login({ className, ...props }) {
                 </span>
               </section>
 
-              <GoogleOAuthProvider clientId={GOOGLE_CLIENT_ID}>
+              <GoogleOAuthProvider clientId={GOOGLE_CLIENT_OAUTH2}>
                 <GoogleLogin
                   onSuccess={handleGoogleLoginSuccess}
                   onError={handleGoogleLoginError}

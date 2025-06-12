@@ -1,6 +1,5 @@
 # apps/quizzes/serializers.py
 from rest_framework import serializers
-from rest_framework.exceptions import ValidationError
 
 from .models import Answer, Question, Quiz
 

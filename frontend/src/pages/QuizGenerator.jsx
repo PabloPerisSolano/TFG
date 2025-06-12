@@ -276,12 +276,28 @@ export default function QuizGenerator() {
                 <CardContent className="space-y-5">
                   <section>
                     <Label>Selecciona un archivo PDF</Label>
-                    <Input
-                      type="file"
-                      accept=".pdf"
-                      ref={fileInputRef}
-                      onChange={(e) => setPdfFile(e.target.files[0])}
-                    />
+                    <article className="flex items-center justify-between gap-2">
+                      <Input
+                        type="file"
+                        accept=".pdf"
+                        ref={fileInputRef}
+                        onChange={(e) => setPdfFile(e.target.files[0])}
+                      />
+                      <Button
+                        type="button"
+                        variant="destructive"
+                        onClick={() => {
+                          setPdfFile(null);
+                          setPageRange("");
+                          if (fileInputRef.current) {
+                            fileInputRef.current.value = "";
+                          }
+                        }}
+                      >
+                        <Trash2 />{" "}
+                        <span className="hidden sm:inline">Quitar archivo</span>
+                      </Button>
+                    </article>
                   </section>
 
                   <section>
@@ -297,21 +313,6 @@ export default function QuizGenerator() {
                     </p>
                   </section>
                 </CardContent>
-                <CardFooter className="flex justify-end">
-                  <Button
-                    type="button"
-                    variant="destructive"
-                    onClick={() => {
-                      setPdfFile(null);
-                      setPageRange("");
-                      if (fileInputRef.current) {
-                        fileInputRef.current.value = "";
-                      }
-                    }}
-                  >
-                    <Trash2 /> Quitar archivo
-                  </Button>
-                </CardFooter>
               </Card>
             </TabsContent>
 
@@ -329,7 +330,7 @@ export default function QuizGenerator() {
                     placeholder="Escribe el texto del cual se generarán las preguntas..."
                     value={prompt}
                     onChange={(e) => setPrompt(e.target.value)}
-                    className="h-48"
+                    className="h-32"
                     required
                   />
                 </CardContent>

@@ -22,10 +22,10 @@ export const Footer = () => {
             <article className="flex items-center space-x-2">
               <Mail />
               <a
-                href="mailto:pabloperissolano@gmail.com"
+                href="mailto:quizgenerateapp@gmail.com"
                 className="hover:underline"
               >
-                pabloperissolano@gmail.com
+                quizgenerateapp@gmail.com
               </a>
             </article>
           </li>

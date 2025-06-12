@@ -1,5 +1,5 @@
-export const GOOGLE_CLIENT_ID =
-  "853763452683-54jmk80pnmrfqgqhhh1p2218th7q83ge.apps.googleusercontent.com";
+export const GOOGLE_CLIENT_OAUTH2 =
+  "672192043879-eij608ek676727jq4u600iq0td32nsrh.apps.googleusercontent.com";
 
 export const MIN_QUIZ_TIME = 1; // Minutos
 export const MAX_QUIZ_TIME = 120; // Minutos

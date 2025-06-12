@@ -1,6 +1,8 @@
+import random
+
 from django.db.models import Prefetch
 from django.shortcuts import get_object_or_404
-from rest_framework import generics, permissions, status
+from rest_framework import generics, status
 from rest_framework.exceptions import PermissionDenied
 from rest_framework.pagination import PageNumberPagination
 from rest_framework.permissions import IsAuthenticated
@@ -21,29 +23,8 @@ from .serializers import (
 from .utils import filter_and_order_quizzes
 
 
-class IsAuthorOrReadOnly(permissions.BasePermission):
-    def has_object_permission(self, request, view, obj):
-        # Permitir acceso de solo lectura para cualquier solicitud
-        if request.method in permissions.SAFE_METHODS:
-            return True
-
-        # Verificar si el objeto es un Quiz
-        if isinstance(obj, Quiz):
-            return obj.author == request.user
-
-        # Verificar si el objeto es una Question
-        if isinstance(obj, Question):
-            return obj.quiz.author == request.user
-
-        # Verificar si el objeto es una Answer
-        if isinstance(obj, Answer):
-            return obj.question.quiz.author == request.user
-
-        return False
-
-
 class CustomPageNumberPagination(PageNumberPagination):
-    page_size = 20  # Tamaño de página por defecto
+    page_size = 12  # Tamaño de página por defecto
     page_size_query_param = "page_size"
 
 
@@ -84,7 +65,7 @@ class UserQuizListCreateView(generics.ListCreateAPIView):
 
 class UserQuizDetailView(generics.RetrieveUpdateDestroyAPIView):
     serializer_class = QuizDetailSerializer
-    permission_classes = [IsAuthenticated, IsAuthorOrReadOnly]
+    permission_classes = [IsAuthenticated]
 
     def get_object(self):
         quiz_id = self.kwargs["quiz_id"]
@@ -94,8 +75,8 @@ class UserQuizDetailView(generics.RetrieveUpdateDestroyAPIView):
                 Prefetch("questions", queryset=Question.objects.order_by("id")),
                 Prefetch("questions__answers", queryset=Answer.objects.order_by("id")),
             ),
-            id=quiz_id,
             author=self.request.user,
+            id=quiz_id,
         )
 
         return quiz
@@ -107,7 +88,7 @@ class QuestionListCreateView(generics.ListCreateAPIView):
     def get_queryset(self):
         quiz_id = self.kwargs["quiz_id"]
         return Question.objects.filter(
-            quiz_id=quiz_id, quiz__author=self.request.user
+            quiz__author=self.request.user, quiz_id=quiz_id
         ).order_by("id")
 
     def get_serializer_class(self):
@@ -117,13 +98,13 @@ class QuestionListCreateView(generics.ListCreateAPIView):
 
     def perform_create(self, serializer):
         quiz_id = self.kwargs["quiz_id"]
-        quiz = get_object_or_404(Quiz, id=quiz_id, author=self.request.user)
+        quiz = get_object_or_404(Quiz, author=self.request.user, id=quiz_id)
         serializer.save(quiz=quiz)
 
 
 class QuestionDetailView(generics.RetrieveUpdateDestroyAPIView):
     serializer_class = QuestionDetailSerializer
-    permission_classes = [IsAuthenticated, IsAuthorOrReadOnly]
+    permission_classes = [IsAuthenticated]
 
     def get_object(self):
         quiz_id = self.kwargs["quiz_id"]
@@ -133,9 +114,9 @@ class QuestionDetailView(generics.RetrieveUpdateDestroyAPIView):
             Question.objects.prefetch_related(
                 Prefetch("answers", queryset=Answer.objects.order_by("id"))
             ),
-            id=question_id,
-            quiz_id=quiz_id,
             quiz__author=self.request.user,
+            quiz_id=quiz_id,
+            id=question_id,
         )
 
         return question
@@ -146,32 +127,43 @@ class AnswerListCreateView(generics.ListCreateAPIView):
     permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
+        quiz_id = self.kwargs["quiz_id"]
         question_id = self.kwargs["question_id"]
+
         return Answer.objects.filter(
-            question_id=question_id, question__quiz__author=self.request.user
+            question__quiz__author=self.request.user,
+            question__quiz_id=quiz_id,
+            question_id=question_id,
         ).order_by("id")
 
     def perform_create(self, serializer):
+        quiz_id = self.kwargs["quiz_id"]
         question_id = self.kwargs["question_id"]
+
         question = get_object_or_404(
-            Question, id=question_id, quiz__author=self.request.user
+            Question,
+            quiz__author=self.request.user,
+            quiz_id=quiz_id,
+            id=question_id,
         )
         serializer.save(question=question)
 
 
 class AnswerDetailView(generics.RetrieveUpdateDestroyAPIView):
     serializer_class = AnswerSerializer
-    permission_classes = [IsAuthenticated, IsAuthorOrReadOnly]
+    permission_classes = [IsAuthenticated]
 
     def get_object(self):
+        quiz_id = self.kwargs["quiz_id"]
         question_id = self.kwargs["question_id"]
         answer_id = self.kwargs["answer_id"]
 
         answer = get_object_or_404(
             Answer,
-            id=answer_id,
-            question_id=question_id,
             question__quiz__author=self.request.user,
+            question__quiz_id=quiz_id,
+            question_id=question_id,
+            id=answer_id,
         )
 
         return answer
@@ -255,6 +247,9 @@ class GeneratorView(APIView):
             )
 
             questions_data = QuizGenerator.parse_openai_response(openai_response)
+
+            for pregunta in questions_data:
+                random.shuffle(pregunta["answers"])
 
             quiz_data = {
                 "title": data["title"],
