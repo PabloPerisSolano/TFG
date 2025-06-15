@@ -182,3 +182,5 @@ EMAIL_HOST_PASSWORD = config("EMAIL_HOST_PASSWORD")
 AI_API_KEY = config("AI_API_KEY")
 AI_API_URL = "https://api.deepseek.com"
 AI_MODEL = "deepseek-chat"
+
+SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
