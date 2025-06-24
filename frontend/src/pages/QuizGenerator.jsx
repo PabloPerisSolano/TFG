@@ -165,6 +165,60 @@ export default function QuizGenerator() {
 
     if (!res.ok) {
       const errorData = await res.json();
+      let errorMessage = "Error desconocido";
+      let description = errorData.error || "Ocurrió un error inesperado";
+
+      switch (res.status) {
+        case 400:
+          errorMessage = "Formato inválido";
+          description =
+            "Los datos enviados no tienen el formato correcto. Por favor, verifica la información.";
+          break;
+        case 401:
+          errorMessage = "Autenticación fallida";
+          description =
+            "La clave API es incorrecta o no existe. Por favor, verifica tu clave API.";
+          break;
+        case 402:
+          errorMessage = "Saldo insuficiente";
+          description =
+            "No tienes suficiente saldo en tu cuenta. Por favor, recarga fondos.";
+          break;
+        case 422:
+          errorMessage = "Parámetros inválidos";
+          description =
+            "Algunos parámetros de la solicitud son inválidos. Por favor, revísalos.";
+          break;
+        case 429:
+          errorMessage = "Límite de solicitudes alcanzado";
+          description =
+            "Estás enviando solicitudes demasiado rápido. Por favor, espera un momento.";
+          break;
+        case 500:
+          errorMessage = "Error del servidor";
+          description =
+            "Ocurrió un problema en nuestro servidor. Por favor, inténtalo de nuevo más tarde.";
+          break;
+        case 503:
+          errorMessage = "Servidor sobrecargado";
+          description =
+            "El servidor está experimentando alta demanda. Por favor, inténtalo de nuevo en unos minutos.";
+          break;
+        default:
+          // Mantiene los valores por defecto
+          break;
+      }
+
+      toast.error(errorMessage, {
+        description: description,
+      });
+
+      setLoading(false);
+      return;
+    }
+
+    if (!res.ok) {
+      const errorData = await res.json();
       toast.error("Error de creación", {
         description: errorData.error,
       });

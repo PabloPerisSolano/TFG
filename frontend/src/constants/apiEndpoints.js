@@ -1,4 +1,4 @@
-const API_BASE = import.meta.env.VITE_DOCKER_API_BASE;
+const API_BASE = import.meta.env.VITE_PUBLIC_API_BASE;
 
 const API_BASE_AUTH = `${API_BASE}auth/`;
 const API_BASE_USERS = `${API_BASE}users/`;

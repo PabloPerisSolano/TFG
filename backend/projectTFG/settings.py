@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
+    "django_extensions",
     "rest_framework",
     "rest_framework_simplejwt",
     "rest_framework_simplejwt.token_blacklist",
@@ -84,15 +85,18 @@ WSGI_APPLICATION = "projectTFG.wsgi.application"
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
 # Usamos SQLite para desarrollo, para producción se recomienda usar otra como postgresql
 
-if config("USE_DOCKER_DB", default=False, cast=bool):
-    DATABASES = {"default": dj_database_url.config(default=config("DATABASE_URL"))}
-else:
+if DEBUG:
+    # Desarrollo: SQLite
     DATABASES = {
         "default": {
             "ENGINE": "django.db.backends.sqlite3",
             "NAME": BASE_DIR / "db.sqlite3",
         }
     }
+else:
+    # Producción: PostgreSQL
+    DATABASES = {"default": dj_database_url.config(default=config("DATABASE_URL"))}
+
 
 MEDIA_ROOT = os.path.join(BASE_DIR, "media")
 MEDIA_URL = "/media/"
@@ -163,20 +167,23 @@ SIMPLE_JWT = {
     "BLACKLIST_AFTER_ROTATION": True,
 }
 
-FRONTEND_URL = config("FRONTEND_URL", default="http://localhost:5173")
-
-ALLOWED_HOSTS = config("ALLOWED_HOSTS", default="localhost").split(",")
-
 CORS_ALLOW_CREDENTIALS = True
-CORS_ALLOWED_ORIGINS = config("CORS_ALLOWED_ORIGINS", default=FRONTEND_URL).split(",")
 
-CSRF_TRUSTED_ORIGINS = config("CSRF_TRUSTED_ORIGINS", default=FRONTEND_URL).split(",")
+if DEBUG:
+    FRONTEND_URL = "http://localhost:5173"
+    ALLOWED_HOSTS = ["localhost"]
+else:
+    FRONTEND_URL = "https://quizgenerate.xyz"
+    ALLOWED_HOSTS = ["quizgenerate.xyz"]
+
+CORS_ALLOWED_ORIGINS = [FRONTEND_URL]
+CSRF_TRUSTED_ORIGINS = [FRONTEND_URL]
 
 EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
 EMAIL_HOST = "smtp.gmail.com"
 EMAIL_PORT = 587  # Puerto para TLS
 EMAIL_USE_TLS = True
-EMAIL_HOST_USER = config("EMAIL_HOST_USER")
+EMAIL_HOST_USER = config("EMAIL_HOST_USER", default="quizgenerateapp@gmail.com")
 EMAIL_HOST_PASSWORD = config("EMAIL_HOST_PASSWORD")
 
 AI_API_KEY = config("AI_API_KEY")

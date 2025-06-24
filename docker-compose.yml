@@ -2,15 +2,11 @@ version: '3.9'
 
 services:
   backend:
-    build:
-      context: ./backend
-    env_file:
-      - ./backend/.env
-    ports:
-      - "8000:8000"
+    build: ./backend
+    env_file: ./backend/.env
     depends_on:
       - db
-    restart: unless-stopped
+    restart: always
 
 
   db:
@@ -21,13 +17,11 @@ services:
       POSTGRES_DB: tfg_db
       POSTGRES_USER: tfg_user
       POSTGRES_PASSWORD: tfg_user_password
-    restart: unless-stopped
+    restart: always
 
 
   nginx:
-    build:
-      context: ./frontend
-      dockerfile: Dockerfile
+    build: ./frontend
     ports:
       - "80:80"
       - "443:443"
@@ -36,7 +30,7 @@ services:
       - /etc/letsencrypt:/etc/letsencrypt:ro  # Certificados
     depends_on:
       - backend
-    restart: unless-stopped
+    restart: always
 
 
 volumes:
