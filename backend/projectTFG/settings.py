@@ -98,8 +98,8 @@ else:
     DATABASES = {"default": dj_database_url.config(default=config("DATABASE_URL"))}
 
 
+MEDIA_URL = "/api/v1/media/"
 MEDIA_ROOT = os.path.join(BASE_DIR, "media")
-MEDIA_URL = "/media/"
 
 # Password validation
 # https://docs.djangoproject.com/en/5.1/ref/settings/#auth-password-validators
