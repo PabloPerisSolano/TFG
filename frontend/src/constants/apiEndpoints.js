@@ -1,4 +1,5 @@
-const API_BASE = import.meta.env.VITE_API_BASE_URL;
+const API_BASE =
+  import.meta.env.VITE_API_BASE_URL || "http://localhost:8000/api/v1/";
 
 const API_BASE_AUTH = `${API_BASE}auth/`;
 const API_BASE_USERS = `${API_BASE}users/`;
