@@ -28,6 +28,7 @@ services:
       - "80:80"
       - "443:443"
     volumes:
+      - ./backend/media:/app/media
       - ./nginx/default.conf:/etc/nginx/conf.d/default.conf
       - /etc/letsencrypt:/etc/letsencrypt:ro  # Certificados
     depends_on:
