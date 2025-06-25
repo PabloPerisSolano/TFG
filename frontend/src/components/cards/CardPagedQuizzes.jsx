@@ -207,7 +207,7 @@ export const CardPagedQuizzes = ({ isPublicVariant }) => {
             <p className="font-bold">No se han encontrado resultados.</p>
           </div>
         ) : (
-          <section className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <section className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {items.map((quiz) => (
               <CardQuiz
                 key={quiz.id}

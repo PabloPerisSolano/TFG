@@ -33,7 +33,7 @@ export const FiltroQuizzes = ({ isPublicVariant, onFilterChange }) => {
     <div className="flex flex-col gap-5 p-4 border rounded-lg shadow-lg">
       <h2 className="text-lg font-bold">Filtrar Quizzes</h2>
 
-      <section className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+      <section className="flex flex-col md:flex-row md:items-center justify-between gap-3">
         <Input
           type="text"
           placeholder="Buscar por título..."
@@ -64,7 +64,7 @@ export const FiltroQuizzes = ({ isPublicVariant, onFilterChange }) => {
         )}
       </section>
 
-      <section className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+      <section className="flex flex-col md:flex-row md:items-center justify-between gap-3">
         <article>
           <Label className="mb-0.5">Ordenar por:</Label>
 
@@ -101,7 +101,7 @@ export const FiltroQuizzes = ({ isPublicVariant, onFilterChange }) => {
           </Select>
         </article>
 
-        <article className="mt-4 flex flex-col sm:flex-row gap-3">
+        <article className="mt-4 flex flex-col md:flex-row gap-3">
           <Button variant="destructive" onClick={handleLimpiarFiltros}>
             <BrushCleaning />
             Limpiar Filtros
