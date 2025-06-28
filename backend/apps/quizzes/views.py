@@ -24,7 +24,7 @@ from .utils import filter_and_order_quizzes
 
 
 class CustomPageNumberPagination(PageNumberPagination):
-    page_size = 12  # Tamaño de página por defecto
+    page_size = 6  # Tamaño de página por defecto
     page_size_query_param = "page_size"
 
 

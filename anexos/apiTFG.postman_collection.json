@@ -1,0 +1,1045 @@
+{
+	"info": {
+		"_postman_id": "60a3f4d9-d75f-4be8-8ec2-65921e950742",
+		"name": "apiTFG",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "33230974"
+	},
+	"item": [
+		{
+			"name": "auth",
+			"item": [
+				{
+					"name": "Register",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"username\": \"pablo\",\n    \"email\": \"2pabloperissolano@gmail.com\",\n    \"password\": \"pablo123\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}auth/register/",
+							"host": [
+								"{{base_url}}auth"
+							],
+							"path": [
+								"register",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "login",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"username\": \"pablo\",\n    \"password\": \"pablo123\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}auth/login/",
+							"host": [
+								"{{base_url}}auth"
+							],
+							"path": [
+								"login",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "google-login",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"token\": \"\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}auth/google/",
+							"host": [
+								"{{base_url}}auth"
+							],
+							"path": [
+								"google",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "logout",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"refresh\": \"{{refresh_token}}\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}auth/logout/",
+							"host": [
+								"{{base_url}}auth"
+							],
+							"path": [
+								"logout",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "refresh token",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"refresh\": \"{{refresh_token}}\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}auth/refresh/",
+							"host": [
+								"{{base_url}}auth"
+							],
+							"path": [
+								"refresh",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "password-reset-request",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"email\": \"2pabloperissolano@gmail.com\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}auth/password-reset-request/",
+							"host": [
+								"{{base_url}}auth"
+							],
+							"path": [
+								"password-reset-request",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "password-reset-confirm",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"token\": \"L6iEIQCw6WA54DWBZGr5LzsM57BWdem3\",\n    \"new_password\": \"pablo12345\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}auth/password-reset-confirm/",
+							"host": [
+								"{{base_url}}auth"
+							],
+							"path": [
+								"password-reset-confirm",
+								""
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "users",
+			"item": [
+				{
+					"name": "change-password",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"current_password\": \"pablo123\",\n    \"new_password\": \"pablo12345\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}users/me/change-password/",
+							"host": [
+								"{{base_url}}users"
+							],
+							"path": [
+								"me",
+								"change-password",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "me user",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}users/me/",
+							"host": [
+								"{{base_url}}users"
+							],
+							"path": [
+								"me",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "foto perfil",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}media/profile_pictures/Foto_Perfil_Dc622zZ.jpg",
+							"host": [
+								"{{base_url}}media"
+							],
+							"path": [
+								"profile_pictures",
+								"Foto_Perfil_Dc622zZ.jpg"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "actualizar usuario",
+					"request": {
+						"method": "PATCH",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "profile_picture",
+									"type": "file",
+									"src": "/home/pablo/Descargas/Foto_Perfil.jpg"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{base_url}}users/me/",
+							"host": [
+								"{{base_url}}users"
+							],
+							"path": [
+								"me",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Eliminar cuenta",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"confirm_delete\": true\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}users/me/",
+							"host": [
+								"{{base_url}}users"
+							],
+							"path": [
+								"me",
+								""
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"auth": {
+				"type": "noauth"
+			},
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"type": "text/javascript",
+						"packages": {},
+						"exec": [
+							""
+						]
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"type": "text/javascript",
+						"packages": {},
+						"exec": [
+							""
+						]
+					}
+				}
+			]
+		},
+		{
+			"name": "quizzes",
+			"item": [
+				{
+					"name": "public",
+					"item": [
+						{
+							"name": "obtener quizzes públicos",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"auth": {
+									"type": "noauth"
+								},
+								"method": "GET",
+								"header": [],
+								"body": {
+									"mode": "urlencoded",
+									"urlencoded": []
+								},
+								"url": {
+									"raw": "{{base_url}}quizzes/public/?page=1&page_size=3&sort_by=title",
+									"host": [
+										"{{base_url}}quizzes"
+									],
+									"path": [
+										"public",
+										""
+									],
+									"query": [
+										{
+											"key": "page",
+											"value": "1"
+										},
+										{
+											"key": "page_size",
+											"value": "3"
+										},
+										{
+											"key": "sort_by",
+											"value": "title"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "obtener quizz público",
+							"request": {
+								"auth": {
+									"type": "noauth"
+								},
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{base_url}}quizzes/public/{{idQuizz}}/",
+									"host": [
+										"{{base_url}}quizzes"
+									],
+									"path": [
+										"public",
+										"{{idQuizz}}",
+										""
+									]
+								}
+							},
+							"response": []
+						}
+					],
+					"auth": {
+						"type": "noauth"
+					},
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"type": "text/javascript",
+								"packages": {},
+								"exec": [
+									""
+								]
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"packages": {},
+								"exec": [
+									""
+								]
+							}
+						}
+					]
+				},
+				{
+					"name": "me",
+					"item": [
+						{
+							"name": "quizzes",
+							"item": [
+								{
+									"name": "crear quizz",
+									"request": {
+										"method": "POST",
+										"header": [],
+										"body": {
+											"mode": "raw",
+											"raw": "{\n    \"title\": \"Examen2\",\n    \"category\": \"HISTORY\"\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{base_url}}quizzes/me/",
+											"host": [
+												"{{base_url}}quizzes"
+											],
+											"path": [
+												"me",
+												""
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "obtener quizzes",
+									"request": {
+										"method": "GET",
+										"header": [],
+										"url": {
+											"raw": "{{base_url}}quizzes/me/?page=1&page_size=10&sort_by=created&sort_order=desc",
+											"host": [
+												"{{base_url}}quizzes"
+											],
+											"path": [
+												"me",
+												""
+											],
+											"query": [
+												{
+													"key": "page",
+													"value": "1"
+												},
+												{
+													"key": "page_size",
+													"value": "10"
+												},
+												{
+													"key": "sort_by",
+													"value": "created"
+												},
+												{
+													"key": "sort_order",
+													"value": "desc"
+												}
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "obtener quizz",
+									"request": {
+										"method": "GET",
+										"header": [],
+										"url": {
+											"raw": "{{base_url}}quizzes/me/{{idQuizz}}/",
+											"host": [
+												"{{base_url}}quizzes"
+											],
+											"path": [
+												"me",
+												"{{idQuizz}}",
+												""
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "actualizar quizz",
+									"request": {
+										"method": "PATCH",
+										"header": [],
+										"body": {
+											"mode": "raw",
+											"raw": "{\n    \"public\": true\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{base_url}}quizzes/me/{{idQuizz}}/",
+											"host": [
+												"{{base_url}}quizzes"
+											],
+											"path": [
+												"me",
+												"{{idQuizz}}",
+												""
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "borrar quizz",
+									"request": {
+										"method": "DELETE",
+										"header": [],
+										"url": {
+											"raw": "{{base_url}}quizzes/me/{{idQuizz}}/",
+											"host": [
+												"{{base_url}}quizzes"
+											],
+											"path": [
+												"me",
+												"{{idQuizz}}",
+												""
+											]
+										}
+									},
+									"response": []
+								}
+							]
+						},
+						{
+							"name": "questions",
+							"item": [
+								{
+									"name": "crear question",
+									"request": {
+										"method": "POST",
+										"header": [],
+										"body": {
+											"mode": "raw",
+											"raw": "{\n    \"text\": \"¿Qué edad tengo?\",\n    \"answers\": [\n            {\n                \"text\": \"19\",\n                \"is_correct\": false\n            },\n            {\n                \"text\": \"21\",\n                \"is_correct\": true\n            }\n        ]\n    \n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{base_url}}quizzes/me/{{idQuizz}}/questions/",
+											"host": [
+												"{{base_url}}quizzes"
+											],
+											"path": [
+												"me",
+												"{{idQuizz}}",
+												"questions",
+												""
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "obtener questions",
+									"request": {
+										"method": "GET",
+										"header": [],
+										"url": {
+											"raw": "{{base_url}}quizzes/me/{{idQuizz}}/questions/",
+											"host": [
+												"{{base_url}}quizzes"
+											],
+											"path": [
+												"me",
+												"{{idQuizz}}",
+												"questions",
+												""
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "obtener question",
+									"request": {
+										"method": "GET",
+										"header": [],
+										"url": {
+											"raw": "{{base_url}}quizzes/me/{{idQuizz}}/questions/{{idQuestion}}/",
+											"host": [
+												"{{base_url}}quizzes"
+											],
+											"path": [
+												"me",
+												"{{idQuizz}}",
+												"questions",
+												"{{idQuestion}}",
+												""
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "actualizar question",
+									"request": {
+										"method": "PATCH",
+										"header": [],
+										"body": {
+											"mode": "raw",
+											"raw": "{\n    \"text\": \"¿Cómo de mayor eres?\"\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{base_url}}quizzes/me/{{idQuizz}}/questions/{{idQuestion}}/",
+											"host": [
+												"{{base_url}}quizzes"
+											],
+											"path": [
+												"me",
+												"{{idQuizz}}",
+												"questions",
+												"{{idQuestion}}",
+												""
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "borrar question",
+									"request": {
+										"method": "DELETE",
+										"header": [],
+										"url": {
+											"raw": "{{base_url}}quizzes/me/{{idQuizz}}/questions/{{idQuestion}}/",
+											"host": [
+												"{{base_url}}quizzes"
+											],
+											"path": [
+												"me",
+												"{{idQuizz}}",
+												"questions",
+												"{{idQuestion}}",
+												""
+											]
+										}
+									},
+									"response": []
+								}
+							]
+						},
+						{
+							"name": "answers",
+							"item": [
+								{
+									"name": "crear answer",
+									"request": {
+										"method": "POST",
+										"header": [],
+										"body": {
+											"mode": "raw",
+											"raw": "{\n    \"text\": \"4\",\n    \"is_correct\": false\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{base_url}}quizzes/me/{{idQuizz}}/questions/{{idQuestion}}/answers/",
+											"host": [
+												"{{base_url}}quizzes"
+											],
+											"path": [
+												"me",
+												"{{idQuizz}}",
+												"questions",
+												"{{idQuestion}}",
+												"answers",
+												""
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "obtener answers",
+									"request": {
+										"method": "GET",
+										"header": [],
+										"url": {
+											"raw": "{{base_url}}quizzes/me/{{idQuizz}}/questions/{{idQuestion}}/answers/",
+											"host": [
+												"{{base_url}}quizzes"
+											],
+											"path": [
+												"me",
+												"{{idQuizz}}",
+												"questions",
+												"{{idQuestion}}",
+												"answers",
+												""
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "obtener answer",
+									"request": {
+										"method": "GET",
+										"header": [],
+										"url": {
+											"raw": "{{base_url}}quizzes/me/{{idQuizz}}/questions/{{idQuestion}}/answers/{{idAnswer}}/",
+											"host": [
+												"{{base_url}}quizzes"
+											],
+											"path": [
+												"me",
+												"{{idQuizz}}",
+												"questions",
+												"{{idQuestion}}",
+												"answers",
+												"{{idAnswer}}",
+												""
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "actualizar answer",
+									"request": {
+										"method": "PATCH",
+										"header": [],
+										"body": {
+											"mode": "raw",
+											"raw": "{\n    \"is_correct\": true\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{base_url}}quizzes/me/{{idQuizz}}/questions/{{idQuestion}}/answers/{{idAnswer}}/",
+											"host": [
+												"{{base_url}}quizzes"
+											],
+											"path": [
+												"me",
+												"{{idQuizz}}",
+												"questions",
+												"{{idQuestion}}",
+												"answers",
+												"{{idAnswer}}",
+												""
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "borrar answer",
+									"request": {
+										"method": "DELETE",
+										"header": [],
+										"url": {
+											"raw": "{{base_url}}quizzes/me/{{idQuizz}}/questions/{{idQuestion}}/answers/{{idAnswer}}/",
+											"host": [
+												"{{base_url}}quizzes"
+											],
+											"path": [
+												"me",
+												"{{idQuizz}}",
+												"questions",
+												"{{idQuestion}}",
+												"answers",
+												"{{idAnswer}}",
+												""
+											]
+										}
+									},
+									"response": []
+								}
+							]
+						},
+						{
+							"name": "generate",
+							"item": [
+								{
+									"name": "generar quizz prompt",
+									"request": {
+										"method": "POST",
+										"header": [
+											{
+												"key": "title",
+												"value": "IA-PHP",
+												"type": "text"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "{\n    \"title\": \"Prueba IA\",\n    \"category\": \"ART\",\n    \"num_preguntas\": 1,\n    \"num_opciones\": 2,\n    \"idioma\": \"Español\",\n    \"prompt\": \"{{prompt}}\"\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{base_url}}quizzes/me/generator/",
+											"host": [
+												"{{base_url}}quizzes"
+											],
+											"path": [
+												"me",
+												"generator",
+												""
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "generar quizz PDF",
+									"request": {
+										"method": "POST",
+										"header": [],
+										"body": {
+											"mode": "formdata",
+											"formdata": [
+												{
+													"key": "title",
+													"value": "TestPDF",
+													"type": "text"
+												},
+												{
+													"key": "category",
+													"value": "HISTORY",
+													"type": "text"
+												},
+												{
+													"key": "num_preguntas",
+													"value": "1",
+													"type": "text"
+												},
+												{
+													"key": "num_opciones",
+													"value": "2",
+													"type": "text"
+												},
+												{
+													"key": "idioma",
+													"value": "Español",
+													"type": "text"
+												},
+												{
+													"key": "pdf",
+													"type": "file",
+													"src": "/home/pablo/Descargas/Tema4-PHP-2024.pdf"
+												},
+												{
+													"key": "page_range",
+													"value": "5-10, 12",
+													"type": "text"
+												}
+											]
+										},
+										"url": {
+											"raw": "{{base_url}}quizzes/me/generator/",
+											"host": [
+												"{{base_url}}quizzes"
+											],
+											"path": [
+												"me",
+												"generator",
+												""
+											]
+										}
+									},
+									"response": []
+								}
+							]
+						},
+						{
+							"name": "take",
+							"item": [
+								{
+									"name": "take",
+									"request": {
+										"method": "GET",
+										"header": [],
+										"url": {
+											"raw": "{{base_url}}quizzes/take/{{idQuizz}}/",
+											"host": [
+												"{{base_url}}quizzes"
+											],
+											"path": [
+												"take",
+												"{{idQuizz}}",
+												""
+											]
+										}
+									},
+									"response": []
+								}
+							]
+						}
+					]
+				}
+			]
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "idQuizz",
+			"value": "5",
+			"type": "string"
+		},
+		{
+			"key": "idQuestion",
+			"value": "10",
+			"type": "string"
+		},
+		{
+			"key": "idAnswer",
+			"value": "1",
+			"type": "string"
+		},
+		{
+			"key": "prompt",
+			"value": "España, país de la península ibérica de Europa, incluye 17 regiones autónomas con diversas características geográficas y culturales. En Madrid, su capital, se encuentra el Palacio Real y el Museo del Prado, que alberga obras de maestros europeos. Segovia tiene un castillo medieval (el Alcázar) y un acueducto romano intacto",
+			"type": "string"
+		},
+		{
+			"key": "refresh_token",
+			"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoicmVmcmVzaCIsImV4cCI6MTc1MTEyMTU5MSwiaWF0IjoxNzUxMDM1MTkxLCJqdGkiOiJkMjAwNGNmMDU2OTM0YTdjODMyNDFkNzIyYzVhMDNiMCIsInVzZXJfaWQiOjJ9.vVucDGuP_8U0aD0w8Gy_uvm9Dra9c7uJzfO0cP0Pjag",
+			"type": "string"
+		}
+	]
+}

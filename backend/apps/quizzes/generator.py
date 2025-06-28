@@ -152,7 +152,8 @@ class QuizGenerator:
                     "role": "user",
                     "content": textwrap.dedent(
                         f"""\
-                        Genera {num_preguntas} preguntas tipo test, con {num_opciones} opciones cada una, en idioma "{idioma}". Basadas exclusivamente en el siguiente texto:
+                        Genera {num_preguntas} preguntas tipo test, con {num_opciones} opciones cada una, en idioma "{idioma}".
+                        Basadas exclusivamente en el siguiente texto:
                         
                         {prompt}
                         """

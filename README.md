@@ -15,16 +15,14 @@
 2. [Tecnologías utilizadas](#-tecnologías-utilizadas)
 3. [Requisitos previos](#️-requisitos-previos)
 4. [Instalación y configuración](#-instalación-y-configuración)
-5. [Uso](#-uso)
-6. [Estructura del proyecto](#-estructura-del-proyecto)
-7. [Contacto](#-contacto)
-8. [Licencia](#-licencia)
+5. [Contacto](#-contacto)
+6. [Licencia](#-licencia)
 
 ---
 
 ## 📖 Descripción
 
-El proyecto consiste en una aplicación web diseñada para **crear, generar, gestionar y realizar quizzes** de forma online. El objetivo principal es proporcionar una herramienta **open source**, intuitiva y flexible que permita a los usuarios crear exámenes tipo test a su gusto, para fines educativos o simplemente por entretenimiento.
+**QuizGenerate** es una aplicación web que permite a los usuarios crear, editar, realizar e incluso generar mediante inteligencia artificial (IA) cuestionarios tipo test. El objetivo principal es proporcionar una herramienta **open source**, intuitiva y flexible para fines educativos.
 
 ---
 
@@ -69,12 +67,11 @@ El proyecto consiste en una aplicación web diseñada para **crear, generar, ges
 
 ## ⚙️ Requisitos previos
 
-Antes de comenzar, asegúrate de tener instalados los siguientes programas:
+Antes de comenzar, asegúrate de tener instalados los siguientes programas, utilizados para ejecutar los comandos de la instalación:
 
-- **Python 3.10+**
-- **Node.js 16+**
-- **npm** o **yarn**
 - **Git**
+- **Python**
+- **Node.js (npm)**
 
 ---
 
@@ -83,108 +80,51 @@ Antes de comenzar, asegúrate de tener instalados los siguientes programas:
 ### 1. Clonar el repositorio
 
 ```bash
-git clone https://github.com/tu-usuario/TFG.git
-cd TFG
+git clone https://github.com/PabloPerisSolano/TFG.git
 ```
 
-### 2. Configurar el backend
+### 2. Configuración del Backend
+
+#### 2.1 Crear entorno virtual y descargar dependencias
 
 ```bash
-python -m venv backend/.venv
-source backend/.venv/bin/activate
+cd TFG/backend
 
-pip install -r backend/requirements.txt
+python -m venv .venv
+source .venv/bin/activate
+
+pip install -r requirements-dev.txt
 ```
 
-### 🛠️ Configuración del archivo `.env`
+#### 2.2 Configurar variables de entorno
 
-Crea un archivo `.env` en la carpeta `backend/` con las siguientes variables:
-
-### Clave secreta para la seguridad de Django (debe ser única y secreta)
+Crea un archivo `.env` en con las siguientes variables:
 
 ```env
 SECRET_KEY="tu_clave_secreta"
+AI_API_KEY="tu_clave_motor_IA"
 ```
 
-### Modo de depuración (True para desarrollo, False para producción)
-
-```env
-DEBUG="True"
-```
-
-### Hosts permitidos (agrega los dominios o IPs que usarás)
-
-```env
-ALLOWED_HOSTS="localhost,127.0.0.1"
-```
-
-### Configuración del correo electrónico para el restablecimiento de contraseñas
-
-```env
-EMAIL_HOST_USER="tu_email@gmail.com"
-EMAIL_HOST_PASSWORD="tu_contraseña"
-```
-
-## Inicia el backend
+#### 2.3 Inicia el servidor
 
 ```bash
 python manage.py migrate
 python manage.py runserver
 ```
 
-### 3. Configurar el frontend
+El backend estará disponible en la siguiente dirección:
+`http://localhost:8000/api/v1/`
+
+### 3. Configuración del frontend
 
 ```bash
-cd frontend
+cd TFG/frontend
 npm install
 npm run dev
 ```
 
----
-
-### 📚 Uso
-
-1. Accede al frontend en http://localhost:5173.
-2. Regístrate o inicia sesión para comenzar a usar la aplicación.
-3. Crea, edita y realiza quizzes desde la interfaz de usuario.
-
----
-
-### 📂 Estructura del proyecto
-
-```plaintext
-TFG/
-├── assets/                   # Multimedia del repositorio
-├── backend/                  # Código del backend
-│   ├── apps/                 # Aplicaciones Django personalizadas
-│   │   ├── users/            # Gestión de usuarios (autenticación, perfiles, etc.)
-│   │   └── quizzes/          # Lógica relacionada con los quizzes
-│   ├── projectTFG/           # Configuración principal de Django
-│   ├── manage.py             # Script de gestión de Django
-│   └── requirements.txt      # Dependencias del backend
-├── frontend/                 # Código del frontend
-|   ├── public/               # Multimedia del frontend
-│   ├── src/                  # Código fuente del frontend
-│   │   ├── app/              # Páginas y rutas principales (Next.js)
-│   │   ├── components/       # Componentes reutilizables de React
-│   │   ├── config/           # Configuración de constantes generales
-│   │   ├── context/          # Contextos globales (autenticación, etc.)
-│   │   ├── hooks/            # Hooks personalizados de React para lógica reutilizable
-│   │   ├── lib/              # Utilidades y funciones auxiliares
-│   │   └── utils/            # Funciones auxiliares y utilidades generales
-│   ├── README.md             # README del proyecto Next
-│   ├── components.json       # Configuración para la biblioteca shadcn/ui
-│   ├── eslint.config.mjs     # Configuración de eslint
-│   ├── jsconfig.json         # Configuración de alias para rutas en el proyecto
-│   ├── next.config.js        # Configuración de Next.js
-│   ├── package-lock.json     # Bloqueo de versiones de dependencias para consistencia
-│   ├── package.json          # Configuración del proyecto y lista de dependencias
-│   ├── postcss.config.mjs    # Configuración de PostCSS para procesar CSS
-│   └── tailwind.config.mjs   # Configuración de Tailwind CSS para personalizar
-├── .gitignore                # Archivos y carpetas ignorados por Git
-├── LICENSE                   # Licencia del proyecto
-└── README.md                 # Documentación del proyecto
-```
+El frontend estará disponible en la siguiente dirección:
+`http://localhost:5173`
 
 ---
 
