@@ -151,12 +151,14 @@ export default function Login({ className, ...props }) {
                 </span>
               </section>
 
-              <GoogleOAuthProvider clientId={GOOGLE_CLIENT_OAUTH2}>
-                <GoogleLogin
-                  onSuccess={handleGoogleLoginSuccess}
-                  onError={handleGoogleLoginError}
-                />
-              </GoogleOAuthProvider>
+              <section className="flex flex-col items-center">
+                <GoogleOAuthProvider clientId={GOOGLE_CLIENT_OAUTH2}>
+                  <GoogleLogin
+                    onSuccess={handleGoogleLoginSuccess}
+                    onError={handleGoogleLoginError}
+                  />
+                </GoogleOAuthProvider>
+              </section>
             </div>
 
             <div className="mt-4 text-center text-sm">

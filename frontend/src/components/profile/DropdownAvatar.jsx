@@ -85,10 +85,16 @@ export const DropdownAvatar = ({ children }) => {
         </DropdownMenuContent>
       </DropdownMenu>
 
+      <DialogEditPhoto
+        open={isPhotoDialogOpen}
+        onOpenChange={setIsPhotoDialogOpen}
+      />
+
       <DialogEditProfile
         open={isProfileDialogOpen}
         onOpenChange={setIsProfileDialogOpen}
       />
+
       <DialogChangePassword
         open={isPasswordDialogOpen}
         onOpenChange={setIsPasswordDialogOpen}
@@ -97,10 +103,6 @@ export const DropdownAvatar = ({ children }) => {
       <DialogDeleteAccount
         open={isDeleteDialogOpen}
         onOpenChange={setIsDeleteDialogOpen}
-      />
-      <DialogEditPhoto
-        open={isPhotoDialogOpen}
-        onOpenChange={setIsPhotoDialogOpen}
       />
     </>
   );
